@@ -1,0 +1,12 @@
+node_modules/
+platforms/
+platforms/android
+platforms/browser
+www
+www/
+www/index.html
+www/platform_cordova_files/browser/index.html
+platforms/android/app/src/main/assets/www/index.html
+www/config.xml
+platforms/browser/www/index.html
+platforms/android/app/src/main/assets/www/index.html
