@@ -7,7 +7,7 @@ import GoogleMapsLoader from 'google-maps'
 
 export default {
   name: 'google-map',
-  props: ['name', 'center', 'zoom'],
+  props: ['name', 'center', 'zoom', 'markers'],
   data: function () {
     return {
       mapName: this.name + "-map",
@@ -23,7 +23,7 @@ export default {
       }],
       map: null,
       bounds: null,
-      markers: []
+      // markers: []
     }
   },
   mounted: function () {
