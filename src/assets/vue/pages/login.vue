@@ -1,5 +1,5 @@
 <template>
-	<f7-login-screen id="login-screen" style="padding:30px;">
+	<!-- <f7-login-screen id="login-screen" style="padding:30px;"> -->
 		<f7-page login-screen>
 			<f7-login-screen-title>Login</f7-login-screen-title>
 			<f7-list form>
@@ -28,7 +28,7 @@
 			</f7-block>
 
 		</f7-page>
-	</f7-login-screen>
+	<!-- </f7-login-screen> -->
 </template>
 
 <style scoped>
@@ -81,84 +81,89 @@ export default {
 		Model: 'Model/Model',
 		UserModel: 'User/UserModel'
 	}),
-	methods: Object.assign({},
-	  	mapActions({
+	methods: {
+	  	...mapActions({
 			__findUser: 'User/findUser'
     	}),
-		{
-			closeLogin() {
-				let f7 = this.$f7;
-				f7.loginScreen.close("#login-screen", true);
-			},
-			login() {
-				let instance = this;
-				var root = this.$root;
+		closeLogin() {
+			let f7 = this.$f7;
+			f7.router.navigate({
+				url: '/',
+				pushState: true,
+				// history: false,
+				clearPreviousHistory: true,
+				reloadAll: true,
+				ignoreCache : true
+			});
+		},
+		login() {
+			let instance = this;
+			var root = this.$root;
 
-				console.log('test', instance.username, instance.password)
+			console.log('test', instance.username, instance.password)
 
-				instance.$f7.preloader.show();
+			instance.$f7.preloader.show();
 
-				setTimeout(function() {
-					
-					instance.$f7.preloader.hide();
+			setTimeout(function() {
+				
+				instance.$f7.preloader.hide();
 
-					sessionStorage.removeItem("AppUserId");
-					instance.__findUser({
-						username: instance.username,
-						password: instance.password
-					})
-					.then(function(obj) {
-						instance.loginMessage = "Success! Welcome " + obj.user.FirstName + " " + obj.user.LastName + "!";
-						instance.isError = false;
-						setTimeout(function() {
-							sessionStorage.setItem("AppUserId", obj.id);
-							instance.closeLogin();
-						}, 1000);
-					})
-					.catch(function(faildata) {
-						instance.loginMessage = "No User Found.";
-						instance.isError = true;
-					})
-					
+				sessionStorage.removeItem("AppUserId");
+				instance.__findUser({
+					username: instance.username,
+					password: instance.password
+				})
+				.then(function(obj) {
+					instance.loginMessage = "Success! Welcome " + obj.user.FirstName + " " + obj.user.LastName + "!";
+					instance.isError = false;
+					setTimeout(function() {
+						sessionStorage.setItem("AppUserId", obj.id);
+						instance.closeLogin();
+					}, 1000);
+				})
+				.catch(function(faildata) {
+					instance.loginMessage = "No User Found.";
+					instance.isError = true;
+				})
+				
 
-				}, 2000);
+			}, 2000);
 
-			//   return;
-			//   Dom7.ajax({
-			//     url: "https://api.wawawa.bid/api/users/Login",
-			//     method: "POST",
-			//     dataType: "json",
-			// 	contentType: "application/json",
-			// 	beforeSend: function() {
-			// 		showPreloader();
-			// 	},
-			//     data: JSON.stringify({
-			// 		UserName: instance.username,
-			// 		Password: instance.password
-			// 	}),
-			//     success: function(response) {
-			// 		hidePreloader();
-			// 		instance.loginMessage = "Success! Welcome " + response.FirstName + " " + response.LastName + "!";
-			// 		instance.isError = false;
-			// 		setTimeout(function() {
-			// 			sessionStorage.setItem("session", response._encryptPassword);
-			// 			sessionStorage.setItem("AppUserId", response.Id);
-			// 			instance.closeLogin();
-			// 		}, 2000);
-			//     },
-			// 	statusCode: {
-			// 		400: function (xhr) {
-			// 			hidePreloader();
-			// 			var respjson = parseResponseText(xhr.responseText);
-			// 			instance.loginMessage = respjson.Value;
-			// 			instance.AppUserId = "";
-			// 			instance.isError = true;
-			// 		}
-			// 	}
-			//   });
+		//   return;
+		//   Dom7.ajax({
+		//     url: "https://api.wawawa.bid/api/users/Login",
+		//     method: "POST",
+		//     dataType: "json",
+		// 	contentType: "application/json",
+		// 	beforeSend: function() {
+		// 		showPreloader();
+		// 	},
+		//     data: JSON.stringify({
+		// 		UserName: instance.username,
+		// 		Password: instance.password
+		// 	}),
+		//     success: function(response) {
+		// 		hidePreloader();
+		// 		instance.loginMessage = "Success! Welcome " + response.FirstName + " " + response.LastName + "!";
+		// 		instance.isError = false;
+		// 		setTimeout(function() {
+		// 			sessionStorage.setItem("session", response._encryptPassword);
+		// 			sessionStorage.setItem("AppUserId", response.Id);
+		// 			instance.closeLogin();
+		// 		}, 2000);
+		//     },
+		// 	statusCode: {
+		// 		400: function (xhr) {
+		// 			hidePreloader();
+		// 			var respjson = parseResponseText(xhr.responseText);
+		// 			instance.loginMessage = respjson.Value;
+		// 			instance.AppUserId = "";
+		// 			instance.isError = true;
+		// 		}
+		// 	}
+		//   });
 
-			}
 		}
-    )
+	}
 };
 </script>

@@ -8,12 +8,10 @@
             <f7-view url="/panel-left/" links-view=".view-main" />
         </f7-panel>
 
-        <f7-views>
-            <f7-view id="main-view" main url="/" ></f7-view>
-        </f7-views>
+        <f7-view id="main-view" main url="/" ></f7-view>
 
         <!-- Login Screen -->
-		<login v-if="!UserModel"></login>
+		<!-- <login v-if="!UserModel"></login> -->
 
     </div>
 </template>
@@ -73,9 +71,50 @@ export default {
             UserModel: 'User/UserModel',
         })
     },
-    mounted() {
-        console.log(this.$device)
-    },
+    mounted() {},
+    methods: {
+        ...mapActions({
+            __getCurrentLocation:	'User/getCurrentLocation',
+            __populateModelData: 'Model/getModelData',
+            __findUser: 'User/findUser',
+            __getUserRoutes: 'User/getRoutesOfUser',
+            __selectRoute: 'User/setSelectedAppRouteId'
+        }),
+        onF7Ready: function() {
+            let instance = this;
+            // instance.useragent = navigator.userAgent;
+            
+            var root = this.$root;
+
+            if(!instance.CurrentLocation) {
+                instance.$f7.preloader.show("Getting Location...");
+                instance.__getCurrentLocation(function() {
+                    instance.$f7.preloader.hide();
+                });
+            }
+
+            // instance.__populateModelData();
+
+
+            if(!sessionStorage.getItem("AppUserId")) {
+                console.log('about to navigate to login');
+                // setTimeout(function() {
+                    instance.$f7.router.navigate({
+                        url: './login/',
+                        pushState: true,
+                        // history: false,
+                        clearPreviousHistory: true,
+                        reloadAll: true,
+                        ignoreCache : true
+                    });
+                // }, 100)
+            }
+            else {
+                instance.__findUser(sessionStorage.getItem("AppUserId").toString());
+                instance.$root.CurrentUserJobModel = root.JobModel;
+            }
+        }
+    }
     
 }
 </script>

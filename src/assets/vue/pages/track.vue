@@ -163,7 +163,7 @@
 					:draggable="false"
 					></gmap-marker>
 			</gmap-map> -->
-			<google-map
+			<!-- <google-map
 				:center="Center"
 				:zoom="zoom"
 				map-type-id="terrain"
@@ -171,7 +171,7 @@
 				v-bind:class="{ halfheight: locationopened }"
 				:markers="Markers"
 				>
-			</google-map>
+			</google-map> -->
 		</div>
 
 		<f7-popup v-if="tracking == TRACK.DONE" id="summarypopup" @popup:opened="showSummary()">
@@ -192,7 +192,7 @@
 			</f7-page>
 		</f7-popup>
 
-		<f7-popup id="addresspopup" :opened="addingroutenode">
+		<f7-popup id="addresspopup" v-if="addingroutenode" :opened="addingroutenode">
 			<add-route-node @closedAddRouteNode="closeAddRouteNode()"></add-route-node>
 		</f7-popup>
 
@@ -628,81 +628,10 @@
 				{}
 			)
 		,
-		mounted() {
-
-			let clients;
-			let instance = this;
-			let Dom7 = instance.Dom7;
-
-			if(instance.route && instance.started) {
-				return;
-			}
-
-			if(!instance.route || !instance.route.length) {
-
-				instance.$f7.preloader.show();
-
-				if(!instance.selectedRouteId){
-					instance.__selectRoute(sessionStorage.getItem('SelectedAppRouteId'));
-				}
-
-				instance.__getRouteData(instance.selectedRouteId);
-			
-			}
-
-			// var c = instance.$firebase.database().ref("AppRoutes");
-			// c.once("value")
-			// .then(function(snap) {
-			// 	console.log(snap.val());
-			// }).catch(function(err) {
-			// 	console.log(err);
-			// })
-
-			// for(var x=0;x<instance.route.length;x++)
-			// 	instance.$db.addRoute(instance.route[x]);
-
-			// if(!instance.$store.state['User/currentLocation']) {
-			// 	// showPreloader();
-			// 	instance.$store.dispatch("User/getCurrentLocation", function() {
-			// 		// instance.$f7.hidePreloader();
-			// 	});
-			// }
-
-			// FileService.writeToFile("test12345.txt", "HELLO1!", function() {
-			// 	console.log(arguments);
-			// 	FileService.readFile("test12345.txt", function() {
-			// 		console.log(arguments);
-			// 		FileService.readLocalFiles();
-			// 	})
-			// });
-
-			console.log('ewewewewew', instance.$f7)
-
-			// 	// alert('dddd');
-			// 	// e.preventDefault();
-			// 	// cordova.plugins.notification.local.schedule({
-			// 	// 	title: 'FreshRoute Notification',
-			// 	// 	text: 'You have a route running',
-			// 	// 	foreground: true
-			// 	// });
-			// });
-
-			// custom height for the map background and the timeline
-			setTimeout(function() {
-				instance.$f7.preloader.hide();
-
-				if(Dom7(".route-timeline").length) {
-					instance.routeheight = Dom7(".track-container .page-content").outerHeight(true) - 120
-					instance.mapheight = Dom7(".track-container .page-content").outerHeight(true);
-					Dom7(".track-container .page-content").css("overflow-y", "hidden");
-				}
-			},1000);
-		},
-		created() {
-		},
-		methods:
-			Object.assign({},
-			mapActions({
+		mounted() { console.log("mounted track") },
+		created() { },
+		methods: {
+			...mapActions({
 				__getRouteData: 'Route/getRouteData',
 				__startRoute: 'Route/startRoute',
 				__activateProperty: 'Route/enableProperty',
@@ -712,230 +641,303 @@
 				__closeActiveLocation: 'Route/closeProperty',
 				__selectRoute: 'User/setSelectedAppRouteId'
 			}),
-			{
-				hideRouteTimeline: function() {
-					this.routevisible = false;
-				},
-				showRouteTimeline: function(show) {
-					this.routevisible = true;
-				},
-				revertTimeline: function(nodeData) {
+			onF7Ready: function() {
 
-					let instance = this;
+				let clients;
+				let instance = this;
+				let Dom7 = instance.Dom7;
 
-					// instance.getCurrentLocation();
-					instance.zoom = 14;
+				console.log(this.$f7);
 
-					if(nodeData) {
+				console.log('f7ready track', this);
 
-						if(nodeData.Status == instance.STATUS.COMPLETE) {
-							setTimeout(function() {
-								// instance.activeLocation = null;
-								instance.__next();
-								instance.__activateProperty(instance.current);
-								instance.$forceUpdate();
-							}, 1000)
-						}
-						
-					}
-
-				},
-				resetRoute: function() {
-
-				},
-				updateFocusLocation: function(location) {
-					this.focusLocation = location;
-					this.$forceUpdate();
-				},
-				phone: function(num) {
-					return "tel://" + num;
-				},
-				skipNode: function(evt, nodeData) {
-					let instance = this;
-					
-					if(nodeData && nodeData.Skipped == true) return;
-
-					instance.$f7.dialog.confirm("Skip this Route Location?", "Skip",
-						function() {
-							nodeData.Skipped = true;
-							nodeData.Status = instance.STATUS.INCOMPLETE
-							instance.current++;
-							instance.__activateProperty(instance.current);
-							instance.$forceUpdate();
-						},
-						function() {
-							nodeData.Skipped = false;
-							instance.$forceUpdate();
-						}
-					);
-				},
-				unskipNode: function(evt, nodeData) {
-					let instance = this;
-					instance.$f7.dialog.confirm("Re-add this Location to Ongoing Route?", "Re-Add",
-						function() {
-							nodeData.Skipped = false;
-							nodeData.Status = instance.STATUS.INCOMPLETE
-							instance.$forceUpdate();
-						},
-						function() {
-							nodeData.Skipped = true;
-							instance.$forceUpdate();
-						}
-					);
-				},
-				viewNode: function(evt, nodeData) {
-
-				},
-				focusNode: function(evt, nodeData) {
-					let instance = this;
-					nodeData.Expand = true;
-					instance.$forceUpdate();
-				},
-				showDate: function() {
-					return moment().format("ll");
-				},
-				// happens at the beginning
-				startTracking: function() {
-					let instance = this;
-
-					instance.routevisible = true;
-console.log(instance.$f7);
-					instance.$f7.dialog.confirm(
-						"Begin your Route?",
-						"Begin Route",
-						function() {
-							console.log('dddddd');
-							instance.$f7.notification.create({
-								closeOnClick: true,
-								closeTimeout: 3000,
-								text: 'Tap on [Open Location] on the next available Location to begin working.',
-							}).open();
-							instance.__startRoute();
-							instance.__activateProperty(instance.current);
-						},
-						function() {
-							console.log('no?', arguments);
-						}
-					)
-				},
-				stopTracking: function() {
-					let instance = this;
-					
-					var doing = _.find(instance.route, function(obj) {
-						return obj.Status === instance.STATUS.DOING;
-					});
-					if(doing) {
-						instance.$f7.alert.show("You have unfinished Locations. Please complete before finishing Route.", "Hold on...");
-						return;
-					}
-					instance.$f7.dialog.confirm(
-						"Finish your Route?",
-						"End Route",
-						function() { instance.__endRoute(); },
-						function() { }
-					)
-				},
-				pauseTracking: function() {
-					let instance = this;
-					instance.tracking = instance.TRACK.PAUSE;
-				},
-				// activateProperty: function(nodeData) {
-				// 	let instance = this;
-				// 	// Status wasn't part of the reactive properties, so we need to manually update
-				// 	nodeData.Status = instance.STATUS.ACTIVE;
-				// 	instance.$forceUpdate();
-				// },
-				openProperty: function(seq) {
-					let instance = this;
-
-					// if(nodeData && !nodeData.Status == instance.STATUS.ACTIVE) return;
-
-
-
-					// instance.activeLocation = nodeData;
-					// instance.locationopened = true;
-
-					// instance.center = nodeData.Location;
-					instance.zoom = 16;
-
-					instance.__openProperty(seq);
-					// window.history.pushState({}, 'active', 'track/active');
-					// instance.$forceUpdate();
-				},
-				stopProperty: function(nodeData) {
-					let instance = this;
-					
-					if(nodeData && !nodeData.Status == instance.STATUS.DOING) return;
-
-					instance.$f7.dialog.confirm(
-						"Finish this Location?",
-						"End Location",
-						function() {
-							// instance.current++;
-							nodeData.Status = instance.STATUS.COMPLETE;
-							nodeData.EndTime = moment().format('LLL');
-							instance.current++;
-							instance.activateProperty(instance.route[instance.current]);
-							instance.$forceUpdate();
-						},
-						function() {
-							console.log('no?', arguments);
-						}
-					)
-				},
-				addExpense: function() {
-					let instance = this;
-
-					if(!instance.expense.description || !instance.expense.amount) {
-						instance.$f7.alert("Please enter some information.", "Oops!");
-						return;
-					}
-
-					instance.ExternalExpenses.push({
-						Description: instance.expense.description,
-						Amount: instance.expense.amount
-					})
-					instance.expense.description = "";
-					instance.expense.amount = "";
-					instance.$forceUpdate();
-				},
-				checkForChanges: function() {
-					console.log('eee', arguments)
-					// let instance = this;
-					// if(instance.tracking == instance.TRACK.PLAY || instance.tracking == instance.TRACK.DONE) {
-					// 	instance.$f7.confirm(
-					// 		"Any unsaved route data will be lost. Are you sure you want to leave?",
-					// 		"Hold on...",
-					// 		function() {
-					// 			return true;
-					// 		},
-					// 		function() {
-					// 			return false;
-					// 		}
-					// 	)
-					// }
-				},
-				showSummary: function() {
-					this.showingsummary = true;
-					this.$forceUpdate();
-				},
-				addRouteNode: function() {
-					let instance = this;
-					instance.addingroutenode = true;
-				},
-				closeAddRouteNode: function() {
-					let instance = this;
-					setTimeout(function() {
-						instance.addingroutenode = false;
-					}, 500)
-				},
-				closeActiveLocation: function(e) {
-					this.__closeActiveLocation();
-				},
-				back: function() {
-					this.$f7.views.main.router.back();
+				if(instance.route && instance.started) {
+					return;
 				}
-			})
+
+				if(!instance.route || !instance.route.length) {
+
+					instance.$f7.preloader.show();
+
+					if(!instance.selectedRouteId){
+						instance.__selectRoute(sessionStorage.getItem('SelectedAppRouteId'));
+					}
+
+					instance.__getRouteData(instance.selectedRouteId);
+				
+				}
+
+				// var c = instance.$firebase.database().ref("AppRoutes");
+				// c.once("value")
+				// .then(function(snap) {
+				// 	console.log(snap.val());
+				// }).catch(function(err) {
+				// 	console.log(err);
+				// })
+
+				// for(var x=0;x<instance.route.length;x++)
+				// 	instance.$db.addRoute(instance.route[x]);
+
+				// if(!instance.$store.state['User/currentLocation']) {
+				// 	// showPreloader();
+				// 	instance.$store.dispatch("User/getCurrentLocation", function() {
+				// 		// instance.$f7.hidePreloader();
+				// 	});
+				// }
+
+				// FileService.writeToFile("test12345.txt", "HELLO1!", function() {
+				// 	console.log(arguments);
+				// 	FileService.readFile("test12345.txt", function() {
+				// 		console.log(arguments);
+				// 		FileService.readLocalFiles();
+				// 	})
+				// });
+
+				console.log('ewewewewew', instance.$f7)
+
+				// 	// alert('dddd');
+				// 	// e.preventDefault();
+				// 	// cordova.plugins.notification.local.schedule({
+				// 	// 	title: 'FreshRoute Notification',
+				// 	// 	text: 'You have a route running',
+				// 	// 	foreground: true
+				// 	// });
+				// });
+
+				// custom height for the map background and the timeline
+				setTimeout(function() {
+					instance.$f7.preloader.hide();
+
+					if(Dom7(".route-timeline").length) {
+						instance.routeheight = Dom7(".track-container .page-content").outerHeight(true) - 120
+						instance.mapheight = Dom7(".track-container .page-content").outerHeight(true);
+						Dom7(".track-container .page-content").css("overflow-y", "hidden");
+					}
+				},1000);
+			},
+			hideRouteTimeline: function() {
+				this.routevisible = false;
+			},
+			showRouteTimeline: function(show) {
+				this.routevisible = true;
+			},
+			revertTimeline: function(nodeData) {
+
+				let instance = this;
+
+				// instance.getCurrentLocation();
+				instance.zoom = 14;
+
+				if(nodeData) {
+
+					if(nodeData.Status == instance.STATUS.COMPLETE) {
+						setTimeout(function() {
+							// instance.activeLocation = null;
+							instance.__next();
+							instance.__activateProperty(instance.current);
+							instance.$forceUpdate();
+						}, 1000)
+					}
+					
+				}
+
+			},
+			resetRoute: function() {
+
+			},
+			updateFocusLocation: function(location) {
+				this.focusLocation = location;
+				this.$forceUpdate();
+			},
+			phone: function(num) {
+				return "tel://" + num;
+			},
+			skipNode: function(evt, nodeData) {
+				let instance = this;
+				
+				if(nodeData && nodeData.Skipped == true) return;
+
+				instance.$f7.dialog.confirm("Skip this Route Location?", "Skip",
+					function() {
+						nodeData.Skipped = true;
+						nodeData.Status = instance.STATUS.INCOMPLETE
+						instance.current++;
+						instance.__activateProperty(instance.current);
+						instance.$forceUpdate();
+					},
+					function() {
+						nodeData.Skipped = false;
+						instance.$forceUpdate();
+					}
+				);
+			},
+			unskipNode: function(evt, nodeData) {
+				let instance = this;
+				instance.$f7.dialog.confirm("Re-add this Location to Ongoing Route?", "Re-Add",
+					function() {
+						nodeData.Skipped = false;
+						nodeData.Status = instance.STATUS.INCOMPLETE
+						instance.$forceUpdate();
+					},
+					function() {
+						nodeData.Skipped = true;
+						instance.$forceUpdate();
+					}
+				);
+			},
+			viewNode: function(evt, nodeData) {
+
+			},
+			focusNode: function(evt, nodeData) {
+				let instance = this;
+				nodeData.Expand = true;
+				instance.$forceUpdate();
+			},
+			showDate: function() {
+				return moment().format("ll");
+			},
+			// happens at the beginning
+			startTracking: function() {
+				let instance = this;
+
+				instance.routevisible = true;
+console.log(instance.$f7);
+				instance.$f7.dialog.confirm(
+					"Begin your Route?",
+					"Begin Route",
+					function() {
+						console.log('dddddd');
+						instance.$f7.notification.create({
+							closeOnClick: true,
+							closeTimeout: 3000,
+							text: 'Tap on [Open Location] on the next available Location to begin working.',
+						}).open();
+						instance.__startRoute();
+						instance.__activateProperty(instance.current);
+					},
+					function() {
+						console.log('no?', arguments);
+					}
+				)
+			},
+			stopTracking: function() {
+				let instance = this;
+				
+				var doing = _.find(instance.route, function(obj) {
+					return obj.Status === instance.STATUS.DOING;
+				});
+				if(doing) {
+					instance.$f7.alert.show("You have unfinished Locations. Please complete before finishing Route.", "Hold on...");
+					return;
+				}
+				instance.$f7.dialog.confirm(
+					"Finish your Route?",
+					"End Route",
+					function() { instance.__endRoute(); },
+					function() { }
+				)
+			},
+			pauseTracking: function() {
+				let instance = this;
+				instance.tracking = instance.TRACK.PAUSE;
+			},
+			// activateProperty: function(nodeData) {
+			// 	let instance = this;
+			// 	// Status wasn't part of the reactive properties, so we need to manually update
+			// 	nodeData.Status = instance.STATUS.ACTIVE;
+			// 	instance.$forceUpdate();
+			// },
+			openProperty: function(seq) {
+				let instance = this;
+
+				// if(nodeData && !nodeData.Status == instance.STATUS.ACTIVE) return;
+
+
+
+				// instance.activeLocation = nodeData;
+				// instance.locationopened = true;
+
+				// instance.center = nodeData.Location;
+				instance.zoom = 16;
+
+				instance.__openProperty(seq);
+				// window.history.pushState({}, 'active', 'track/active');
+				// instance.$forceUpdate();
+			},
+			stopProperty: function(nodeData) {
+				let instance = this;
+				
+				if(nodeData && !nodeData.Status == instance.STATUS.DOING) return;
+
+				instance.$f7.dialog.confirm(
+					"Finish this Location?",
+					"End Location",
+					function() {
+						// instance.current++;
+						nodeData.Status = instance.STATUS.COMPLETE;
+						nodeData.EndTime = moment().format('LLL');
+						instance.current++;
+						instance.activateProperty(instance.route[instance.current]);
+						instance.$forceUpdate();
+					},
+					function() {
+						console.log('no?', arguments);
+					}
+				)
+			},
+			addExpense: function() {
+				let instance = this;
+
+				if(!instance.expense.description || !instance.expense.amount) {
+					instance.$f7.alert("Please enter some information.", "Oops!");
+					return;
+				}
+
+				instance.ExternalExpenses.push({
+					Description: instance.expense.description,
+					Amount: instance.expense.amount
+				})
+				instance.expense.description = "";
+				instance.expense.amount = "";
+				instance.$forceUpdate();
+			},
+			checkForChanges: function() {
+				console.log('eee', arguments)
+				// let instance = this;
+				// if(instance.tracking == instance.TRACK.PLAY || instance.tracking == instance.TRACK.DONE) {
+				// 	instance.$f7.confirm(
+				// 		"Any unsaved route data will be lost. Are you sure you want to leave?",
+				// 		"Hold on...",
+				// 		function() {
+				// 			return true;
+				// 		},
+				// 		function() {
+				// 			return false;
+				// 		}
+				// 	)
+				// }
+			},
+			showSummary: function() {
+				this.showingsummary = true;
+				this.$forceUpdate();
+			},
+			addRouteNode: function() {
+				let instance = this;
+				instance.addingroutenode = true;
+			},
+			closeAddRouteNode: function() {
+				let instance = this;
+				setTimeout(function() {
+					instance.addingroutenode = false;
+				}, 500)
+			},
+			closeActiveLocation: function(e) {
+				this.__closeActiveLocation();
+			},
+			back: function() {
+				this.$f7.views.main.router.back();
+			}
+		}
 	};
 
 

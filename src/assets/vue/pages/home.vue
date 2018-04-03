@@ -94,11 +94,37 @@
 		// 	Login,
 		// },
 		created() {
-			// console.log(this);
+            // console.log(this);
+            console.log('in home created');
 		},
 		mounted() {
-			let instance = this;
-			// instance.useragent = navigator.userAgent;
+			// let instance = this;
+            // // instance.useragent = navigator.userAgent;
+            
+
+            // console.log('in home mounted')
+            // var root = this.$root;
+
+            // if(!instance.CurrentLocation) {
+            //     instance.$f7.preloader.show("Getting Location...");
+            //     instance.__getCurrentLocation(function() {
+            //         instance.$f7.preloader.hide();
+            //     });
+            // }
+
+            // // instance.__populateModelData();
+
+        
+            // if(!sessionStorage.getItem("AppUserId")) {
+            //     instance.$f7.router.load({url: '/'})
+            //     setTimeout(function() {
+            //         instance.$f7.loginScreen.open("#login-screen", true);
+            //     }, 1);
+            // }
+            // else {
+            //     instance.__findUser(sessionStorage.getItem("AppUserId").toString());
+            //     instance.$root.CurrentUserJobModel = root.JobModel;
+            // }
 		},
         computed: {
             ...mapGetters({
@@ -109,79 +135,50 @@
             })
         },
         
-		methods: 
-            Object.assign({},
-            mapActions({
+		methods: {
+            ...mapActions({
                 __getCurrentLocation:	'User/getCurrentLocation',
                 __populateModelData: 'Model/getModelData',
                 __findUser: 'User/findUser',
                 __getUserRoutes: 'User/getRoutesOfUser',
                 __selectRoute: 'User/setSelectedAppRouteId'
             }),
-            {
-                onF7Init: function(f7) {
+            logout: function() {
+                var instance = this;
+                sessionStorage.clear();
+                window.location.replace("/");
+            },
+            openRoutes: function() {
+                console.log('open routes');
+                let instance = this;
 
-                    console.log('in main')
-                    var root = this.$root;
-                    var instance = this;
-
-                    if(!instance.CurrentLocation) {
-                        instance.$f7.preloader.show("Getting Location...");
-                        instance.__getCurrentLocation(function() {
-                            instance.$f7.preloader.hide();
-                        });
-                    }
-
-                    // instance.__populateModelData();
-
-                
-                    if(!sessionStorage.getItem("AppUserId")) {
-                        f7.router.load({url: '/'})
-                        setTimeout(function() {
-                            f7.loginScreen.open("#login-screen", true);
-                        }, 1);
-                    }
-                    else {
-                        instance.__findUser(sessionStorage.getItem("AppUserId").toString());
-                        instance.$root.CurrentUserJobModel = root.JobModel;
-                    }
-                },
-                logout: function() {
-                    var instance = this;
-                    sessionStorage.clear();
-                    window.location.replace("/");
-                },
-                openRoutes: function() {
-                    let instance = this;
-
-                    if(sessionStorage.getItem("SelectedAppRouteId")) {
-                        instance.selectRoute(sessionStorage.getItem("SelectedAppRouteId"));
-                    }
-                    else {
-                        instance.__getUserRoutes(instance.UserModel.id);
-                        instance.gotroutes = true;
-                    }
-                },
-                selectRoute: function(approuteid) {
-                    let instance = this;
-                    // parse the route info
-                    instance.__selectRoute(approuteid);
-
-                    // the below is temporary
-                    sessionStorage.setItem("SelectedAppRouteId", approuteid);
-
-                    instance.closeRoutes();
-                    console.log(instance.$f7)
-                    instance.$f7.router.navigate({url: '/track/'});
-                },
-                closeRoutes: function() {
-                    let instance = this;
-                    setTimeout(function() {
-                        instance.gotroutes = false;
-                    }, 500)
+                if(sessionStorage.getItem("SelectedAppRouteId")) {
+                    instance.selectRoute(sessionStorage.getItem("SelectedAppRouteId"));
                 }
+                else {
+                    instance.__getUserRoutes(instance.UserModel.id);
+                    instance.gotroutes = true;
+                }
+            },
+            selectRoute: function(approuteid) {
+                let instance = this;
+                // parse the route info
+                instance.__selectRoute(approuteid);
+
+                // the below is temporary
+                sessionStorage.setItem("SelectedAppRouteId", approuteid);
+
+                instance.closeRoutes();
+                console.log(instance.$f7)
+                instance.$f7.router.navigate({ url: '/track/'});
+            },
+            closeRoutes: function() {
+                let instance = this;
+                setTimeout(function() {
+                    instance.gotroutes = false;
+                }, 500)
             }
-        )
+        }
 	}
 
 </script>

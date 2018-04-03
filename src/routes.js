@@ -1,8 +1,18 @@
 export default [
   {
     path: "/",
-    component: require("./assets/vue/pages/home.vue")
+    component: require("./assets/vue/pages/home.vue"),
+    routes: [
+      {
+        path: "login/",
+        component: require("./assets/vue/pages/login.vue")
+      }
+    ]
   },
+  // {
+  //   path: "login/",
+  //   component: require("./assets/vue/pages/login.vue")
+  // },
   {
     path: "/clients/",
     component: require("./assets/vue/pages/client/clients.vue")
