@@ -4,11 +4,11 @@
 
         <f7-statusbar></f7-statusbar>
 
-        <f7-panel left cover layout="dark">
+        <!-- <f7-panel left cover layout="dark">
             <f7-view url="/panel-left/" links-view=".view-main" />
-        </f7-panel>
+        </f7-panel> -->
 
-        <f7-view id="main-view" main url="/" ></f7-view>
+        <f7-view id="main-view" :main="true" url="/" ></f7-view>
 
         <!-- Login Screen -->
 		<!-- <login v-if="!UserModel"></login> -->
@@ -60,7 +60,9 @@ export default {
         return {
             username: "",
             useragent: "",
-            gotroutes: false
+            gotroutes: false,
+            pollGPS: null,
+            pollRate: 5000
         }
     },
     components: {
@@ -82,19 +84,29 @@ export default {
         }),
         onF7Ready: function() {
             let instance = this;
-            // instance.useragent = navigator.userAgent;
-            
             var root = this.$root;
 
             if(!instance.CurrentLocation) {
                 instance.$f7.preloader.show("Getting Location...");
                 instance.__getCurrentLocation(function() {
                     instance.$f7.preloader.hide();
+
+                    instance.pollGPS = null;
+
+                    // start polling GPS location (default 5s)
+                    instance.pollGPS = setTimeout(function() {
+                        console.log('start interfval')
+                        instance.__getCurrentLocation(
+                            instance.__getCurrentLocation,
+                            function(e) {
+                                console.log('Failed to get GPS Location', err);
+                                clearInterval(instance.pollGPS);
+                            }
+                        );
+                    }, instance.pollRate);
+
                 });
             }
-
-            // instance.__populateModelData();
-
 
             if(!sessionStorage.getItem("AppUserId")) {
                 console.log('about to navigate to login');

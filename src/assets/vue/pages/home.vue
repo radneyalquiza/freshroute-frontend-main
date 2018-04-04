@@ -1,9 +1,9 @@
 <template>
     <f7-page>
         <f7-navbar>
-            <f7-nav-left>
+            <!-- <f7-nav-left>
                 <f7-link class="panel-open" open-panel="left" icon="fa fa-bars"></f7-link>
-            </f7-nav-left>
+            </f7-nav-left> -->
             <div class="title">FreshRoute - Express</div>
             <f7-nav-right>
                 <f7-link class="searchbar-enable" data-searchbar=".searchbar-components" icon="fa fa-search"></f7-link>
@@ -12,12 +12,6 @@
         </f7-navbar>
 
         <f7-block-title class="welcome">Welcome to <span class="red">FreshRoute</span></f7-block-title>
-
-        <!-- <f7-list class="components-list searchbar-found">
-            <f7-list-item link="/clients/" title="Clients"></f7-list-item>
-            <f7-list-item link="/route/" title="Route"></f7-list-item>
-            <f7-list-item link="/reports/" title="Reports"></f7-list-item>
-        </f7-list> -->
 
         <f7-list class="components-list searchbar-found">
             <f7-list-item link="/clients/" title="Clients" panel-close>

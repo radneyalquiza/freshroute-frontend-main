@@ -1,63 +1,109 @@
 <template>
-  <div class="google-map" :id="mapName"></div>
+  <div class="google-map" :id="id"></div>
 </template>
 
 <script>
-import GoogleMapsLoader from 'google-maps'
+
+import GoogleMapsLoader from "google-maps";
 
 export default {
-  name: 'google-map',
-  props: ['name', 'center', 'zoom', 'markers'],
-  data: function () {
-    return {
-      mapName: this.name + "-map",
-      markerCoordinates: [{
-        latitude: 51.501527,
-        longitude: -0.1921837
-      }, {
-        latitude: 51.505874,
-        longitude: -0.1838486
-      }, {
-        latitude: 51.4998973,
-        longitude: -0.202432
-      }],
-      map: null,
-      bounds: null,
-      // markers: []
-    }
-  },
-  mounted: function () {
+	name: "google-map",
+	props: ["id", "center", "zoom", "markers"],
+	data: function() {
+		return {
+			map: null,
+			bounds: null,
+			element: null,
+			key: "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754"
+		};
+	},
+	watch: {
+		center: function(newval, oldval) {
+			console.log('changed center');
+			if(newval !== oldval) {
+				this.setCenter(newval);
+			}
+		},
+		markers: function(newval, oldval) {
+			console.log('changed amrkers');
+			this.setMarkers(newval);
+		},
+		zoom: function(newval, oldval) {
+			console.log('changed zoom');
+			this.setZoom(newval);
+		}
+	},
+	mounted: function() {
+		// GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 
-    GoogleMapsLoader.KEY = 'AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754';
-    // GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+		let instance = this;
+		instance.initMap();
 
-    let instance = this;
+		// if the below props have values already at this moment, update the map
+		if(instance.markers)
+			instance.setMarkers(instance.markers);
+		if(instance.center)
+			instance.setCenter(instance.center);
+	},
+	methods: {
 
-    GoogleMapsLoader.load(function(google) {
-        instance.bounds = new google.maps.LatLngBounds();
-        const element = document.getElementById(instance.mapName)
-        const mapCentre = instance.markerCoordinates[0]
-        const options = {
-          center: new google.maps.LatLng(mapCentre.latitude, mapCentre.longitude)
-        }
-        console.log('ye?')
-        instance.map = new google.maps.Map(element, options);
-        instance.markerCoordinates.forEach((coord) => {
-          const position = new google.maps.LatLng(coord.latitude, coord.longitude);
-          const marker = new google.maps.Marker({ 
-            position,
-            map: instance.map
-          });
-        instance.markers.push(marker)
-          instance.map.fitBounds(instance.bounds.extend(position))
-        });
-    })
+		initMap: function() {
+			let instance = this;
+			GoogleMapsLoader.KEY = instance.key;
+			GoogleMapsLoader.load(function(google) {
+				instance.bounds = new google.maps.LatLngBounds();
+				instance.element = document.getElementById(instance.id);
+				let options = null;
+				
+				if(instance.center) {
+					options = {
+						center: new google.maps.LatLng(instance.center.lat, instance.center.lng),
+						zoom: instance.zoom
+					};
+				}
+				instance.map = new google.maps.Map(instance.element, options);
+			});
+		},
 
-    
-    
-  }
+		setCenter: function(coords) {
+			let instance = this;
+			GoogleMapsLoader.load(function(google) {
+				if(coords && coords.lat) {
+					let ctr = new google.maps.LatLng(coords.lat, coords.lng);
+					instance.map.setCenter(ctr);
+				}
+			});
+		},
+
+		setZoom: function(zoom) {
+			let instance = this;		
+			GoogleMapsLoader.load(function(google) {
+				instance.map.setZoom(parseInt(zoom));
+			});
+		},
+
+		setMarkers: function(mrkrs) {
+			let instance = this;		
+			GoogleMapsLoader.load(function(google) {
+				mrkrs.forEach(coord => {
+					let position = new google.maps.LatLng(
+						coord.position.lat,
+						coord.position.lng
+					);
+
+					let marker = new google.maps.Marker({
+						position,
+						map: instance.map
+					});
+					// instance.map.fitBounds(instance.bounds.extend(position));
+				});
+			});
+		},
+
+	}
 };
 </script>
+
 <style scoped>
 .google-map {
   width: 100%;

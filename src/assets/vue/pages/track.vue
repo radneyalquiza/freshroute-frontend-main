@@ -80,6 +80,7 @@
 						</div>
 
 						<div v-if="address.lat" class="card" v-bind:class="{ active: address.Status == STATUS.ACTIVE && tracking != TRACK.DONE,
+														pulse: address.Status == STATUS.ACTIVE && tracking != TRACK.DONE,
 														skipped: address.Skipped == true,
 														inc: address.Status == STATUS.INCOMPLETE,
 														done: address.Status == STATUS.COMPLETE || tracking == TRACK.DONE }">
@@ -163,7 +164,8 @@
 					:draggable="false"
 					></gmap-marker>
 			</gmap-map> -->
-			<!-- <google-map
+			<google-map
+				id="test"
 				:center="Center"
 				:zoom="zoom"
 				map-type-id="terrain"
@@ -171,7 +173,7 @@
 				v-bind:class="{ halfheight: locationopened }"
 				:markers="Markers"
 				>
-			</google-map> -->
+			</google-map>
 		</div>
 
 		<f7-popup v-if="tracking == TRACK.DONE" id="summarypopup" @popup:opened="showSummary()">
@@ -329,6 +331,9 @@
 	width: 13px;
 	height: 13px;
 	background: #146aff;
+}
+.pulse {
+	animation: pulseblue 2s;
 }
 .timeline-item-divider.inc {
 	background: #f44336;
@@ -546,6 +551,27 @@
   }
 }
 
+@-webkit-keyframes pulseblue {
+  0% { -webkit-box-shadow: 0 0 0 0 rgba(0, 82, 247, 0.4); }
+  70% { -webkit-box-shadow: 0 0 0 20px rgba(0, 82, 247, 0);  }
+  100% { -webkit-box-shadow: 0 0 0 0 rgba(0, 82, 247, 0);  }
+}
+@keyframes pulseblue {
+  0% {
+	  -moz-box-shadow: 0 0 0 0 rgba(0, 82, 247, 0.4);
+      box-shadow: 0 0 0 0 rgba(0, 82, 247, 0.4);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 20px rgba(0, 82, 247, 0);
+      box-shadow: 0 0 0 20px rgba(0, 82, 247, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(0, 82, 247, 0);
+      box-shadow: 0 0 0 0 rgba(0, 82, 247, 0);
+  }
+}
+
+
 </style>
 
 <script>
@@ -578,7 +604,7 @@
 				addingroutenode: false,
 				// activeLocation: null,
 				// tracking: 0,
-				zoom: 15,
+				zoom: 0,
 				height: "50%",
 				mapheight: "640px",
 				routeheight: "640px",
@@ -607,28 +633,25 @@
 				}
 			}
 		},
-		computed: 
-			Object.assign({},
-				mapGetters({
-					currentLocation: 'User/currentLocation',
-					route: 'Route/Route',
-					routename: 'Route/RouteName',
-					UserModel: 'User/UserModel',
-					started: 'Route/started',
-					RouteStatus: 'Route/RouteStatus',
-					LocationStatus: 'Route/LocationStatus',
-					Center: 'Route/Center',
-					Markers: 'Route/Markers',
-					current: 'Route/current',
-					locationopened: 'Route/locationopened',
-					activeLocation: 'Route/activeLocation',
-					tracking: 'Route/RouteStatus',
-					selectedRouteId: 'User/selectedAppRouteId'
-				}),
-				{}
-			)
-		,
-		mounted() { console.log("mounted track") },
+		computed: {
+			...mapGetters({
+				currentLocation: 'User/currentLocation',
+				route: 'Route/Route',
+				routename: 'Route/RouteName',
+				UserModel: 'User/UserModel',
+				started: 'Route/started',
+				RouteStatus: 'Route/RouteStatus',
+				LocationStatus: 'Route/LocationStatus',
+				Center: 'Route/Center',
+				Markers: 'Route/Markers',
+				current: 'Route/current',
+				locationopened: 'Route/locationopened',
+				activeLocation: 'Route/activeLocation',
+				tracking: 'Route/RouteStatus',
+				selectedRouteId: 'User/selectedAppRouteId'
+			})
+		},
+		mounted() { },
 		created() { },
 		methods: {
 			...mapActions({
@@ -647,13 +670,8 @@
 				let instance = this;
 				let Dom7 = instance.Dom7;
 
-				console.log(this.$f7);
-
-				console.log('f7ready track', this);
-
-				if(instance.route && instance.started) {
+				if(instance.route && instance.started)
 					return;
-				}
 
 				if(!instance.route || !instance.route.length) {
 
@@ -666,14 +684,6 @@
 					instance.__getRouteData(instance.selectedRouteId);
 				
 				}
-
-				// var c = instance.$firebase.database().ref("AppRoutes");
-				// c.once("value")
-				// .then(function(snap) {
-				// 	console.log(snap.val());
-				// }).catch(function(err) {
-				// 	console.log(err);
-				// })
 
 				// for(var x=0;x<instance.route.length;x++)
 				// 	instance.$db.addRoute(instance.route[x]);
@@ -693,8 +703,6 @@
 				// 	})
 				// });
 
-				console.log('ewewewewew', instance.$f7)
-
 				// 	// alert('dddd');
 				// 	// e.preventDefault();
 				// 	// cordova.plugins.notification.local.schedule({
@@ -707,6 +715,8 @@
 				// custom height for the map background and the timeline
 				setTimeout(function() {
 					instance.$f7.preloader.hide();
+
+					instance.zoom = 15;
 
 					if(Dom7(".route-timeline").length) {
 						instance.routeheight = Dom7(".track-container .page-content").outerHeight(true) - 120

@@ -49,7 +49,7 @@ const MUTATIONS = {
     },
 
     setLoading(state, status) {
-        if (status) state.loading = status;
+        if (typeof status == 'boolean') state.loading = status;
     },
 
     setUserModel(state, umodel) {
@@ -81,9 +81,9 @@ const ACTIONS = {
         //     lng: -79.14355
         // });
 
-        setTimeout(function() {
-            onsuccess();
-        }, 1);
+        // setTimeout(function() {
+        //     onsuccess();
+        // }, 1);
 
         navigator.geolocation.getCurrentPosition(function(pos) {
             if (pos && pos.coords) {
@@ -93,13 +93,16 @@ const ACTIONS = {
                     lat: pos.coords.latitude,
                     lng: pos.coords.longitude
                 });
+                console.log(pos.coords.latitude, pos.coords.longitude);
 
                 if (typeof onsuccess == "function") onsuccess();
 
             }
-        }, function() {
+        }, function(err) {
+            console.log('no boom?')
+            commit('setLoading', false);
             if (typeof onfail == "function")
-                onfail();
+                onfail(err);
         })
     },
 
@@ -130,18 +133,25 @@ const ACTIONS = {
                             if (key == id) {
                                 commit("setUserModel", Object.assign({}, users[key], { id: key }));
                                 resolve({ id: key, user: users[key] });
+                                break;
                             }
                         }
+                        reject();
+
                     } else if (typeof payload == "object") {
                         let usr = payload.username;
                         let pass = payload.password;
+                        console.log('look for', usr, pass)
                         for (var key in users) {
                             if (users[key].UserName == usr &&
                                 users[key].Password == pass) {
+                                    console.log("qwqwqq", usr, pass)
                                 commit("setUserModel", Object.assign({}, users[key], { id: key }));
                                 resolve({ id: key, user: users[key] });
+                                break;
                             }
                         }
+                        reject();
                     }
                 })
                 .catch(function(err) {

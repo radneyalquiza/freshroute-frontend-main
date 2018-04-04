@@ -4,6 +4,10 @@ import * as firebase from 'firebase'
 
 // temporary until we can use HTTP
 import RouteModel from '../../../assets/js/atlas-job-model.js'
+import GoogleMapsLoader from "google-maps"
+import axios from 'axios'
+
+const gmapkey = "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754"
 
 // ---------------------------------------------------------------------------------------
 const RouteStatus = {
@@ -112,13 +116,11 @@ const MUTATIONS = {
     INIT_ADDRESS_AS_LOCATION: function(state, payload) {
         var route = state.Route[payload.sequence];
         route = _.extend(route, payload.address);
-        console.log('11', route);
         // delete route.AppAddresses;
     },
     INIT_CLIENT_AS_LOCATION: function(state, payload) {
         var route = state.Route[payload.sequence];
         route = _.extend(route, payload.client);
-        console.log('22', route);
         // delete route.AppAddresses;
     },
     SORT: function(state) {
@@ -301,6 +303,23 @@ const ACTIONS = {
                                     sequence: idx,
                                     address: a
                                 });
+                                commit('UPDATE_ROUTE_MARKERS', {
+                                    sequence: idx,
+                                    position: { 
+                                        lat: a.lat,
+                                        lng: a.lng
+                                    }
+                                });
+
+                                if(idx == route.length-1)
+                                {
+                                    let routecenter = {
+                                        position: rootGetters['User/currentLocation'],
+                                        sequence: idx+1
+                                    }
+                                    commit('UPDATE_ROUTE_MARKERS', routecenter);
+                                    commit('UPDATE_ROUTE_CENTER', routecenter );
+                                }
                             });
                     })(x);
                 }
@@ -391,63 +410,87 @@ const ACTIONS = {
 
     updateWeather({ commit, getters }) {
         var al = ACTION_HELPERS.getOpened(getters.Route);
+        console.log(al);
 
-        Dom7.ajax({
+        console.log(window.f7)
+
+        axios({
             url: "http://api.openweathermap.org/data/2.5/weather",
-            method: "GET",
-            dataType: "json",
             data: {
                 units: "metric",
-                lat: al.Location.lat,
-                lon: al.Location.lng,
+                lat: al.lat,
+                lon: al.lng,
                 APPID: "be03f14ebd1f48d5e5a22c551ac78bda"
-            },
-            contentType: "application/json",
-            success: function(response) {
-                if (response) {
-                    commit('UPDATE_WEATHER', {
-                        sequence: al.Sequence,
-                        weather: response
-                    })
-                }
             }
-        });
+        }).then(function(response) {
+            if (response) {
+                commit('UPDATE_WEATHER', {
+                    sequence: al.Sequence,
+                    weather: response
+                })
+            }
+        }).catch(function(e) {
+            console.log('Failed to get Weather', e);
+        })
+
+        // Dom7.ajax({
+        //     url: "http://api.openweathermap.org/data/2.5/weather",
+        //     method: "GET",
+        //     dataType: "json",
+        //     data: {
+        //         units: "metric",
+        //         lat: al.Location.lat,
+        //         lon: al.Location.lng,
+        //         APPID: "be03f14ebd1f48d5e5a22c551ac78bda"
+        //     },
+        //     contentType: "application/json",
+        //     success: function(response) {
+        //         if (response) {
+        //             commit('UPDATE_WEATHER', {
+        //                 sequence: al.Sequence,
+        //                 weather: response
+        //             })
+        //         }
+        //     }
+        // });
     },
 
     getDistanceFromLocation({ commit, getters }, geocodeduserlocation, cb) {
         var al = ACTION_HELPERS.getOpened(getters.Route);
 
-        var service = new google.maps.DistanceMatrixService();
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({ 'location': al.Location }, function(results, status) {
-            if (status === 'OK') {
-                if (results[1]) {
-                    // instance.CurrentLocation = results[1].formatted_address;
-                    commit('SET_WHERE_YOU_ARE', {
-                        whereyouare: results[1].formatted_address
-                    })
-                    service.getDistanceMatrix({
-                        origins: [new google.maps.LatLng(geocodeduserlocation.lat, geocodeduserlocation.lng)],
-                        destinations: [new google.maps.LatLng(al.Location.lat, al.Location.lng)],
-                        travelMode: 'DRIVING',
-                        unitSystem: google.maps.UnitSystem.METRIC
-                    }, function(result, status) {
-                        if (status == "OK" && result) {
-                            if (result.rows) {
-                                if (typeof cb == "function")
-                                    cb(result);
+        GoogleMapsLoader.KEY = gmapkey;
+        GoogleMapsLoader.load(function(google) {
+            var service = new google.maps.DistanceMatrixService();
+            var geocoder = new google.maps.Geocoder();
+    
+            geocoder.geocode({ 'location': al.Location }, function(results, status) {
+                if (status === 'OK') {
+                    if (results[1]) {
+                        // instance.CurrentLocation = results[1].formatted_address;
+                        commit('SET_WHERE_YOU_ARE', {
+                            whereyouare: results[1].formatted_address
+                        })
+                        service.getDistanceMatrix({
+                            origins: [new google.maps.LatLng(geocodeduserlocation.lat, geocodeduserlocation.lng)],
+                            destinations: [new google.maps.LatLng(al.lat, al.lng)],
+                            travelMode: 'DRIVING',
+                            unitSystem: google.maps.UnitSystem.METRIC
+                        }, function(result, status) {
+                            if (status == "OK" && result) {
+                                if (result.rows) {
+                                    if (typeof cb == "function")
+                                        cb(result);
+                                }
                             }
-                        }
-                    });
-
+                        });
+    
+                    }
+                } else {
+                    if (typeof cb == "function") cb(status)
                 }
-            } else {
-                if (typeof cb == "function") cb(status)
-            }
-
+    
+            });
         });
-
     },
 
 
@@ -514,7 +557,7 @@ export default {
 const ACTION_HELPERS = {
     getOpened: function(route) {
         var loc = _.find(route, function(obj) {
-            return obj.Status == LocationStatus.ACTIVE;
+            return obj.Status == LocationStatus.ACTIVE || obj.Status == LocationStatus.DOING;
         })
         if (loc) return loc;
     }

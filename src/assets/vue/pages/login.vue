@@ -102,18 +102,22 @@ export default {
 
 			console.log('test', instance.username, instance.password)
 
+			sessionStorage.removeItem("AppUserId");
+
 			instance.$f7.preloader.show();
 
-			setTimeout(function() {
+			// setTimeout(function() {
 				
-				instance.$f7.preloader.hide();
-
-				sessionStorage.removeItem("AppUserId");
 				instance.__findUser({
 					username: instance.username,
 					password: instance.password
 				})
 				.then(function(obj) {
+
+					instance.$f7.preloader.hide();
+
+					console.log('bbbb', obj);
+
 					instance.loginMessage = "Success! Welcome " + obj.user.FirstName + " " + obj.user.LastName + "!";
 					instance.isError = false;
 					setTimeout(function() {
@@ -122,12 +126,15 @@ export default {
 					}, 1000);
 				})
 				.catch(function(faildata) {
+
+					instance.$f7.preloader.hide();
+
 					instance.loginMessage = "No User Found.";
 					instance.isError = true;
 				})
 				
 
-			}, 2000);
+			// }, 2000);
 
 		//   return;
 		//   Dom7.ajax({
