@@ -75,35 +75,35 @@ const ACTIONS = {
 
         commit("setLoading", true);
 
-        // commit("setLoading", false);
-        // commit("setCurrentLocation", {
-        //     lat: 44.19271,
-        //     lng: -79.14355
-        // });
+        commit("setLoading", false);
+        commit("setCurrentLocation", {
+            lat: 44.19271,
+            lng: -79.14355
+        });
 
-        // setTimeout(function() {
-        //     onsuccess();
-        // }, 1);
+        setTimeout(function() {
+            if (typeof onsuccess == "function") onsuccess();
+        }, 1);
 
-        navigator.geolocation.getCurrentPosition(function(pos) {
-            if (pos && pos.coords) {
+        // navigator.geolocation.getCurrentPosition(function(pos) {
+        //     if (pos && pos.coords) {
 
-                commit('setLoading', false);
-                commit("setCurrentLocation", {
-                    lat: pos.coords.latitude,
-                    lng: pos.coords.longitude
-                });
-                console.log(pos.coords.latitude, pos.coords.longitude);
+        //         commit('setLoading', false);
+        //         commit("setCurrentLocation", {
+        //             lat: pos.coords.latitude,
+        //             lng: pos.coords.longitude
+        //         });
+        //         console.log(pos.coords.latitude, pos.coords.longitude);
 
-                if (typeof onsuccess == "function") onsuccess();
+        //         if (typeof onsuccess == "function") onsuccess();
 
-            }
-        }, function(err) {
-            console.log('no boom?')
-            commit('setLoading', false);
-            if (typeof onfail == "function")
-                onfail(err);
-        })
+        //     }
+        // }, function(err) {
+        //     console.log('no boom?')
+        //     commit('setLoading', false);
+        //     if (typeof onfail == "function")
+        //         onfail(err);
+        // })
     },
 
     getCurrentAddress({ commit, getters }) {
@@ -145,7 +145,7 @@ const ACTIONS = {
                         for (var key in users) {
                             if (users[key].UserName == usr &&
                                 users[key].Password == pass) {
-                                    console.log("qwqwqq", usr, pass)
+                                console.log("qwqwqq", usr, pass)
                                 commit("setUserModel", Object.assign({}, users[key], { id: key }));
                                 resolve({ id: key, user: users[key] });
                                 break;
