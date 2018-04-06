@@ -11,24 +11,28 @@
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>First Name</f7-label>
-                    <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+                    <f7-input type="text" :value="client.FirstName"
+    			        		@input="client.FirstName = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Last Name</f7-label>
-                    <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+                    <f7-input type="text" :value="client.LastName"
+    			        		@input="client.LastName = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
 
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Phone</f7-label>
-                    <f7-input type="tel" placeholder="Your phone number" clear-button></f7-input>
+                    <f7-input type="tel" :value="client.Phone"
+    			        		@input="client.Phone = $event.target.value" placeholder="Your phone number" clear-button></f7-input>
                 </f7-list-item>
 
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>E-mail</f7-label>
-                    <f7-input type="email" placeholder="Your e-mail" clear-button></f7-input>
+                    <f7-input type="email" :value="client.Email"
+    			        		@input="client.Email = $event.target.value" placeholder="Your e-mail" clear-button></f7-input>
                 </f7-list-item>
 
             </f7-list>
@@ -40,55 +44,85 @@
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Street Address</f7-label>
-                    <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+                    <f7-input type="text" :value="address.Street"
+    			        		@input="address.Street = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>City</f7-label>
-                    <f7-input type="text" placeholder="Your name" clear-button></f7-input>
+                    <f7-input type="text" :value="address.City"
+    			        		@input="address.City = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
 
                 <f7-list-item>
                     <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Postal Code</f7-label>
-                    <f7-input type="text" placeholder="Your phone number" clear-button></f7-input>
+                    <f7-input type="text" :value="address.PostalCode"
+    			        		@input="address.PostalCode = $event.target.value" placeholder="Your phone number" clear-button></f7-input>
                 </f7-list-item>
 
             </f7-list>
         </f7-block>
 
         <f7-block>
-            <f7-block-title>Service Info</f7-block-title>
-            <f7-list no-hairlines-md>
-                <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
-                    <f7-label style="width: auto" >Service Type</f7-label>
-                    <f7-button style="width:150px; margin-top: 5px;" :fill=true green popover-open=".services">Select a Service</f7-button>
-                    <f7-popover class='services'>
-                        <f7-list>
-                            <f7-list-item v-for="service in appservices" :key="service.$index" popover-close=".services" @click="addService(service)">
-                                {{ service.AppServiceDescription }}
-                            </f7-list-item>
-                        </f7-list>
-                    </f7-popover>
-                </f7-list-item>
-            </f7-list>
+            <f7-block-title>Service Info (for now 1 service per Address)</f7-block-title>
+            <div style="border:1px solid #e0e0e0; width:85%; text-align: center; margin:auto; padding: 8px; border-radius:3px;" v-for="serv in services" :key="serv.$index">
+                <div style="display: flex">
+                    <div class="servicetype" style="width:50%">
+                        <f7-label style="width: auto" >Service Type</f7-label>
+                        <f7-button style="width:130px; margin-top: 5px; font-size:11px; margin: auto" :fill=true green popover-open=".services">
+                            {{ serv.AppServiceType ? serv.AppServiceType : 'Select' }}
+                        </f7-button>
+                        <f7-popover class='services'>
+                            <f7-list>
+                                <f7-list-item v-for="service in appservices" :key="service.$index" popover-close=".services" @click="selectService(serv, service)">
+                                    {{ service.AppServiceDescription }}
+                                </f7-list-item>
+                            </f7-list>
+                        </f7-popover>
+                    </div>
+                    <div class="frequency" style="width:50%" >
+                        <f7-label style="width: auto" >Frequency</f7-label>
+                        <f7-button style="width:130px; margin-top: 5px; font-size:11px; margin: auto" :fill=true green popover-open=".frequencies">
+                            {{ serv.Frequency ? frequencyDescription(serv.Frequency) : 'Select' }}
+                        </f7-button>
+                        <f7-popover class='frequencies'>
+                            <f7-list>
+                                <f7-list-item v-for="fr in frequencies" :key="fr.$index" popover-close=".services" @click="selectFrequency(serv, fr)">
+                                    {{ fr.FrequencyDescription }}
+                                </f7-list-item>
+                            </f7-list>
+                        </f7-popover>
+                    </div>
+                </div>
+
+                <div class="rate" style="display: flex">
+                    <div style="width: 30%">
+                        <f7-label style="width: auto" >Rate</f7-label>
+                        <span>${{ serv.Price }}</span>
+                    </div>
+                    <f7-range :value="serv.Price"
+    			        		@range:change="updatePrice(serv, $event)" :draggableBar="true" color="orange" :label="true" :min="0" :max="100" :step="5" >
+                    </f7-range>
+                </div>
+            </div>
         </f7-block>
 
-        <f7-button style="width:95%; margin:auto;" big :fill=true raised color="blue">Save</f7-button>
+        <f7-button style="width:95%; margin:auto;" @click="collectAndSave()" big :fill=true raised color="blue">Save</f7-button>
 
         <f7-block></f7-block>
     </f7-page>
 </template>
 
 <style>
-
+.servicetype, .frequency, .rate { margin-top: 5px; margin-bottom: 5px; }
 </style>
 
 <script>
     import { mapGetters } from 'vuex'
     import GoogleMapsLoader from "google-maps"
     import axios from 'axios'
+    import _ from 'lodash'
 
     const gmapkey = "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754"
 
@@ -99,23 +133,50 @@
             return {
                 appservices: null,
                 address: {
-                    streetaddress: "",
-                    city: "",
-                    postalcode: "",
+                    Street: "",
+                    City: "",
+                    PostalCode: "",
                     lat: null,
                     lng: null
                 },
-                customer: {
-                    firstName: "",
-                    lastName: "",
-                    phone: ""
+                client: {
+                    FirstName: "",
+                    LastName: "",
+                    Phone: "",
+                    Email: ""
                 },
                 routeNode: {
-                    sequence: null,
-                    clientid: null,
-                    addressid: null
+                    Sequence: null,
+                    ClientId: null,
+                    AddressId: null
                 },
-                services: []
+                services: [],
+                frequencies: [
+                    {
+                        FrequencyType: "ONE",
+                        FrequencyDescription: "One-time"
+                    },
+                    {
+                        FrequencyType: "WEEK",
+                        FrequencyDescription: "Weekly"
+                    },
+                    {
+                        FrequencyType: "BIWEEK",
+                        FrequencyDescription: "Bi-weekly"
+                    },
+                    {
+                        FrequencyType: "MONTH",
+                        FrequencyDescription: "Monthly"
+                    },
+                    {
+                        FrequencyType: "BIMONTH",
+                        FrequencyDescription: "Bi-Monthly"
+                    },
+                    {
+                        FrequencyType: "BIANNUM",
+                        FrequencyDescription: "Bi-Annually"
+                    },
+                ]
             }
         },
 		created() {
@@ -129,6 +190,11 @@
             .once("value", function(data) {
                 instance.appservices = data.val();
                 console.log(instance.appservices);
+                instance.services.push({
+                    AppServiceType: "",
+                    Frequency: "",
+                    Price: 0
+                })
             });
 		},
 		methods: {
@@ -136,19 +202,27 @@
                 let instance = this;
                 instance.$f7.router.back();
             },
-            geocodeAddress: function() {
+            geocodeAddress: async function() {
+
+                let instance = this;
+
+                instance.$f7.preloader.show();
 
                 GoogleMapsLoader.KEY = gmapkey;
-                GoogleMapsLoader.load(function(google) {
+                await GoogleMapsLoader.load(function(google) {
+                    
                     let geocoder = new google.maps.Geocoder();
-                    var route = getters.Route;
-                    geocoder.geocode({ 'address': route[i].Street + " " + route[i].City + " " + route[i].PostalCode },
+
+                    geocoder.geocode({ 'address': instance.address.Street + " " + instance.address.City + " " + instance.address.PostalCode },
                         function(results, status) {
+
+                            instance.$f7.preloader.hide();
                             if (status == google.maps.GeocoderStatus.OK) {
-                                var latitude = results[0].geometry.location.lat();
-                                var longitude = results[0].geometry.location.lng();
-                                var position = { lat: latitude, lng: longitude };
+                                instance.address.lat = results[0].geometry.location.lat();
+                                instance.address.lng = results[0].geometry.location.lng();
                             }
+                        }, function() {
+                            instance.$f7.preloader.hide();
                         }
                     )
                 });
@@ -160,15 +234,41 @@
                     Rate: null, // on init, use Default Price
                 });
             },
+            selectService: function(serviceobj, srv) {
+                console.log('change service', srv);
+                serviceobj.AppServiceType = srv.AppServiceType;
+            },
+            selectFrequency: function(serviceobj, frq) {
+                console.log('change freq', frq)
+                serviceobj.Frequency = frq.FrequencyType;
+            },
             addService: function(service) {
                 this.services.push(service);
+            },
+            updatePrice: function(serviceobj, evt) {
+                serviceobj.Price = evt;
+                this.$forceUpdate();
+            },
+            collectAndSave: function() {
+                console.log(this.client, this.address, this.services);
+
+                let instance = this;
+                instance.geocodeAddress();
+                console.log('done await geocodeaddress')
+            },
+            frequencyDescription: function(val) {
+                let instance = this;
+                console.log('qqqqqq', val)
+                let s = _.find(instance.frequencies, function(obj) {
+                    return obj.FrequencyType.toLowerCase() === val.toLowerCase();
+                });
+                return s.FrequencyDescription;
             }
 		},
 		computed: {
             ...mapGetters({
                 routename: 'Route/RouteName'
             })
-
 		},
     } 
 </script>

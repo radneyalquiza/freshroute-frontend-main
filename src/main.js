@@ -8,6 +8,8 @@ global.jQuery = jQuery;
 
 import * as firebase from "firebase";
 
+import 'babel-polyfill';
+
 // Import Vue Maps
 // import * as VueGoogleMaps from "vue2-google-maps";
 
@@ -72,22 +74,22 @@ var App;
 
 let theme = 'auto';
 if (document.location.search.indexOf('theme=') >= 0) {
-  theme = document.location.search.split('theme=')[1].split('&')[0];
+    theme = document.location.search.split('theme=')[1].split('&')[0];
 }
 
 document.addEventListener("deviceready", function() {
 
     window.showPreloader = function(msg) {
-      // if (!$(".modal-overlay-visible").length) window.f7.showPreloader(msg);
+        // if (!$(".modal-overlay-visible").length) window.f7.showPreloader(msg);
     };
     window.hidePreloader = function() {
-      // if ($(".modal-overlay-visible").length) {
-      //     setTimeout(function() {
-      //         window.f7.hidePreloader();
-      //         $(".modal-overlay-visible").remove();
-      //         $(".popup-overlay").remove();
-      //     }, 800);
-      // }
+        // if ($(".modal-overlay-visible").length) {
+        //     setTimeout(function() {
+        //         window.f7.hidePreloader();
+        //         $(".modal-overlay-visible").remove();
+        //         $(".popup-overlay").remove();
+        //     }, 800);
+        // }
     };
 
     store = new Vuex.Store({
@@ -103,35 +105,35 @@ document.addEventListener("deviceready", function() {
 
     // Init Vue App
     App = new Vue({
-      // Root Element
-      el: '#app',
-      store,
-      render: c => c('app'),
-      data: {},
-      components: {
-          app,
-      },
-      routes,
-      framework7: {
-          view: {
-            pushState: true
-          },
-          material: true,
-          tapHold: true,
-          id: 'io.freshroute.app',
-          theme: "md", // md or ios
-      },
-      created() {
-          Vue.prototype.$firebase = firebase.initializeApp({
-              apiKey: "AIzaSyAA-i7VNULO2EM5KBhxQ2_uXwdlei5DSl4",
-              authDomain: "freshroute-ac861.firebaseapp.com",
-              databaseURL: "https://freshroute-ac861.firebaseio.com",
-              projectId: "freshroute-ac861",
-              storageBucket: "freshroute-ac861.appspot.com",
-              messagingSenderId: "171839500964"
-          });
+        // Root Element
+        el: '#app',
+        store,
+        render: c => c('app'),
+        data: {},
+        components: {
+            app,
+        },
+        routes,
+        framework7: {
+            view: {
+                pushState: true
+            },
+            material: true,
+            tapHold: true,
+            id: 'io.freshroute.app',
+            theme: "md", // md or ios
+        },
+        created() {
+            Vue.prototype.$firebase = firebase.initializeApp({
+                apiKey: "AIzaSyAA-i7VNULO2EM5KBhxQ2_uXwdlei5DSl4",
+                authDomain: "freshroute-ac861.firebaseapp.com",
+                databaseURL: "https://freshroute-ac861.firebaseio.com",
+                projectId: "freshroute-ac861",
+                storageBucket: "freshroute-ac861.appspot.com",
+                messagingSenderId: "171839500964"
+            });
 
-      }
+        }
     });
 
 });
