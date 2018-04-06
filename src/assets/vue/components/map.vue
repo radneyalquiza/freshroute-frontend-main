@@ -19,28 +19,27 @@ export default {
 	},
 	watch: {
 		center: function(newval, oldval) {
-			console.log('changed center');
 			if(newval !== oldval) {
 				this.setCenter(newval);
 			}
 		},
 		markers: function(newval, oldval) {
-			console.log('changed amrkers');
 			this.setMarkers(newval);
 		},
 		zoom: function(newval, oldval) {
-			console.log('changed zoom');
 			this.setZoom(newval);
 		}
 	},
 	mounted: function() {
+
 		// GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 
 		let instance = this;
+		console.log('init?', instance.map)
 		instance.initMap();
 
 		// if the below props have values already at this moment, update the map
-		if(instance.markers)
+		if(instance.markers) 
 			instance.setMarkers(instance.markers);
 		if(instance.center)
 			instance.setCenter(instance.center);
@@ -54,7 +53,7 @@ export default {
 				instance.bounds = new google.maps.LatLngBounds();
 				instance.element = document.getElementById(instance.id);
 				let options = null;
-				
+				console.log('go????????', instance.center);
 				if(instance.center) {
 					options = {
 						center: new google.maps.LatLng(instance.center.lat, instance.center.lng),

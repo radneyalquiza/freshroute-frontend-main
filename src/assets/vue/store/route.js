@@ -27,6 +27,7 @@ const LocationStatus = {
 // ---------------------------------------------------------------------------------------
 
 const STATE = {
+
     Route: [], // array of AppAddress objects
     RouteName: "", // custom name for the route, for user identification
     started: false, // state of the route if started or not
@@ -42,10 +43,14 @@ const STATE = {
     current: 0,
     RouteStatus: 0,
 
+    Workers: [],
+
     // property currently open in the active-location component
     activeLocation: null,
     locationopened: false,
-    whereyouare: null
+    whereyouare: null,
+
+    ExternalExpenses: []
 
     // each element in Route[] will contain various timings apart from the actual address
 }
@@ -92,6 +97,13 @@ const GETTERS = {
     // expose statuses
     LocationStatus: function(state) {
         return LocationStatus;
+    },
+
+    ExternalExpenses: function(state) {
+        return state.ExternalExpenses;
+    },
+    Workers: function(state) {
+        return state.Workers;
     }
 }
 
@@ -101,8 +113,12 @@ const MUTATIONS = {
 
     },
     SET_ROUTE_NAME: function(state, name) {
+        console.log(name);
         if (name)
-            state.Route.RouteName = name;
+            state.RouteName = name;
+    },
+    SET_ROUTE_WORKERS: function(state, payload) {
+        state.Workers = payload;
     },
     // just a list of address id's
     SET_ADDRESSES: function(state, addresses) {
@@ -110,7 +126,6 @@ const MUTATIONS = {
             state.Route = addresses.map(function(obj) {
                 return Object.assign({}, obj, MUTATION_HELPERS.LocationEmptyState);
             });
-            console.log(state.Route);
         }
     },
     INIT_ADDRESS_AS_LOCATION: function(state, payload) {
@@ -151,6 +166,7 @@ const MUTATIONS = {
     },
 
     UPDATE_PROPERTY_STATUS: function(state, payload) {
+        console.log(state.Route[payload.sequence], state.Route, payload);
         if (state.Route[payload.sequence].Status == LocationStatus.DOING && payload.status == LocationStatus.ACTIVE) { return; }
         state.Route[payload.sequence].Status = payload.status;
     },
@@ -263,8 +279,14 @@ const MUTATIONS = {
     },
 
     NEXT: function(state) {
+        console.log(state.current, state.Route.length)
+        if(state.current >= state.Route.length-1) return;
         state.current++;
         state.activeLocation = state.Route[state.current];
+    },
+
+    ADD_EXPENSE: function(state, payload) {
+        state.ExternalExpenses.push(payload);
     }
 }
 
@@ -323,7 +345,8 @@ const ACTIONS = {
                             });
                     })(x);
                 }
-                commit('SET_ROUTE_NAME', RouteModel.RouteName);
+                commit('SET_ROUTE_NAME', RouteModel.Name);
+                commit('SET_ROUTE_WORKERS', RouteModel.Workers);
             });
 
     },
@@ -388,11 +411,13 @@ const ACTIONS = {
     },
 
     // WE NEED TO PASS A SEQUENCE NUMBER HERE
-    enableProperty({ commit }, sequence) {
+    enableProperty({ commit }, payload) {
         commit('UPDATE_PROPERTY_STATUS', {
             status: LocationStatus.ACTIVE,
-            sequence: sequence
+            sequence: payload.sequence
         });
+        if(typeof payload.callback == 'function')
+            payload.callback();
     },
 
     // WE NEED TO PASS A SEQUENCE NUMBER HERE
@@ -403,7 +428,7 @@ const ACTIONS = {
         // });
         commit('SET_ACTIVE_LOCATION', { sequence: sequence });
         commit('UPDATE_ROUTE_CENTER', {
-            position: getters.activeLocation.Location,
+            position: { lat: getters.activeLocation.lat, lng: getters.activeLocation.lng },
             sequence: sequence
         });
     },
@@ -412,11 +437,8 @@ const ACTIONS = {
         var al = ACTION_HELPERS.getOpened(getters.Route);
         console.log(al);
 
-        console.log(window.f7)
-
-        axios({
-            url: "http://api.openweathermap.org/data/2.5/weather",
-            data: {
+        axios.get("http://api.openweathermap.org/data/2.5/weather", {
+            params: {
                 units: "metric",
                 lat: al.lat,
                 lon: al.lng,
@@ -424,10 +446,13 @@ const ACTIONS = {
             }
         }).then(function(response) {
             if (response) {
-                commit('UPDATE_WEATHER', {
-                    sequence: al.Sequence,
-                    weather: response
-                })
+                console.log('rrrr', response)
+                let weather = response.data;
+                if(weather)
+                    commit('UPDATE_WEATHER', {
+                        sequence: al.Sequence,
+                        weather: weather
+                    })
             }
         }).catch(function(e) {
             console.log('Failed to get Weather', e);
@@ -455,15 +480,21 @@ const ACTIONS = {
         // });
     },
 
-    getDistanceFromLocation({ commit, getters }, geocodeduserlocation, cb) {
+    getDistanceFromLocation({ commit, getters }, payload) {
         var al = ACTION_HELPERS.getOpened(getters.Route);
+
+        if(!payload.userlocation) return;
+
+        let cb = payload.callback;
 
         GoogleMapsLoader.KEY = gmapkey;
         GoogleMapsLoader.load(function(google) {
             var service = new google.maps.DistanceMatrixService();
             var geocoder = new google.maps.Geocoder();
+
+            console.log("qwqwqqwq", typeof cb)
     
-            geocoder.geocode({ 'location': al.Location }, function(results, status) {
+            geocoder.geocode({ 'location': { lat: al.lat, lng: al.lng } }, function(results, status) {
                 if (status === 'OK') {
                     if (results[1]) {
                         // instance.CurrentLocation = results[1].formatted_address;
@@ -471,15 +502,19 @@ const ACTIONS = {
                             whereyouare: results[1].formatted_address
                         })
                         service.getDistanceMatrix({
-                            origins: [new google.maps.LatLng(geocodeduserlocation.lat, geocodeduserlocation.lng)],
+                            origins: [new google.maps.LatLng(payload.userlocation.lat, payload.userlocation.lng)],
                             destinations: [new google.maps.LatLng(al.lat, al.lng)],
                             travelMode: 'DRIVING',
                             unitSystem: google.maps.UnitSystem.METRIC
                         }, function(result, status) {
+                            console.log('no?', result)
                             if (status == "OK" && result) {
+                                console.log('vvvv', result.rows, typeof cb);
                                 if (result.rows) {
-                                    if (typeof cb == "function")
+                                    if (typeof cb == "function") {
+                                        console.log('call bro');
                                         cb(result);
+                                    }
                                 }
                             }
                         });
@@ -538,6 +573,10 @@ const ACTIONS = {
 
     next({ commit }) {
         commit('NEXT');
+    },
+
+    addExternalExpense({ commit }, payload) {
+        commit('ADD_EXPENSE', payload);
     },
 
     addPropertyToRoute({ commit }, payload) {

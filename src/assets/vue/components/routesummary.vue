@@ -1,129 +1,150 @@
 <template>
-    <div class="route-summary" style="max-height:640px">
-			<h4>{{ name }}</h4>
-			<!-- <f7-swiper pagination navigation>
-				<f7-swiper-slide> -->
-					
-					<h4>Locations</h4>
-					<donut-chart v-if="locations.datasets" :width="150" :height="150" :datasets="locations.datasets" :labels="locations.labels"></donut-chart>
-					
-					<div class="data-row">
-						<div class="data-container" style="text-align: right">
-							<div class="data-label">Completed</div>
+
+	<f7-page navbar-fixed>
+		<f7-navbar v-bind:title="name + ' Summary'">
+			<f7-nav-right>
+				<f7-link @click="$f7.router.back()">Close</f7-link>
+			</f7-nav-right>
+		</f7-navbar>
+
+		<div class="route-summary" v-if="locations.datasets.length && money.datasets.length">
+				<!-- <f7-swiper pagination navigation>
+					<f7-swiper-slide> -->
+						
+						<h4>Locations</h4>
+						<donut-chart v-if="locations.datasets" :width="150" :height="150" :datasets="locations.datasets" :labels="locations.labels"></donut-chart>
+						
+						<div class="summary-data-row">
+							<div class="data-container" style="text-align: right">
+								<div class="data-label">Completed</div>
+								<div class="data">
+									<!--<countto :number='1000'></countto>-->
+										<ICountUp
+										:startVal="startVal"
+										:endVal="endVal"
+										:duration="duration"
+										:options="options"
+										@ready="onReady"
+										/>
+										locations
+								</div>
+							</div>
+							<div class="data-container" style="text-align: left">
+								<div class="data-label">Incomplete</div>
+								<div class="data">
+									<!--<countto :number='1000'></countto>-->
+										<ICountUp
+										:startVal="startVal"
+										:endVal="completeddata.incomplete"
+										:duration="duration"
+										:options="options"
+										@ready="onReady"
+										/>
+										locations
+								</div>
+							</div>
+						</div>
+
+						<f7-block></f7-block>
+
+						<h4>Time</h4>
+						<div class="summary-data-row">
+							<div class="data-container" style="text-align: right">
+							<div class="data-label">Total Route Time</div>
 							<div class="data">
-								<!--<countto :number='1000'></countto>-->
+									<!--<countto :number='1000'></countto>-->
 									<ICountUp
 									:startVal="startVal"
-									:endVal="endVal"
+									:endVal="completeddata.totaltime"
+									:decimals="decimals"
 									:duration="duration"
 									:options="options"
 									@ready="onReady"
 									/>
-									locations
+									mins
 							</div>
-						</div>
-						<div class="data-container" style="text-align: left">
-							<div class="data-label">Incomplete</div>
+							</div>
+							<div class="data-container" style="text-align: left">
+							<div class="data-label">Avg Time Worked</div>
 							<div class="data">
-								<!--<countto :number='1000'></countto>-->
+									<!--<countto :number='1000'></countto>-->
 									<ICountUp
 									:startVal="startVal"
-									:endVal="completeddata.incomplete"
+									:endVal="completeddata.averagetime"
+									:decimals="decimals"
 									:duration="duration"
 									:options="options"
 									@ready="onReady"
 									/>
-									locations
+									mins
+							</div>
 							</div>
 						</div>
-					</div>
 
-					<f7-block></f7-block>
+						<f7-block></f7-block>
+						
+						<h4>Profit</h4>
+						<donut-chart v-if="money.datasets" :width="150" :height="150"  :options="chartoptions" :datasets="money.datasets" :labels="money.labels"></donut-chart>
+						
+						<div class="summary-data-row">
+							<div class="data-container"  style="text-align: right">
+							<div class="data-label">Revenue</div>
+							<div class="data">
+									<!--<countto :number='1000'></countto>-->
+									$ <ICountUp
+									:startVal="startVal"
+									:endVal="completeddata.totalserviceprice"
+									:decimals="decimals"
+									:duration="duration"
+									:options="options"
+									@ready="onReady"
+									/>
+							</div>
+							</div>
+							<div class="data-container"  style="text-align: left">
+							<div class="data-label">Misc. Expenses</div>
+							<div class="data">
+									<!--<countto :number='1000'></countto>-->
+									$ <ICountUp
+									:startVal="startVal"
+									:endVal="completeddata.miscexpenses"
+									:decimals="decimals"
+									:duration="duration"
+									:options="options"
+									@ready="onReady"
+									/>
+							</div>
+							</div>
+						</div>
 
-					<h4>Time</h4>
-					<div class="data-row">
-						<div class="data-container" style="text-align: right">
-						<div class="data-label">Total Route Time</div>
-						<div class="data">
-								<!--<countto :number='1000'></countto>-->
-								<ICountUp
-								:startVal="startVal"
-								:endVal="completeddata.totaltime"
-								:decimals="decimals"
-								:duration="duration"
-								:options="options"
-								@ready="onReady"
-								/>
-								mins
-						</div>
-						</div>
-						<div class="data-container" style="text-align: left">
-						<div class="data-label">Avg Time Worked</div>
-						<div class="data">
-								<!--<countto :number='1000'></countto>-->
-								<ICountUp
-								:startVal="startVal"
-								:endVal="completeddata.averagetime"
-								:decimals="decimals"
-								:duration="duration"
-								:options="options"
-								@ready="onReady"
-								/>
-								mins
-						</div>
-						</div>
-					</div>
+				<f7-block>
+					<f7-button :fill="true" blue raised>Save Route Details</f7-button>
+				</f7-block>
 
-					<f7-block></f7-block>
-					
-					<h4>Profit</h4>
-					<donut-chart v-if="money.datasets" :width="150" :height="150"  :options="chartoptions" :datasets="money.datasets" :labels="money.labels"></donut-chart>
-					
-					<div class="data-row">
-						<div class="data-container"  style="text-align: right">
-						<div class="data-label">Revenue</div>
-						<div class="data">
-								<!--<countto :number='1000'></countto>-->
-								$ <ICountUp
-								:startVal="startVal"
-								:endVal="completeddata.totalserviceprice"
-								:decimals="decimals"
-								:duration="duration"
-								:options="options"
-								@ready="onReady"
-								/>
-						</div>
-						</div>
-						<div class="data-container"  style="text-align: left">
-						<div class="data-label">Misc. Expenses</div>
-						<div class="data">
-								<!--<countto :number='1000'></countto>-->
-								$ <ICountUp
-								:startVal="startVal"
-								:endVal="completeddata.miscexpenses"
-								:decimals="decimals"
-								:duration="duration"
-								:options="options"
-								@ready="onReady"
-								/>
-						</div>
-						</div>
-					</div>
+	<!-- 
+					</f7-swiper-slide>
+					<f7-swiper-slide>Slide 2</f7-swiper-slide>
+					<f7-swiper-slide>Slide 3</f7-swiper-slide>
+				</f7-swiper> -->
+		</div>
+	</f7-page>
 
-
-
-<!-- 
-				</f7-swiper-slide>
-				<f7-swiper-slide>Slide 2</f7-swiper-slide>
-				<f7-swiper-slide>Slide 3</f7-swiper-slide>
-			</f7-swiper> -->
-	</div>
 </template>
 
 <style>
+.route-summary {
+	color: #4b5259;
+	overflow-x: hidden;
+}
 h4 {
 	text-align: center;
 	font-size: 1.4em;
+	border-bottom: 1px solid #d6d6d6;
+}
+h3 {
+	text-align: center;
+	font-size: 1.4em;
+	border-bottom: 1px solid #d6d6d6;
 }
 .data-container {
 	width: 100%;
@@ -149,11 +170,10 @@ h4 {
 	font-size: 1.6em;
 	font-weight: 800;
 }
-.data-row {
+.summary-data-row {
 	display: flex;
 	width: 100%;
 	padding: 3px;
-	border-bottom: 1px solid #d6d6d6;
 	padding-bottom: 15px;
 }
 donut-chart {
@@ -165,6 +185,7 @@ donut-chart {
 	import ICountUp from 'vue-countup-v2'
 	import BarChart from '../components/barchart.vue'
 	import DonutChart from '../components/donutchart.vue'
+	import { mapGetters, mapActions } from 'vuex'
 
 function timeConversion(millisec) {
 
@@ -188,17 +209,21 @@ function timeConversion(millisec) {
     }
 
     export default {
-		props: ['routedata', 'expensedata', 'routename'],
 		components: {
 			BarChart,
 			DonutChart,
 			ICountUp
 		},
+		computed: {
+			...mapGetters({
+				route: 'Route/Route',
+				routename: 'Route/RouteName',
+				expense: 'Route/ExternalExpenses'
+			})
+		},
         data: function() {
             return {
 				donutData: null,
-				route: null,
-				expense: null,
 				name: "Default Route",
 				completeddata: {},
 				startVal: 0,
@@ -244,19 +269,12 @@ function timeConversion(millisec) {
         },
 		created() {
 			let instance = this;
-			console.log(instance.routedata);
-			instance.route = instance.routedata;
-			instance.expense = instance.expensedata;
-
 			instance.getData();
 			instance.name = instance.routename;
 			instance.endVal = instance.completeddata.completed;
+
 		},
         mounted() {
-		},
-		ready() {
-			console.log(this.message);
-			console.log(this.routedata);
 		},
 		methods: {
 			onReady: function(instance, CountUp) {
@@ -276,9 +294,11 @@ function timeConversion(millisec) {
 				for(var x=0; x<instance.route.length; x++) {
 					if(instance.route[x].Status == 2) {
 						completed++;
-						if(instance.route[x].AppServices[0]) {
-							console.log(instance.route[x].AppServices[0].Price);
-							totalserviceprice += parseFloat(instance.route[x].AppServices[0].Price);
+						if(instance.route[x].AppServices) {
+							for(var a in instance.route[x].AppServices) {
+								totalserviceprice += parseFloat(instance.route[x].AppServices[a].Price);
+								break;
+							}
 						}
 						if(instance.route[x].JobData.TotalJobTime) {
 							averagetime += instance.route[x].JobData.TotalJobTime;
@@ -330,9 +350,7 @@ function timeConversion(millisec) {
 					data: [totalserviceprice, miscexpenses]
 				}];
 
-
-
-instance.$forceUpdate();
+				instance.$forceUpdate();
 				instance.completeddata = {
 					completed: parseInt(completed),
 					incomplete: parseInt(incomplete),
@@ -343,54 +361,6 @@ instance.$forceUpdate();
 				};
 
 			}
-		},
-		computed: {
-			// getData: function() {
-
-			// 	let instance = this;
-			// 	var completed = 0;
-			// 	var totalserviceprice = 0;
-			// 	var averagetime = 0;
-			// 	var miscexpenses = 0;
-				
-			// 	for(var x=0; x<instance.route.length; x++) {
-			// 		if(instance.route[x].Status == 3) {
-			// 			completed++;
-			// 		}
-			// 		if(instance.route[x].AppServices[0]) {
-			// 			totalserviceprice += parseFloat(instance.route[x].AppServices[0].Price);
-			// 		}
-			// 		if(instance.route[x].Duration) {
-			// 			averagetime += instance.route[x].Duration;
-			// 		}
-			// 	}
-
-			// 	if(averagetime) {
-			// 		averagetime = averagetime / instance.route.length;
-			// 	}
-
-
-			// 	if(instance.expense) {
-			// 		miscexpenses += instance.expensedata;
-			// 	}
-
-			// 	return {
-			// 		completed: completed,
-			// 		totalserviceprice: totalserviceprice,
-			// 		averagetime: averagetime,
-			// 		miscexpenses: miscexpenses
-			// 	};
-
-			// },
-			// incomplete: function() {
-
-
-			// },
-			// averagetime: function() {
-
-			// },
-			// totalserviceprice: function() {},
-			// miscexpenses: function() {}
 		},
     } 
 </script>

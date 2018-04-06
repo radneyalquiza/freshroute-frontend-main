@@ -130,6 +130,7 @@ document.addEventListener("deviceready", function() {
               storageBucket: "freshroute-ac861.appspot.com",
               messagingSenderId: "171839500964"
           });
+
       }
     });
 

@@ -215,7 +215,6 @@ export default {
 
 						<div class="buttons-cont">
 							<f7-segmented style="width: 100%;">
-							{{ location.Status }}
 								<f7-button v-if="location.Status != STATUS.COMPLETE && location.Status != STATUS.DONE" @click="backToTimeline()" class="footer "><f7-icon fa="map"></f7-icon> Back to Route</f7-button>
 								<f7-button v-if="location.Status == STATUS.DOING" @click="takeBeforePhoto()" class="footer yellow"><f7-icon fa="camera"></f7-icon> Before</f7-button>
 								<f7-button v-if="location.Status == STATUS.DONE" @click="takeAfterPhoto()" class="footer yellow"><f7-icon fa="camera"></f7-icon> After</f7-button>
@@ -282,9 +281,9 @@ export default {
 
 
 								<div class="service" v-if="location.AppServices">
-									<div class="servicechild type" style="width:15%"><span class="label">Type</span><span class="cont type ">{{ location.AppServices[0].AppServiceType }}</span></div>
-									<div class="servicechild" style="width:55%;"><span class="label">Frequency</span><span class="cont freq">{{ location.AppServices[0].Frequency }}</span></div>
-									<div class="servicechild" style="width:30%"><span class="label">Price</span><span class="cont prc">$ {{ location.AppServices[0].Price }}</span></div>
+									<div class="servicechild type" style="width:15%"><span class="label">Type</span><span class="cont type ">{{ appservice.AppServiceType }}</span></div>
+									<div class="servicechild" style="width:55%;"><span class="label">Frequency</span><span class="cont freq">{{ appservice.Frequency }}</span></div>
+									<div class="servicechild" style="width:30%"><span class="label">Price</span><span class="cont prc">$ {{ appservice.Price }}</span></div>
 								</div>
 							</div>
 						</div>
@@ -332,6 +331,7 @@ export default {
 			}),
 			{
 				weatherimage () {
+					console.log(this.location.Weather);
 					return require('../../images/weather/' + this.location.Weather.weather[0].icon + '.png')
 				},
 				distance() {
@@ -348,6 +348,11 @@ export default {
 					if(this.location.JobData) {
 						console.log(this.location);
 						return this.location.JobData.DateTimeEnded;
+					}
+				},
+				appservice: function() {
+					for (var x in this.location.AppServices) {
+						return this.location.AppServices[x]; // return first appservice only (for now)
 					}
 				}
 			}
@@ -406,10 +411,13 @@ export default {
 				// 	instance.$f7.addNotification({ message: 'Geocoder failed due to: ' + data });
 				// });
 
-				instance.__getDFL(instance.UserLocation, function(data) {
-					console.log('doddododo', data);
-					instance.Distance = data.rows[0].elements[0].distance.value; // in meters
-                    instance.DistanceTime = data.rows[0].elements[0].duration.value; // in seconds
+				instance.__getDFL({
+					userlocation: instance.UserLocation,
+					callback: function(data) {
+						console.log('doddododo', data);
+						instance.Distance = data.rows[0].elements[0].distance.value; // in meters
+						instance.DistanceTime = data.rows[0].elements[0].duration.value; // in seconds
+					}
 				});
 
 				instance.$forceUpdate();

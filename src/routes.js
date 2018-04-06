@@ -22,8 +22,16 @@ export default [{
                 component: require("./assets/vue/pages/client/add.vue")
             },
             {
+                path: "expenses/",
+                component: require("./assets/vue/pages/expenses.vue")
+            },
+            {
+                path: "routesummary/",
+                component: require("./assets/vue/components/routesummary.vue")
+            },
+            {
                 path: "activelocation/",
-                component: require("./assets/vue/components/activelocation.vue")
+                // component: require("./assets/vue/components/activelocation.vue")
             }
         ]
     },

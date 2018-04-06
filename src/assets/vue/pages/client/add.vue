@@ -1,6 +1,6 @@
 <template>
     <f7-page navbar-fixed>
-        <f7-navbar title="Add to Route">
+        <f7-navbar v-bind:title="'Add to ' + routename">
             <f7-nav-right>
                 <f7-link :close-popup="true" @click="closeAddRouteNode()">Close</f7-link>
             </f7-nav-right>
@@ -57,6 +57,24 @@
             </f7-list>
         </f7-block>
 
+        <f7-block>
+            <f7-block-title>Service Info</f7-block-title>
+            <f7-list no-hairlines-md>
+                <f7-list-item>
+                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
+                    <f7-label style="width: auto" >Service Type</f7-label>
+                    <f7-button style="width:150px; margin-top: 5px;" :fill=true green popover-open=".services">Select a Service</f7-button>
+                    <f7-popover class='services'>
+                        <f7-list>
+                            <f7-list-item v-for="service in appservices" :key="service.$index" popover-close=".services" @click="addService(service)">
+                                {{ service.AppServiceDescription }}
+                            </f7-list-item>
+                        </f7-list>
+                    </f7-popover>
+                </f7-list-item>
+            </f7-list>
+        </f7-block>
+
         <f7-button style="width:95%; margin:auto;" big :fill=true raised color="blue">Save</f7-button>
 
         <f7-block></f7-block>
@@ -68,6 +86,7 @@
 </style>
 
 <script>
+    import { mapGetters } from 'vuex'
     import GoogleMapsLoader from "google-maps"
     import axios from 'axios'
 
@@ -78,6 +97,7 @@
 		},
         data: function() {
             return {
+                appservices: null,
                 address: {
                     streetaddress: "",
                     city: "",
@@ -94,13 +114,22 @@
                     sequence: null,
                     clientid: null,
                     addressid: null
-                }
+                },
+                services: []
             }
         },
 		created() {
 		},
         mounted() {
             console.log('dsdsdsd', this);
+            let instance = this;
+
+            // get the list of Services
+            instance.$firebase.database().ref("AppServices")
+            .once("value", function(data) {
+                instance.appservices = data.val();
+                console.log(instance.appservices);
+            });
 		},
 		methods: {
             closeAddRouteNode: function() {
@@ -124,9 +153,21 @@
                     )
                 });
 
+            },
+            createService: function() {
+                this.services.push({
+                    AppServiceId: "",
+                    Rate: null, // on init, use Default Price
+                });
+            },
+            addService: function(service) {
+                this.services.push(service);
             }
 		},
 		computed: {
+            ...mapGetters({
+                routename: 'Route/RouteName'
+            })
 
 		},
     } 

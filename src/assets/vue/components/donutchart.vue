@@ -18,7 +18,7 @@ export default {
   },
 
   mounted () {
-console.log(this.labels, this.datasets)
+console.log("wwwww", this.labels, this.datasets)
     this.renderChart({
       labels: this.labels,
       datasets: this.datasets

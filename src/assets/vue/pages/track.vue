@@ -1,5 +1,5 @@
 <template>
-	<f7-page class="track-container" style="padding-bottom: 60px;">
+	<f7-page class="track-container" style="">
 
 		<f7-navbar name="nav">
 			<f7-nav-left v-if="!locationopened">
@@ -8,7 +8,7 @@
 			<f7-nav-left v-if="locationopened">
 				<f7-link icon="icon-back"  @click="closeActiveLocation($event)"></f7-link>
 			</f7-nav-left>
-			<div class="title">Track Route</div>
+			<div class="title">Track {{ routename ? ("  " + routename) : "" }}</div>
 			<f7-nav-right>
 				<f7-link >RESET</f7-link>
 			</f7-nav-right>
@@ -58,7 +58,7 @@
 		<transition name="swipeleft">
 			<div v-if="!locationopened && routevisible"
 			     v-hammer:swipe.left="hideRouteTimeline"
-				 style="margin-top: 60px; position: absolute; z-index: 999"
+				 style="margin-top: 50px; position: absolute; z-index: 999"
 				 v-bind:style="{ height: routeheight + 'px', maxHeight: routeheight + 'px', overflowY: 'auto' }"
 				 class="timeline route-timeline">
 
@@ -102,9 +102,11 @@
 								</f7-button> -->
 								<p class="address-text">{{ address.Street + " " + address.City + " " + address.PostalCode }}</p>
 								<div class="service" v-if="address.AppServices">
-									<div class="servicechild type" style="width:15%"><span class="label">Type</span><span class="cont type ">{{ address.AppServices[0].AppServiceType }}</span></div>
-									<div class="servicechild" style="width:55%;"><span class="label">Frequency</span><span class="cont freq">{{ address.AppServices[0].Frequency }}</span></div>
-									<div class="servicechild" style="width:30%"><span class="label">Price</span><span class="cont prc">$ {{ address.AppServices[0].Price }}</span></div>
+									<div v-for="appservice in address.AppServices" v-bind:key="appservice.index">
+										<div class="servicechild type" style="width:15%"><span class="label">Type</span><span class="cont type ">{{ appservice.AppServiceType }}</span></div>
+										<div class="servicechild" style="width:55%;"><span class="label">Frequency</span><span class="cont freq">{{ appservice.Frequency }}</span></div>
+										<div class="servicechild" style="width:30%"><span class="label">Price</span><span class="cont prc">$ {{ appservice.Price }}</span></div>
+									</div>
 								</div>
 							</div>
 							
@@ -116,8 +118,10 @@
 							</div>
 							<div class="card-footer" v-if="address.Status == STATUS.COMPLETE">
 								<div style="display: flex; width: 100%; text-align: center; color: ">
-									<div style="width: 33%; padding: 3px;">{{ address.AppServices[0].AppServiceType }}</div>
-									<div style="width: 33%; border-left: 1px solid #CCC; padding: 3px;">CAD$ {{ address.AppServices[0].Price }}</div>
+									<div style="width: 66%; display: flex " v-for="appservice in address.AppServices" v-bind:key="appservice.index">
+										<div style="width: 50%; padding: 3px;">{{ appservice.AppServiceType }}</div>
+										<div style="width: 50%; border-left: 1px solid #CCC; padding: 3px;">CAD$ {{ appservice.Price }}</div>
+									</div>
 									<div v-if="address.JobData" style="width: 33%; border-left: 1px solid #CCC; padding: 3px;">{{ address.JobData.TotalJobTimeText }}</div>
 								</div>
 							</div>
@@ -128,24 +132,33 @@
 			</div>
 		</transition>
 
-		<transition name="slideup">
-			<f7-button v-if="tracking == TRACK.DONE" open-popup="#summarypopup" style="width: 110px; right: 10px; position: fixed; z-index: 1000; bottom: 60px;" :fill=true round raised color="orange">
-				<i class="fa fa-chart pie"></i> Summary
-			</f7-button>
-		</transition>
-		<transition name="slideup">
-			<f7-button v-if="tracking == TRACK.DONE" open-popup="#expensepopup" style="width: 140px; right: 125px; position: fixed; z-index: 1000; bottom: 60px;" :fill=true round raised color="red">
-				<i class="fa fa-chart pie"></i> Daily Expenses
-			</f7-button>
-		</transition>
-
 		<f7-block></f7-block>
 
-		<f7-fab color="pink"
-				style="bottom:65px; right: 10px; width:35px; height:35px"
-				href="./addroutenode/">
-			<f7-icon f7="add"></f7-icon>
-		</f7-fab> 
+		<div v-if="!locationopened && tracking != TRACK.DONE" class="fab fab-right-bottom color-red">
+			<a href="./addroutenode/" style="width: 35px; height: 35px; bottom: 1px; right: 1px;">
+				<i class="icon f7-icons">add</i>
+			</a>
+		</div>
+
+		<div class="detail-buttons-container">
+			<f7-button
+					icon-f7="persons_fill"
+					sheet-open=".workers-sheet"
+					icon-size=28
+					:fill=true raised color="pink">
+			</f7-button>
+			<f7-button href="./routesummary/"
+					v-if="tracking == TRACK.DONE"
+					icon-f7="graph_round"
+					icon-size=28
+					:fill=true raised color="orange">
+			</f7-button>
+			<f7-button href="./expenses/"
+					icon-f7="money_dollar"
+					icon-size=28
+					:fill=true raised color="blue">
+			</f7-button>
+		</div>
 
 		<div class="map-container" v-bind:style="{ height: mapheight + 'px', maxHeight: mapheight + 'px' }">
 			<!-- <gmap-map
@@ -176,7 +189,26 @@
 			</google-map>
 		</div>
 
-		<f7-popup v-if="tracking == TRACK.DONE" id="summarypopup" @popup:opened="showSummary()">
+		<div class="sheet-modal workers-sheet" >
+			<div class="toolbar">
+			<div class="toolbar-inner">
+				<div class="left">All Employees in this Route</div>
+				<div class="right"><a class="link sheet-close" href="#">Done</a></div>
+			</div>
+			</div>
+			<div class="sheet-modal-inner">
+				<div class="block">
+					<f7-list >
+						<f7-list-item title="" v-for="emp in workers" v-bind:key="emp.$index">
+							{{ emp }}
+						</f7-list-item>
+					</f7-list>
+
+				</div>
+			</div>
+		</div>
+
+		<!-- <f7-popup v-if="tracking == TRACK.DONE" id="summarypopup" @popup:opened="showSummary()">
 			<f7-page navbar-fixed>
 				<f7-navbar title="Summary">
 					<f7-nav-right>
@@ -192,52 +224,11 @@
 					</routesummary>
 				</f7-block>
 			</f7-page>
-		</f7-popup>
+		</f7-popup> -->
 
-		<f7-popup id="addresspopup" v-if="addingroutenode" :opened="addingroutenode">
+		<!-- <f7-popup id="addresspopup" v-if="addingroutenode" :opened="addingroutenode">
 			<add-route-node @closedAddRouteNode="closeAddRouteNode()"></add-route-node>
-		</f7-popup>
-
-		<f7-popup v-if="tracking == TRACK.DONE" id="expensepopup">
-			<f7-page navbar-fixed>
-				<f7-navbar title="Expenses">
-					<f7-nav-right>
-						<f7-link :close-popup="true">Close</f7-link>
-					</f7-nav-right>
-				</f7-navbar>
-				<f7-block>
-					
-					<f7-list inline-labels no-hairlines-md>
-						<f7-list-item>
-							<f7-label>Description</f7-label>
-							<f7-input type="text" v-model="expense.description" clear-button></f7-input>
-						</f7-list-item>
-
-						<f7-list-item>
-							<f7-label>Amount</f7-label>
-							<f7-input type="number" placeholder="Amount" v-model="expense.amount" clear-button></f7-input>
-						</f7-list-item>
-
-					</f7-list>
-
-					<f7-button style="width: 200px;margin: auto" @click="addExpense" :fill=true round raised color="blue">
-						<i class="fa fa-plus"></i> Add Expense
-					</f7-button>
-
-					<f7-block v-if="ExternalExpenses.length > 0">
-						<f7-block-title>List of Expenses for today's Route</f7-block-title>
-						<f7-list>
-							<f7-list-item v-for="exp in ExternalExpenses" :key="exp.$index">
-								<div style='width:100%'> {{ exp.Description }} <span style='float:right'>{{ '$ ' + parseFloat(exp.Amount).toFixed(2) }}</span></div>
-							</f7-list-item>
-
-						</f7-list>
-
-					</f7-block>
-
-				</f7-block>
-			</f7-page>
-		</f7-popup>
+		</f7-popup> -->
 
 
 	</f7-page>
@@ -309,6 +300,10 @@
 	background-color:#50b223;
 	color: white !important;
 }
+.card.inc .play {
+	opacity: 0.5;
+	background-color: #8e3b3b
+}
 .stop {
 	background-color:#f44336;
 	color: white !important;
@@ -354,11 +349,11 @@
 	font-size: 20px;
 }
 .card.skipped {
-	background-color: rgba(204, 204, 204, 0.6);
+	background-color: rgba(204, 204, 204, 0.2);
 }
 .card.done,
 .card.inc {
-	background-color: rgba(204, 204, 204, 0.6);
+	background-color: rgba(204, 204, 204, 0.2);
 	pointer-events: none;
 	user-select: none;
 	color: #adadad;
@@ -452,43 +447,43 @@
 .card .endtime {
 	top: 15px;
 }
-.service {
-		display: flex;
-		width: 100%;
-		padding: 0;
-		padding-left:10px;
-	}
-	 .service .servicechild {
-		width: 33%;
-		padding: 0px;
-		padding-bottom: 7px;
-		font-size:1em;
-		position: relative;
+.service > div{
+	display: flex;
+	width: 100%;
+	padding: 0;
+	padding-left:10px;
+}
+.service .servicechild {
+	width: 33%;
+	padding: 0px;
+	padding-bottom: 7px;
+	font-size:1em;
+	position: relative;
 
-	}
-	.service .servicechild span.label {
-		position: absolute;
-		color: #939393;
-		text-align: center;
-		top:1px;
-		left: 5px;
-		font-size:0.8em;
-	}
-	.service .servicechild .type,
-	.service .servicechild .freq,
-	.service .servicechild .prc {
-		padding: 0px;
-		padding-top: 2px;
-		padding-left: 5px;
-		padding-bottom: 1px;
-		border-radius: 10px;
-		display: inline-block;
-		margin-top: 10px;
-		min-width: 60px;
-		font-size: 0.9em;
-		text-align: left;
-		color: #939393
-	}
+}
+.service .servicechild span.label {
+	position: absolute;
+	color: #939393;
+	text-align: center;
+	top:1px;
+	left: 5px;
+	font-size:0.8em;
+}
+.service .servicechild .type,
+.service .servicechild .freq,
+.service .servicechild .prc {
+	padding: 0px;
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-bottom: 1px;
+	border-radius: 10px;
+	display: inline-block;
+	margin-top: 10px;
+	min-width: 60px;
+	font-size: 0.9em;
+	text-align: left;
+	color: #939393
+}
 
 .map {
 	width: 100%;
@@ -504,6 +499,25 @@
 }
 .halfheight { height: 50%; margin-top: 69%; transition: all 0.5s ease-in-out; }
 
+.detail-buttons-container {
+	display: flex;
+	height: 35px;
+	left: 5px;
+	font-size:25px;
+	position: fixed;
+	z-index: 1500;
+	bottom: 15px;
+}
+.detail-buttons-container .button {
+	width: 50%;
+	margin-right: 5px;
+}
+
+.workers-sheet .left {
+	padding: 5px;
+	padding-left: 15px;
+	font-weight: 600;
+}
 /* -------------------------------------------------- */
 /* Transitions */
 /* -------------------------------------------------- */
@@ -648,7 +662,8 @@
 				locationopened: 'Route/locationopened',
 				activeLocation: 'Route/activeLocation',
 				tracking: 'Route/RouteStatus',
-				selectedRouteId: 'User/selectedAppRouteId'
+				selectedRouteId: 'User/selectedAppRouteId',
+				workers: 'Route/Workers'
 			})
 		},
 		mounted() { },
@@ -669,6 +684,7 @@
 				let clients;
 				let instance = this;
 				let Dom7 = instance.Dom7;
+
 
 				if(instance.route && instance.started)
 					return;
@@ -744,9 +760,15 @@
 						setTimeout(function() {
 							// instance.activeLocation = null;
 							instance.__next();
-							instance.__activateProperty(instance.current);
-							instance.$forceUpdate();
-						}, 1000)
+							instance.__activateProperty({
+								sequence: instance.current,
+								callback: function() {
+									setTimeout(function() {
+										instance.Dom7('.route-timeline').scrollTop(instance.Dom7(".active").offset().top-120, 500);
+									},300);
+								}
+							});
+						}, 700)
 					}
 					
 				}
@@ -772,8 +794,9 @@
 						nodeData.Skipped = true;
 						nodeData.Status = instance.STATUS.INCOMPLETE
 						instance.current++;
-						instance.__activateProperty(instance.current);
-						instance.$forceUpdate();
+						instance.__activateProperty({
+							sequence: instance.current
+						});
 					},
 					function() {
 						nodeData.Skipped = false;
@@ -823,7 +846,9 @@ console.log(instance.$f7);
 							text: 'Tap on [Open Location] on the next available Location to begin working.',
 						}).open();
 						instance.__startRoute();
-						instance.__activateProperty(instance.current);
+						instance.__activateProperty({
+							sequence: instance.current
+						});
 					},
 					function() {
 						console.log('no?', arguments);
@@ -871,8 +896,7 @@ console.log(instance.$f7);
 				instance.zoom = 16;
 
 				instance.__openProperty(seq);
-				// window.history.pushState({}, 'active', 'track/active');
-				// instance.$forceUpdate();
+				instance.$f7.router.navigate({ url: './activelocation/'})
 			},
 			stopProperty: function(nodeData) {
 				let instance = this;
@@ -895,38 +919,7 @@ console.log(instance.$f7);
 					}
 				)
 			},
-			addExpense: function() {
-				let instance = this;
 
-				if(!instance.expense.description || !instance.expense.amount) {
-					instance.$f7.alert("Please enter some information.", "Oops!");
-					return;
-				}
-
-				instance.ExternalExpenses.push({
-					Description: instance.expense.description,
-					Amount: instance.expense.amount
-				})
-				instance.expense.description = "";
-				instance.expense.amount = "";
-				instance.$forceUpdate();
-			},
-			checkForChanges: function() {
-				console.log('eee', arguments)
-				// let instance = this;
-				// if(instance.tracking == instance.TRACK.PLAY || instance.tracking == instance.TRACK.DONE) {
-				// 	instance.$f7.confirm(
-				// 		"Any unsaved route data will be lost. Are you sure you want to leave?",
-				// 		"Hold on...",
-				// 		function() {
-				// 			return true;
-				// 		},
-				// 		function() {
-				// 			return false;
-				// 		}
-				// 	)
-				// }
-			},
 			showSummary: function() {
 				this.showingsummary = true;
 				this.$forceUpdate();
