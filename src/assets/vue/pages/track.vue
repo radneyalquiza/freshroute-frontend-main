@@ -58,7 +58,7 @@
 		<transition name="swipeleft">
 			<div v-if="!locationopened && routevisible"
 			     v-hammer:swipe.left="hideRouteTimeline"
-				 style="margin-top: 50px; position: absolute; z-index: 999"
+				 style="margin-top: 50px; position: absolute; z-index: 999; padding-bottom: 50px;"
 				 v-bind:style="{ height: routeheight + 'px', maxHeight: routeheight + 'px', overflowY: 'auto' }"
 				 class="timeline route-timeline">
 

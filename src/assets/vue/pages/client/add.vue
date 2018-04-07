@@ -70,12 +70,12 @@
                 <div style="display: flex">
                     <div class="servicetype" style="width:50%">
                         <f7-label style="width: auto" >Service Type</f7-label>
-                        <f7-button style="width:130px; margin-top: 5px; font-size:11px; margin: auto" :fill=true green popover-open=".services">
+                        <f7-button class="servicesbutton" style="width:130px; font-size:12px; margin: auto; margin-top: 5px; " :fill=true green @click="openservicespopover = true;">
                             {{ serv.AppServiceType ? serv.AppServiceType : 'Select' }}
                         </f7-button>
-                        <f7-popover class='services'>
+                        <f7-popover target=".servicesbutton" class='services' :opened="openservicespopover == true">
                             <f7-list>
-                                <f7-list-item v-for="service in appservices" :key="service.$index" popover-close=".services" @click="selectService(serv, service)">
+                                <f7-list-item v-bind:class="{ active: service.AppServiceType == serv.AppServiceType }" v-for="service in appservices" :key="service.$index" @click="selectService(serv, service); openservicespopover = false">
                                     {{ service.AppServiceDescription }}
                                 </f7-list-item>
                             </f7-list>
@@ -83,12 +83,12 @@
                     </div>
                     <div class="frequency" style="width:50%" >
                         <f7-label style="width: auto" >Frequency</f7-label>
-                        <f7-button style="width:130px; margin-top: 5px; font-size:11px; margin: auto" :fill=true green popover-open=".frequencies">
+                        <f7-button class="frequenciesbutton" style="width:130px; font-size:12px; margin: auto; margin-top: 5px;" :fill=true green @click="openfrequenciespopover = true">
                             {{ serv.Frequency ? frequencyDescription(serv.Frequency) : 'Select' }}
                         </f7-button>
-                        <f7-popover class='frequencies'>
+                        <f7-popover target=".frequenciesbutton" class='frequencies' :opened="openfrequenciespopover == true">
                             <f7-list>
-                                <f7-list-item v-for="fr in frequencies" :key="fr.$index" popover-close=".services" @click="selectFrequency(serv, fr)">
+                                <f7-list-item v-bind:class="{ active: fr.FrequencyType == serv.Frequency }" v-for="fr in frequencies" :key="fr.$index" @click="selectFrequency(serv, fr); openfrequenciespopover = false;">
                                     {{ fr.FrequencyDescription }}
                                 </f7-list-item>
                             </f7-list>
@@ -116,6 +116,7 @@
 
 <style>
 .servicetype, .frequency, .rate { margin-top: 5px; margin-bottom: 5px; }
+.list li.active {  background-color: #38597a; color: white; }
 </style>
 
 <script>
@@ -131,13 +132,16 @@
 		},
         data: function() {
             return {
+                openfrequenciespopover: false,
+                openservicespopover: false,
                 appservices: null,
                 address: {
                     Street: "",
                     City: "",
                     PostalCode: "",
                     lat: null,
-                    lng: null
+                    lng: null,
+                    AppClientId: null
                 },
                 client: {
                     FirstName: "",
@@ -182,14 +186,21 @@
 		created() {
 		},
         mounted() {
-            console.log('dsdsdsd', this);
+            
             let instance = this;
+
+            setTimeout(function() {
+                instance.$f7.notification.create({
+                    closeOnClick: true,
+                    closeTimeout: 3000,
+                    text: 'FOR DEMO: New Addresses will be appended to the end of the route.',
+                }).open();
+            }, 500);
 
             // get the list of Services
             instance.$firebase.database().ref("AppServices")
             .once("value", function(data) {
                 instance.appservices = data.val();
-                console.log(instance.appservices);
                 instance.services.push({
                     AppServiceType: "",
                     Frequency: "",
@@ -202,14 +213,14 @@
                 let instance = this;
                 instance.$f7.router.back();
             },
-            geocodeAddress: async function() {
+            geocodeAddress: function() {
 
                 let instance = this;
 
                 instance.$f7.preloader.show();
 
                 GoogleMapsLoader.KEY = gmapkey;
-                await GoogleMapsLoader.load(function(google) {
+                GoogleMapsLoader.load(function(google) {
                     
                     let geocoder = new google.maps.Geocoder();
 
@@ -235,11 +246,9 @@
                 });
             },
             selectService: function(serviceobj, srv) {
-                console.log('change service', srv);
                 serviceobj.AppServiceType = srv.AppServiceType;
             },
             selectFrequency: function(serviceobj, frq) {
-                console.log('change freq', frq)
                 serviceobj.Frequency = frq.FrequencyType;
             },
             addService: function(service) {
@@ -249,16 +258,42 @@
                 serviceobj.Price = evt;
                 this.$forceUpdate();
             },
-            collectAndSave: function() {
+
+            collectAndSave: async function() {
                 console.log(this.client, this.address, this.services);
 
                 let instance = this;
                 instance.geocodeAddress();
-                console.log('done await geocodeaddress')
+                let cp = await instance.saveClient();
+                let ap = await instance.saveAddress(cp);
+            },
+
+            saveClient: async function() {
+                let instance = this;
+                // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
+                return instance.$firebase.database().ref('AppClients').push(instance.client);
+                // instance.client.AppClientId = clientpush.key;
+            },
+
+            saveAddress: async function(cp) {
+                let instance = this;
+                // let addresspush = await instance.$firebase.database().ref('AppAddresses').push(instance.address);
+                instance.address.AppClientId = cp.key;
+                return instance.$firebase.database().ref('AppAddresses').push(instance.address);
+                // instance.address.AppAddressId = addresspush.key;
+            },
+
+            saveRouteWithNewNode: async function() {
+
+                instance.routenode = {
+                    ClientId: instance.client.AppClientId,
+                    AddressId: instance.client.AppAddressId,
+
+                }
+                
             },
             frequencyDescription: function(val) {
                 let instance = this;
-                console.log('qqqqqq', val)
                 let s = _.find(instance.frequencies, function(obj) {
                     return obj.FrequencyType.toLowerCase() === val.toLowerCase();
                 });

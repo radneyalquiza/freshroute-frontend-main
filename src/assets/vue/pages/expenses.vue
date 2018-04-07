@@ -35,7 +35,7 @@
 				<f7-block-title>{{ today }}: Expenses for {{ RouteName }}</f7-block-title>
 				<f7-list>
 					<f7-list-item v-for="exp in ExternalExpenses" :key="exp.$index">
-						<div style='width:100%'> {{ exp.Description }} | Receipt {{ exp.ReceiptNumber || "N/A" }} <span style='float:right'>{{ '$ ' + parseFloat(exp.Amount).toFixed(2) }}</span></div>
+						<div style='width:100%'> {{ exp.Description }} | <span style="font-size:12px;">Receipt {{ exp.ReceiptNumber || "N/A" }}</span> <span style='float:right'>{{ '$ ' + parseFloat(exp.Amount).toFixed(2) }}</span></div>
 					</f7-list-item>
 
 				</f7-list>
