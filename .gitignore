@@ -10,3 +10,4 @@ platforms/android/app/src/main/assets/www/index.html
 www/config.xml
 platforms/browser/www/index.html
 platforms/android/app/src/main/assets/www/index.html
+plugins/*

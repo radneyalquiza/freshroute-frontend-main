@@ -83,22 +83,10 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         </js-module>
 
         <config-file target="config.xml" parent="/*">
-		<feature name="Geolocation">
-		    <param name="ios-package" value="CDVLocation"/>
-		</feature>
+                <feature name="Geolocation">
+                    <param name="ios-package" value="CDVLocation"/>
+                </feature>
         </config-file>
-        
-        <config-file target="res/xml/config.xml" parent="/*">
-		    <feature name="Geolocation">
-			<param name="android-package" value="org.apache.cordova.geolocation.GeoBroker"/>
-		    </feature>
-	</config-file>
-	<config-file target="AndroidManifest.xml" parent="/*">
-	    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-	</config-file>
-
         <header-file src="src/ios/CDVLocation.h" />
         <source-file src="src/ios/CDVLocation.m" />
         <framework src="CoreLocation.framework" />

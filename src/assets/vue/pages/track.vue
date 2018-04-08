@@ -58,7 +58,7 @@
 		<transition name="swipeleft">
 			<div v-if="!locationopened && routevisible"
 			     v-hammer:swipe.left="hideRouteTimeline"
-				 style="margin-top: 50px; position: absolute; z-index: 999; padding-bottom: 50px;"
+				 style="margin-top: 50px; position: absolute; z-index: 999; padding-bottom: 45px;"
 				 v-bind:style="{ height: routeheight + 'px', maxHeight: routeheight + 'px', overflowY: 'auto' }"
 				 class="timeline route-timeline">
 
@@ -185,6 +185,9 @@
 				class="map"
 				v-bind:class="{ halfheight: locationopened }"
 				:markers="Markers"
+				:nextlocation="activeLocationCoords"
+				:userlocation="currentLocation"
+				:locationopened="locationopened"
 				>
 			</google-map>
 		</div>
@@ -323,9 +326,12 @@
 	transition: all 0.5s ease-in-out;
 	margin: 0 7px;
 	margin-top: 45px;
-	width: 13px;
-	height: 13px;
+	width: 15px;
+	height: 15px;
 	background: #146aff;
+}
+.timeline-item-divider:after, .timeline-item-divider:before {
+	width: 3px;
 }
 .pulse {
 	animation: pulseblue 2s;
@@ -623,6 +629,8 @@
 				mapheight: "640px",
 				routeheight: "640px",
 				routevisible: true,
+				pollGPS: null,
+				pollRate: 10000,
 				// locationopened: false,
 				ExternalExpenses: [],
 				showingsummary: false,
@@ -663,7 +671,8 @@
 				activeLocation: 'Route/activeLocation',
 				tracking: 'Route/RouteStatus',
 				selectedRouteId: 'User/selectedAppRouteId',
-				workers: 'Route/Workers'
+				workers: 'Route/Workers',
+				activeLocationCoords: 'Route/activeLocationCoords'
 			})
 		},
 		mounted() { },
@@ -677,7 +686,8 @@
 				__next: 'Route/next',
 				__endRoute: 'Route/endRoute',
 				__closeActiveLocation: 'Route/closeProperty',
-				__selectRoute: 'User/setSelectedAppRouteId'
+				__selectRoute: 'User/setSelectedAppRouteId',
+				__getCurrentLocation: 'User/getCurrentLocation'
 			}),
 			onF7Ready: function() {
 
@@ -697,7 +707,27 @@
 						instance.__selectRoute(sessionStorage.getItem('SelectedAppRouteId'));
 					}
 
-					instance.__getRouteData(instance.selectedRouteId);
+					console.log('dddd', instance.currentLocation)
+
+					if(!instance.currentLocation) {
+
+						instance.$f7.preloader.show("Getting Location...");
+						instance.__getCurrentLocation(function() {
+
+							instance.__getRouteData(instance.selectedRouteId);
+
+							instance.$f7.preloader.hide();
+
+							instance.pollGPS = null;
+
+							// start polling GPS location (default 5s)
+							instance.pollGPS = setInterval(function() {
+								instance.__getCurrentLocation();
+							}, instance.pollRate);
+
+						});
+					}
+
 				
 				}
 
@@ -760,14 +790,19 @@
 						setTimeout(function() {
 							// instance.activeLocation = null;
 							instance.__next();
-							instance.__activateProperty({
-								sequence: instance.current,
-								callback: function() {
-									setTimeout(function() {
-										instance.Dom7('.route-timeline').scrollTop(instance.Dom7(".active").offset().top-120, 500);
-									},300);
-								}
-							});
+
+							if(instance.current > instance.route.length-1)
+								instance.stopTracking();
+							else {
+								instance.__activateProperty({
+									sequence: instance.current,
+									callback: function() {
+										setTimeout(function() {
+											instance.Dom7('.route-timeline').scrollTop(instance.Dom7(".active").offset().top-120, 500);
+										},300);
+									}
+								});
+							}
 						}, 700)
 					}
 					
@@ -834,17 +869,22 @@
 				let instance = this;
 
 				instance.routevisible = true;
-console.log(instance.$f7);
 				instance.$f7.dialog.confirm(
 					"Begin your Route?",
 					"Begin Route",
 					function() {
-						console.log('dddddd');
-						instance.$f7.notification.create({
-							closeOnClick: true,
-							closeTimeout: 3000,
+
+						// instance.$f7.notification.create({
+						// 	closeOnClick: true,
+						// 	closeTimeout: 3000,
+						// 	text: 'Tap on [Open Location] on the next available Location to begin working.',
+						// }).open();
+						cordova.plugins.notification.local.schedule({
+							title: 'FreshRoute Notification',
 							text: 'Tap on [Open Location] on the next available Location to begin working.',
-						}).open();
+							foreground: true
+						});
+
 						instance.__startRoute();
 						instance.__activateProperty({
 							sequence: instance.current

@@ -71,6 +71,7 @@ export default {
     computed: {
         ...mapGetters({
             UserModel: 'User/UserModel',
+            CurrentLocation: 'User/currentLocation'
         })
     },
     mounted() {},
@@ -86,30 +87,7 @@ export default {
             let instance = this;
             var root = this.$root;
 
-            if(!instance.CurrentLocation) {
-                instance.$f7.preloader.show("Getting Location...");
-                instance.__getCurrentLocation(function() {
-                    instance.$f7.preloader.hide();
-
-                    instance.pollGPS = null;
-
-                    // start polling GPS location (default 5s)
-                    instance.pollGPS = setTimeout(function() {
-                        console.log('start interfval')
-                        instance.__getCurrentLocation(
-                            instance.__getCurrentLocation,
-                            function(e) {
-                                console.log('Failed to get GPS Location', err);
-                                clearInterval(instance.pollGPS);
-                            }
-                        );
-                    }, instance.pollRate);
-
-                });
-            }
-
             if(!sessionStorage.getItem("AppUserId")) {
-                console.log('about to navigate to login');
                 // setTimeout(function() {
                     instance.$f7.router.navigate({
                         url: './login/',

@@ -1,8 +1,16 @@
 {
-  "cordova-plugin-whitelist": {
+  "cordova-plugin-geolocation": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-whitelist@^1.3.3"
+      "id": "cordova-plugin-geolocation@4.0.1"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-badge": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-badge@^0.8.7"
     },
     "is_top_level": true,
     "variables": {}
@@ -10,7 +18,7 @@
   "cordova-plugin-camera": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-camera@4.0.2"
+      "id": "cordova-plugin-camera@^4.0.2"
     },
     "is_top_level": true,
     "variables": {}
@@ -39,18 +47,18 @@
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-badge": {
+  "cordova-plugin-whitelist": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-badge@>=0.8.5"
+      "id": "https://github.com/apache/cordova-plugin-whitelist"
     },
-    "is_top_level": false,
+    "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-geolocation": {
+  "cordova.plugins.diagnostic": {
     "source": {
-      "type": "local",
-      "path": "C:\\Users\\radneya\\Desktop\\vuejs\\freshroute-frontend-2\\node_modules\\cordova-plugin-geolocation"
+      "type": "registry",
+      "id": "cordova.plugins.diagnostic"
     },
     "is_top_level": true,
     "variables": {}

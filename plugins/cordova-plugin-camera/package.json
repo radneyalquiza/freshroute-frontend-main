@@ -1,19 +1,41 @@
 {
-  "_from": "cordova-plugin-camera@4.0.2",
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-camera@^4.0.2",
+        "scope": null,
+        "escapedName": "cordova-plugin-camera",
+        "name": "cordova-plugin-camera",
+        "rawSpec": "^4.0.2",
+        "spec": ">=4.0.2 <5.0.0",
+        "type": "range"
+      },
+      "C:\\Users\\AtlasBigSSD\\Desktop\\AtlasArk\\projects\\mobile-projects\\freshroute-frontend-main"
+    ]
+  ],
+  "_from": "cordova-plugin-camera@>=4.0.2 <5.0.0",
   "_id": "cordova-plugin-camera@4.0.2",
-  "_inBundle": false,
-  "_integrity": "sha1-MJQQkn70Ctxr69Sw6R3yyMZE84o=",
+  "_inCache": true,
   "_location": "/cordova-plugin-camera",
+  "_nodeVersion": "6.10.2",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-camera-4.0.2.tgz_1517268292950_0.5076568976510316"
+  },
+  "_npmUser": {
+    "name": "surajpindoria",
+    "email": "suraj.pindoria@yahoo.com"
+  },
+  "_npmVersion": "4.6.1",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "cordova-plugin-camera@4.0.2",
-    "name": "cordova-plugin-camera",
+    "raw": "cordova-plugin-camera@^4.0.2",
+    "scope": null,
     "escapedName": "cordova-plugin-camera",
-    "rawSpec": "4.0.2",
-    "saveSpec": null,
-    "fetchSpec": "4.0.2"
+    "name": "cordova-plugin-camera",
+    "rawSpec": "^4.0.2",
+    "spec": ">=4.0.2 <5.0.0",
+    "type": "range"
   },
   "_requiredBy": [
     "#USER",
@@ -21,15 +43,15 @@
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-camera/-/cordova-plugin-camera-4.0.2.tgz",
   "_shasum": "309410927ef40adc6bebd4b0e91df2c8c644f38a",
-  "_spec": "cordova-plugin-camera@4.0.2",
-  "_where": "C:\\Users\\radneya\\Desktop\\vuejs\\freshroute-frontend-2",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-camera@^4.0.2",
+  "_where": "C:\\Users\\AtlasBigSSD\\Desktop\\AtlasArk\\projects\\mobile-projects\\freshroute-frontend-main",
   "author": {
     "name": "Apache Software Foundation"
   },
   "bugs": {
     "url": "https://issues.apache.org/jira/browse/CB"
   },
-  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-camera",
     "platforms": [
@@ -40,7 +62,7 @@
       "osx"
     ]
   },
-  "deprecated": false,
+  "dependencies": {},
   "description": "Cordova Camera Plugin",
   "devDependencies": {
     "dmd-plugin-cordova-plugin": "^0.1.0",
@@ -53,6 +75,11 @@
     "eslint-plugin-standard": "^3.0.1",
     "husky": "^0.10.1",
     "jsdoc-to-markdown": "^1.2.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "309410927ef40adc6bebd4b0e91df2c8c644f38a",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-camera/-/cordova-plugin-camera-4.0.2.tgz"
   },
   "engines": {
     "cordovaDependencies": {
@@ -76,7 +103,55 @@
     "cordova-osx"
   ],
   "license": "Apache-2.0",
+  "maintainers": [
+    {
+      "name": "jcesarmobile",
+      "email": "jcesarmobile@gmail.com"
+    },
+    {
+      "name": "surajpindoria",
+      "email": "suraj.pindoria@yahoo.com"
+    },
+    {
+      "name": "macdonst",
+      "email": "simon.macdonald@gmail.com"
+    },
+    {
+      "name": "cordovaowner",
+      "email": "stevengill.97@gmail.com"
+    },
+    {
+      "name": "anis",
+      "email": "anis.kadri@gmail.com"
+    },
+    {
+      "name": "bowserj",
+      "email": "bowserj@apache.org"
+    },
+    {
+      "name": "purplecabbage",
+      "email": "purplecabbage@gmail.com"
+    },
+    {
+      "name": "filmaj",
+      "email": "maj.fil@gmail.com"
+    },
+    {
+      "name": "shazron",
+      "email": "shazron@gmail.com"
+    },
+    {
+      "name": "csantanapr",
+      "email": "csantana23@gmail.com"
+    },
+    {
+      "name": "stevegill",
+      "email": "stevengill97@gmail.com"
+    }
+  ],
   "name": "cordova-plugin-camera",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apache/cordova-plugin-camera.git"

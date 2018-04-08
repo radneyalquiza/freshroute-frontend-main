@@ -120,7 +120,7 @@
 </style>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapGetters, mapActions } from 'vuex'
     import GoogleMapsLoader from "google-maps"
     import axios from 'axios'
     import _ from 'lodash'
@@ -190,11 +190,19 @@
             let instance = this;
 
             setTimeout(function() {
-                instance.$f7.notification.create({
-                    closeOnClick: true,
-                    closeTimeout: 3000,
-                    text: 'FOR DEMO: New Addresses will be appended to the end of the route.',
-                }).open();
+                // instance.$f7.notification.create({
+                //     closeOnClick: true,
+                //     title: "FreshRoute",
+                //     subtitle: "For Demo purposes",
+                //     closeTimeout: 3000,
+                //     text: 'New Addresses will be appended to the end of the route.',
+                // }).open();
+
+                cordova.plugins.notification.local.schedule({
+                    title: 'FreshRoute Notification',
+                    text: 'New Addresses will be appended to the end of the route',
+                    foreground: true
+                });
             }, 500);
 
             // get the list of Services
@@ -207,8 +215,12 @@
                     Price: 0
                 })
             });
+
 		},
 		methods: {
+            ...mapActions({
+                addNodeToRoute: 'Route/addNodeToRoute'
+            }),
             closeAddRouteNode: function() {
                 let instance = this;
                 instance.$f7.router.back();
@@ -219,23 +231,30 @@
 
                 instance.$f7.preloader.show();
 
-                GoogleMapsLoader.KEY = gmapkey;
-                GoogleMapsLoader.load(function(google) {
+                // GoogleMapsLoader.KEY = gmapkey;
+
+                return new Promise(function(resolve, reject) {
                     
-                    let geocoder = new google.maps.Geocoder();
+                    // GoogleMapsLoader.load(function(google) {
+                    
+                        let geocoder = new google.maps.Geocoder();
 
-                    geocoder.geocode({ 'address': instance.address.Street + " " + instance.address.City + " " + instance.address.PostalCode },
-                        function(results, status) {
+                        geocoder.geocode({ 'address': instance.address.Street + " " + instance.address.City + " " + instance.address.PostalCode },
+                            function(results, status) {
 
-                            instance.$f7.preloader.hide();
-                            if (status == google.maps.GeocoderStatus.OK) {
-                                instance.address.lat = results[0].geometry.location.lat();
-                                instance.address.lng = results[0].geometry.location.lng();
+                                instance.$f7.preloader.hide();
+                                if (status == google.maps.GeocoderStatus.OK) {
+                                    instance.address.lat = results[0].geometry.location.lat();
+                                    instance.address.lng = results[0].geometry.location.lng();
+                                    resolve(results);
+                                }
+                            }, function(err) {
+                                instance.$f7.preloader.hide();
+                                reject(err);
                             }
-                        }, function() {
-                            instance.$f7.preloader.hide();
-                        }
-                    )
+                        )
+                    // });
+
                 });
 
             },
@@ -260,49 +279,98 @@
             },
 
             collectAndSave: async function() {
-                console.log(this.client, this.address, this.services);
 
                 let instance = this;
-                instance.geocodeAddress();
+                let gp = await instance.geocodeAddress();
                 let cp = await instance.saveClient();
-                let ap = await instance.saveAddress(cp);
+                let ap = await instance.saveAddress(cp, gp);
+                let rp = await instance.saveRouteWithNewNode(ap);
+                let rn = await instance.saveServices(rp);
+                let np = await instance.addNodeToLocalRoute(rn);
+
+                instance.$f7.router.back();
             },
 
-            saveClient: async function() {
+            saveClient: function() {
                 let instance = this;
                 // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
                 return instance.$firebase.database().ref('AppClients').push(instance.client);
                 // instance.client.AppClientId = clientpush.key;
             },
 
-            saveAddress: async function(cp) {
+            saveAddress: function(cp, gp) {
                 let instance = this;
                 // let addresspush = await instance.$firebase.database().ref('AppAddresses').push(instance.address);
                 instance.address.AppClientId = cp.key;
+                instance.client.AppClientId = cp.key;
                 return instance.$firebase.database().ref('AppAddresses').push(instance.address);
                 // instance.address.AppAddressId = addresspush.key;
             },
 
-            saveRouteWithNewNode: async function() {
+            saveRouteWithNewNode: function(ap) {
+
+                let instance = this;
+                instance.address.AppAddressId = ap.key;
+                let routelength = instance.route.length;
 
                 instance.routenode = {
                     ClientId: instance.client.AppClientId,
-                    AddressId: instance.client.AppAddressId,
-
+                    AddressId: instance.address.AppAddressId,
+                    Sequence: routelength // the current length (zero index) + 1
                 }
+
+                return instance.$firebase
+                    .database()
+                    .ref('AppRoutes/' + instance.routeid + '/Nodes')
+                    // create a new child using the custom id (integer index)
+                    // and use .set() to create properties for the child
+                    .child(instance.routenode.Sequence)
+                    .set(instance.routenode);
                 
             },
+
+            saveServices: function(rn) {
+
+                let instance = this;
+
+                return instance.$firebase
+                    .database()
+                    .ref('AppRoutes/' + instance.routeid + '/Nodes/' + instance.routenode.Sequence + '/AppServices')
+                    .push(instance.services[0]);
+            },
+
             frequencyDescription: function(val) {
                 let instance = this;
                 let s = _.find(instance.frequencies, function(obj) {
                     return obj.FrequencyType.toLowerCase() === val.toLowerCase();
                 });
                 return s.FrequencyDescription;
+            },
+
+            addNodeToLocalRoute: function(np) {
+                
+                let instance = this;
+                instance.$firebase
+                    .database()
+                    .ref('AppRoutes/' + instance.routeid + '/Nodes/' + instance.routenode.Sequence + '/AppServices')
+                    .once("value", function(data) {
+                        let s = data.val();
+                        instance.routenode.AppServices = {};
+                        for(var p in s) {
+                            instance.routenode.AppServices[p] = s[p];
+                            break;
+                        }
+
+                        instance.addNodeToRoute(instance.routenode);
+                    })
+
             }
 		},
 		computed: {
             ...mapGetters({
-                routename: 'Route/RouteName'
+                routename: 'Route/RouteName',
+                route: 'Route/Route',
+                routeid: 'Route/RouteId'
             })
 		},
     } 

@@ -75,30 +75,52 @@ const ACTIONS = {
 
         commit("setLoading", true);
 
-        commit("setLoading", false);
-        commit("setCurrentLocation", {
-            lat: 44.19271,
-            lng: -79.14355
-        });
+        // commit("setLoading", false);
+        // commit("setCurrentLocation", {
+        //     lat: 44.19271,
+        //     lng: -79.14355
+        // });
 
-        setTimeout(function() {
-            if (typeof onsuccess == "function") onsuccess();
-        }, 1);
+        // setTimeout(function() {
+        //     if (typeof onsuccess == "function") onsuccess();
+        // }, 1);
 
-        // navigator.geolocation.getCurrentPosition(function(pos) {
-        //     if (pos && pos.coords) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            if (pos && pos.coords) {
+                console.log(pos);
+                commit('setLoading', false);
+                commit("setCurrentLocation", {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                });
+                if (typeof onsuccess == "function") onsuccess();
+            }
+        }, function(err) {
+            console.log(err);
+            commit('setLoading', false);
+            if (typeof onfail == "function")
+                onfail(err);
+        })
+
+        // navigator.geolocation.watchPosition(
+        //     function(pos) {
+        //         if (pos && pos.coords) {
+        //             console.log(pos);
+        //             commit('setLoading', false);
+        //             commit("setCurrentLocation", {
+        //                 lat: pos.coords.latitude,
+        //                 lng: pos.coords.longitude
+        //             });
+        //             if (typeof onsuccess == "function") onsuccess();
+        //         }
+        //     },
+        //     function(err) {
+        //         console.log(err);
         //         commit('setLoading', false);
-        //         commit("setCurrentLocation", {
-        //             lat: pos.coords.latitude,
-        //             lng: pos.coords.longitude
-        //         });
-        //         if (typeof onsuccess == "function") onsuccess();
-        //     }
-        // }, function(err) {
-        //     commit('setLoading', false);
-        //     if (typeof onfail == "function")
-        //         onfail(err);
-        // })
+        //         if (typeof onfail == "function")
+        //             onfail(err);
+        //     }, { enableHighAccuracy: true }
+        // );
     },
 
     getCurrentAddress({ commit, getters }) {

@@ -57,10 +57,14 @@ import routestore from "./assets/vue/store/route.js";
 import userstore from "./assets/vue/store/user.js";
 import modelstore from "./assets/vue/store/model.js";
 
+import { gmapload, gmaploaded } from './assets/js/async-map-manager.js';
+
 // Install Plugin
 Vue.use(Framework7Vue, Framework7);
 
 Vue.use(VueHammer);
+
+
 
 // Vue.use(VueGoogleMaps, {
 //   load: {
@@ -76,6 +80,8 @@ let theme = 'auto';
 if (document.location.search.indexOf('theme=') >= 0) {
     theme = document.location.search.split('theme=')[1].split('&')[0];
 }
+
+gmapload("AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754");
 
 document.addEventListener("deviceready", function() {
 

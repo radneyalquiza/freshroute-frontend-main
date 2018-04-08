@@ -1,19 +1,41 @@
 {
-  "_from": "cordova-plugin-local-notification",
+  "_args": [
+    [
+      {
+        "raw": "cordova-plugin-local-notification",
+        "scope": null,
+        "escapedName": "cordova-plugin-local-notification",
+        "name": "cordova-plugin-local-notification",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\Users\\AtlasBigSSD\\Desktop\\AtlasArk\\projects\\mobile-projects\\freshroute-frontend-main"
+    ]
+  ],
+  "_from": "cordova-plugin-local-notification@latest",
   "_id": "cordova-plugin-local-notification@0.9.0-beta.2",
-  "_inBundle": false,
-  "_integrity": "sha512-63n77K1pt8dnbWnNR8QWETi9Glezi1bvNHvHWmGNIOv0xCb0phZnm+Ku49BQ+omwe8Z5voMvrA4I03SYPpv38w==",
+  "_inCache": true,
   "_location": "/cordova-plugin-local-notification",
+  "_nodeVersion": "7.10.1",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-local-notification-0.9.0-beta.2.tgz_1515686266132_0.4216797132976353"
+  },
+  "_npmUser": {
+    "name": "katzer",
+    "email": "katzer@appplant.de"
+  },
+  "_npmVersion": "5.6.0",
   "_phantomChildren": {},
   "_requested": {
-    "type": "tag",
-    "registry": true,
     "raw": "cordova-plugin-local-notification",
-    "name": "cordova-plugin-local-notification",
+    "scope": null,
     "escapedName": "cordova-plugin-local-notification",
+    "name": "cordova-plugin-local-notification",
     "rawSpec": "",
-    "saveSpec": null,
-    "fetchSpec": "latest"
+    "spec": "latest",
+    "type": "tag"
   },
   "_requiredBy": [
     "#USER",
@@ -21,15 +43,15 @@
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-local-notification/-/cordova-plugin-local-notification-0.9.0-beta.2.tgz",
   "_shasum": "e3a0b4a35d11f95bb4f1e367d9baee9909cca695",
+  "_shrinkwrap": null,
   "_spec": "cordova-plugin-local-notification",
-  "_where": "C:\\Users\\radneya\\Desktop\\vuejs\\freshroute-frontend-2",
+  "_where": "C:\\Users\\AtlasBigSSD\\Desktop\\AtlasArk\\projects\\mobile-projects\\freshroute-frontend-main",
   "author": {
     "name": "Sebastián Katzer"
   },
   "bugs": {
     "url": "https://github.com/katzer/cordova-plugin-local-notifications/issues"
   },
-  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-local-notification",
     "platforms": [
@@ -38,8 +60,15 @@
       "windows"
     ]
   },
-  "deprecated": false,
+  "dependencies": {},
   "description": "Schedules and queries for local notifications",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-63n77K1pt8dnbWnNR8QWETi9Glezi1bvNHvHWmGNIOv0xCb0phZnm+Ku49BQ+omwe8Z5voMvrA4I03SYPpv38w==",
+    "shasum": "e3a0b4a35d11f95bb4f1e367d9baee9909cca695",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-local-notification/-/cordova-plugin-local-notification-0.9.0-beta.2.tgz"
+  },
   "engines": [
     {
       "name": "cordova",
@@ -62,6 +91,7 @@
       "version": ">=10.0.0"
     }
   ],
+  "gitHead": "0ac0372f259f33683254ae0f3541d5918ec3698a",
   "homepage": "https://github.com/katzer/cordova-plugin-local-notifications#readme",
   "keywords": [
     "appplant",
@@ -74,7 +104,15 @@
     "cordova-windows"
   ],
   "license": "Apache 2.0",
+  "maintainers": [
+    {
+      "name": "katzer",
+      "email": "katzer@appplant.de"
+    }
+  ],
   "name": "cordova-plugin-local-notification",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/katzer/cordova-plugin-local-notifications.git"

@@ -209,8 +209,9 @@ export default {
 
 
 	// <div class="bg" v-if="location.Weather" :style="{ backgroundImage: 'url(' + weatherimage + ')' }"></div>
+	// <div class="button" :disabled="gpsvalidation" @click="enableGPSValidation()" style="bottom:55px; left: 10px; font-size: 10px;position: fixed; z-index: 1100; background-color: #278aad; color: white;">[FOR DEMO] Enable Distance Validation</div>
 	template:   `<div>
-					<div class="button" :disabled="gpsvalidation" @click="enableGPSValidation()" style="bottom:55px; left: 10px; font-size: 10px;position: fixed; z-index: 1100; background-color: #278aad; color: white;">[FOR DEMO] Enable Distance Validation</div>
+					
 					<div class="card activelocation" v-if="location">
 
 						<div class="buttons-cont">
@@ -230,7 +231,7 @@ export default {
 							<div class="card-content ">
 
 								<div class="timediff">
-									<div class='times' style="width:80%; display: flex">
+									<div class='times' style="width:70%; display: flex">
 										<div style="width: 100%">
 											<f7-button class='label ' v-bind:class="{ start: !start, started: start }" @click="startTimer()">START</f7-button>
 											<span class='timedisplay' v-if="start">{{ start }}</span>
@@ -243,7 +244,7 @@ export default {
 											<span class='timedisplay' v-if="end">{{ end }}</span>
 										</div>
 									</div>
-									<div class='timer' style="width: 20%">
+									<div class='timer' style="width: 30%">
 										<div>
 											<span class='label'>ELAPSED</span>
 											<span class='temptimer' v-if="!location.JobData">00:00:00</span>
@@ -493,31 +494,32 @@ export default {
 				// instance.location.Duration = instance.duration;
 				// instance.STATUS = instance.STATUS.COMPLETE;
 				instance.__jobComplete(instance.location.Sequence);
+				instance.__closeActiveLocation();
 				instance.$emit('doneProperty', instance.location)
 				instance.$forceUpdate();
 			},
 			takeBeforePhoto: function() {
 				let instance = this;
 				navigator.camera.getPicture(function() {
-					instance.$f7.addNotification({
-						message: "Will save the before photo."
-					});
+					instance.$f7.notification.create({
+						text: "Will save the before photo."
+					}).open();
 				}, function(data) {
-					instance.$f7.addNotification({
-						message: "Failed to take photo."
-					});
+					instance.$f7.notification.create({
+						text: "Failed to take photo."
+					}).open();
 				});
 			},
 			takeAfterPhoto: function() {
 				let instance = this;
 				navigator.camera.getPicture(function() {
-					instance.$f7.addNotification({
-						message: "Will save the after photo."
-					});
+					instance.$f7.notification.create({
+						text: "Will save the after photo."
+					}).open();
 				}, function(data) {
-					instance.$f7.addNotification({
-						message: "Failed to take photo."
-					});
+					instance.$f7.notification.create({
+						text: "Failed to take photo."
+					}).open();
 				});
 			},
 			backToTimeline: function() {
@@ -529,9 +531,11 @@ export default {
 			},
 			enableGPSValidation: function() {
 				this.gpsvalidation = true;
-				this.$f7.addNotification({
-					message: "This will validate if your location is too far from the job site. On production, it will be always active. Press [Back] to redo the Route."
-				});
+				this.$f7.notification.create({
+					title: "FreshRoute",
+					closeTimeout: 3000,
+					text: "This will validate if your location is too far from the job site. On production, it will be always active. Press [Back] to redo the Route."
+				}).open();
 			}
 	})
 };

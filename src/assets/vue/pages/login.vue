@@ -83,7 +83,8 @@ export default {
 	}),
 	methods: {
 	  	...mapActions({
-			__findUser: 'User/findUser'
+			__findUser: 'User/findUser',
+			__getCurrentLocation: 'User/getCurrentLocation'
     	}),
 		closeLogin() {
 			let f7 = this.$f7;
@@ -120,6 +121,7 @@ export default {
 
 					instance.loginMessage = "Success! Welcome " + obj.user.FirstName + " " + obj.user.LastName + "!";
 					instance.isError = false;
+					
 					setTimeout(function() {
 						sessionStorage.setItem("AppUserId", obj.id);
 						instance.closeLogin();
@@ -128,6 +130,10 @@ export default {
 				.catch(function(faildata) {
 
 					instance.$f7.preloader.hide();
+
+					instance.$f7.notification.create({
+							text: faildata
+						}).open();
 
 					instance.loginMessage = "No User Found.";
 					instance.isError = true;

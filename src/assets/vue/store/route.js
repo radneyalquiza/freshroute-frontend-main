@@ -108,6 +108,12 @@ const GETTERS = {
     },
     Workers: function(state) {
         return state.Workers;
+    },
+    activeLocationCoords: function(state) {
+        if (state.activeLocation)
+            return { lat: state.activeLocation.lat, lng: state.activeLocation.lng };
+        else
+            return null;
     }
 }
 
@@ -129,9 +135,12 @@ const MUTATIONS = {
     // just a list of address id's
     SET_ADDRESSES: function(state, addresses) {
         if (addresses) {
-            state.Route = addresses.map(function(obj) {
-                return Object.assign({}, obj, MUTATION_HELPERS.LocationEmptyState);
-            });
+
+            for (var x in addresses) {
+                addresses[x] = Object.assign({}, addresses[x], MUTATION_HELPERS.LocationEmptyState);
+            }
+
+            state.Route = addresses;
         }
     },
     INIT_ADDRESS_AS_LOCATION: function(state, payload) {
@@ -153,6 +162,13 @@ const MUTATIONS = {
         var p = state.Route[payload.sequence];
         // update the Location property for an address
         Vue.set(p, "Location", payload.position);
+    },
+    UPDATE_ROUTE_CENTER: function(state, payload) {
+        state.Center = payload.position;
+    },
+    UPDATE_ROUTE_MARKERS: function(state, payload) {
+        // add or replace route marker
+        Vue.set(state.Markers, payload.sequence, { position: payload.position });
     },
     UPDATE_ROUTE_CENTER: function(state, payload) {
         state.Center = payload.position;
@@ -284,13 +300,18 @@ const MUTATIONS = {
     },
 
     NEXT: function(state) {
-        if(state.current >= state.Route.length-1) return;
         state.current++;
+        if (state.current > state.Route.length - 1) return;
         state.activeLocation = state.Route[state.current];
     },
 
     ADD_EXPENSE: function(state, payload) {
         state.ExternalExpenses.push(payload);
+    },
+
+    ADD_NODE: function(state, payload) {
+        payload = Object.assign({}, payload, MUTATION_HELPERS.LocationEmptyState);
+        state.Route.push(payload);
     }
 }
 
@@ -333,20 +354,19 @@ const ACTIONS = {
                                 });
                                 commit('UPDATE_ROUTE_MARKERS', {
                                     sequence: idx,
-                                    position: { 
+                                    position: {
                                         lat: a.lat,
                                         lng: a.lng
                                     }
                                 });
 
-                                if(idx == route.length-1)
-                                {
+                                if (idx == route.length - 1) {
                                     let routecenter = {
                                         position: rootGetters['User/currentLocation'],
-                                        sequence: idx+1
+                                        sequence: idx + 1
                                     }
                                     commit('UPDATE_ROUTE_MARKERS', routecenter);
-                                    commit('UPDATE_ROUTE_CENTER', routecenter );
+                                    commit('UPDATE_ROUTE_CENTER', routecenter);
                                 }
                             });
                     })(x);
@@ -422,7 +442,7 @@ const ACTIONS = {
             status: LocationStatus.ACTIVE,
             sequence: payload.sequence
         });
-        if(typeof payload.callback == 'function')
+        if (typeof payload.callback == 'function')
             payload.callback();
     },
 
@@ -452,7 +472,7 @@ const ACTIONS = {
         }).then(function(response) {
             if (response) {
                 let weather = response.data;
-                if(weather)
+                if (weather)
                     commit('UPDATE_WEATHER', {
                         sequence: al.Sequence,
                         weather: weather
@@ -487,44 +507,44 @@ const ACTIONS = {
     getDistanceFromLocation({ commit, getters }, payload) {
         var al = ACTION_HELPERS.getOpened(getters.Route);
 
-        if(!payload.userlocation) return;
+        if (!payload.userlocation) return;
 
         let cb = payload.callback;
 
-        GoogleMapsLoader.KEY = gmapkey;
-        GoogleMapsLoader.load(function(google) {
-            var service = new google.maps.DistanceMatrixService();
-            var geocoder = new google.maps.Geocoder();
+        // GoogleMapsLoader.KEY = gmapkey;
+        // GoogleMapsLoader.load(function(google) {
+        var service = new google.maps.DistanceMatrixService();
+        var geocoder = new google.maps.Geocoder();
 
-            geocoder.geocode({ 'location': { lat: al.lat, lng: al.lng } }, function(results, status) {
-                if (status === 'OK') {
-                    if (results[1]) {
-                        // instance.CurrentLocation = results[1].formatted_address;
-                        commit('SET_WHERE_YOU_ARE', {
-                            whereyouare: results[1].formatted_address
-                        })
-                        service.getDistanceMatrix({
-                            origins: [new google.maps.LatLng(payload.userlocation.lat, payload.userlocation.lng)],
-                            destinations: [new google.maps.LatLng(al.lat, al.lng)],
-                            travelMode: 'DRIVING',
-                            unitSystem: google.maps.UnitSystem.METRIC
-                        }, function(result, status) {
-                            if (status == "OK" && result) {
-                                if (result.rows) {
-                                    if (typeof cb == "function") {
-                                        cb(result);
-                                    }
+        geocoder.geocode({ 'location': { lat: al.lat, lng: al.lng } }, function(results, status) {
+            if (status === 'OK') {
+                if (results[1]) {
+                    // instance.CurrentLocation = results[1].formatted_address;
+                    commit('SET_WHERE_YOU_ARE', {
+                        whereyouare: results[1].formatted_address
+                    })
+                    service.getDistanceMatrix({
+                        origins: [new google.maps.LatLng(payload.userlocation.lat, payload.userlocation.lng)],
+                        destinations: [new google.maps.LatLng(al.lat, al.lng)],
+                        travelMode: 'DRIVING',
+                        unitSystem: google.maps.UnitSystem.METRIC
+                    }, function(result, status) {
+                        if (status == "OK" && result) {
+                            if (result.rows) {
+                                if (typeof cb == "function") {
+                                    cb(result);
                                 }
                             }
-                        });
-    
-                    }
-                } else {
-                    if (typeof cb == "function") cb(status)
+                        }
+                    });
+
                 }
-    
-            });
+            } else {
+                if (typeof cb == "function") cb(status)
+            }
+
         });
+        // });
     },
 
 
@@ -577,8 +597,34 @@ const ACTIONS = {
         commit('ADD_EXPENSE', payload);
     },
 
-    addPropertyToRoute({ commit }, payload) {
+    addNodeToRoute({ commit }, payload) {
 
+        commit('ADD_NODE', payload);
+
+        firebase.database().ref('AppClients/' + payload.ClientId)
+            .once("value", function(data) {
+                let c = data.val();
+                commit('INIT_CLIENT_AS_LOCATION', {
+                    sequence: payload.Sequence,
+                    client: c
+                });
+
+            });
+        firebase.database().ref('AppAddresses/' + payload.AddressId)
+            .once("value", function(data) {
+                let a = data.val();
+                commit('INIT_ADDRESS_AS_LOCATION', {
+                    sequence: payload.Sequence,
+                    address: a
+                });
+                commit('UPDATE_ROUTE_MARKERS', {
+                    sequence: payload.Sequence,
+                    position: {
+                        lat: a.lat,
+                        lng: a.lng
+                    }
+                });
+            })
     }
 }
 
