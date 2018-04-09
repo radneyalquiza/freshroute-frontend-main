@@ -60,6 +60,7 @@ const STATE = {
 
 const GETTERS = {
     Route: function(state) {
+      console.log(state.Route)
         return state.Route;
     },
     RouteName: function(state) {

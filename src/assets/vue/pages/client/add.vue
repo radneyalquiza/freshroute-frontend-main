@@ -1,67 +1,148 @@
 <template>
     <f7-page navbar-fixed>
-        <f7-navbar v-bind:title="'Add to ' + routename">
+        <f7-navbar v-bind:title="title">
             <f7-nav-right>
                 <f7-link :close-popup="true" @click="closeAddRouteNode()">Close</f7-link>
             </f7-nav-right>
         </f7-navbar>
         <f7-block>
             <f7-block-title>Customer Info</f7-block-title>
-            <f7-list no-hairlines-md>
+			<div class="list no-hairlines-md">
+				<ul>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">First Name</div>
+							<div class="item-input-wrap">
+								<f7-input type="text" :value="client.FirstName"
+    				        		@input="client.FirstName = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="client.FirstName = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Last Name</div>
+							<div class="item-input-wrap">
+								<f7-input type="text" :value="client.LastName"
+    			        			@input="client.LastName = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="client.LastName = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': client.Phone }">
+						<div class="item-inner">
+							<div class="item-title" >Phone</div>
+							<div class="item-input-wrap">
+								<masked-input :class="{ 'input-with-value': client.Phone }" v-model="client.Phone" mask="\+\1 (111) 111-1111" placeholder="" type="tel" />
+								<span class="input-clear-button" @click="client.Phone = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">E-mail</div>
+							<div class="item-input-wrap">
+								<f7-input type="email" :value="client.Email"
+    			        			@input="client.Email = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="client.Email = ''"></span>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+
+
+            <!-- <f7-list no-hairlines-md>
                 <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>First Name</f7-label>
-                    <f7-input type="text" :value="client.FirstName"
+                    <f7-input required validate type="text" :value="client.FirstName"
     			        		@input="client.FirstName = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
                 <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Last Name</f7-label>
-                    <f7-input type="text" :value="client.LastName"
+                    <f7-input required validate type="text" :value="client.LastName"
     			        		@input="client.LastName = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
 
-                <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
-                    <f7-label floating>Phone</f7-label>
-                    <f7-input type="tel" :value="client.Phone"
-    			        		@input="client.Phone = $event.target.value" placeholder="Your phone number" clear-button></f7-input>
-                </f7-list-item>
+                <li>
+
+                    <div class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-floating-label">Phone</div>
+                            <div class="item-input-wrap">
+                                <masked-input v-model="client.Phone" mask="\+\1 (111) 111-1111" placeholder="Phone number" type="tel" />
+                                <span class="input-clear-button"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </li>
 
                 <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>E-mail</f7-label>
                     <f7-input type="email" :value="client.Email"
     			        		@input="client.Email = $event.target.value" placeholder="Your e-mail" clear-button></f7-input>
                 </f7-list-item>
 
-            </f7-list>
+            </f7-list> -->
         </f7-block>
 
         <f7-block>
             <f7-block-title>Address Info</f7-block-title>
-            <f7-list no-hairlines-md>
+            <!-- <f7-list no-hairlines-md>
                 <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Street Address</f7-label>
                     <f7-input type="text" :value="address.Street"
     			        		@input="address.Street = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
                 <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>City</f7-label>
                     <f7-input type="text" :value="address.City"
     			        		@input="address.City = $event.target.value" placeholder="Your name" clear-button></f7-input>
                 </f7-list-item>
 
                 <f7-list-item>
-                    <!-- <f7-icon icon="demo-list-icon" slot="media"></f7-icon> -->
                     <f7-label floating>Postal Code</f7-label>
                     <f7-input type="text" :value="address.PostalCode"
     			        		@input="address.PostalCode = $event.target.value" placeholder="Your phone number" clear-button></f7-input>
                 </f7-list-item>
 
-            </f7-list>
+            </f7-list> -->
+
+			<div class="list no-hairlines-md">
+
+				<ul>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Street Address</div>
+							<div class="item-input-wrap">
+								<f7-input type="text" :value="address.Street"
+    				        		@input="address.Street = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="address.Street = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">City</div>
+							<div class="item-input-wrap">
+								<f7-input type="text" :value="address.City"
+    			        			@input="address.City = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="address.City = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': address.PostalCode }">
+						<div class="item-inner">
+							<div class="item-title" >Postal Code</div>
+							<div class="item-input-wrap">
+								<masked-input :class="{ 'input-with-value': address.PostalCode }" v-model="address.PostalCode" mask="A#A #A#" placeholder="" type="tel" />
+								<span class="input-clear-button" @click="address.PostalCode = ''"></span>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
         </f7-block>
 
         <f7-block>
@@ -99,10 +180,10 @@
                 <div class="rate" style="display: flex">
                     <div style="width: 30%">
                         <f7-label style="width: auto" >Rate</f7-label>
-                        <span>${{ serv.Price }}</span>
+                        <span>${{ price }}</span>
                     </div>
                     <f7-range :value="serv.Price"
-    			        		@range:change="updatePrice(serv, $event)" :draggableBar="true" color="orange" :label="true" :min="0" :max="100" :step="5" >
+    			        		@range:change="updatePrice(serv, $event)" :draggableBar="true" color="orange" :label="true" :min="0.00" :max="100.00" :step="0.50" >
                     </f7-range>
                 </div>
             </div>
@@ -114,264 +195,338 @@
     </f7-page>
 </template>
 
-<style>
-.servicetype, .frequency, .rate { margin-top: 5px; margin-bottom: 5px; }
-.list li.active {  background-color: #38597a; color: white; }
+<style scoped>
+.servicetype,
+.frequency,
+.rate {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.list li.active {
+  background-color: #38597a;
+  color: white;
+}
+.list .item-title {
+	font-size: 0.8em;
+	color: #a0a0a0;
+}
+.md .block-title {
+	font-weight: 600;
+}
 </style>
 
 <script>
-    import { mapGetters, mapActions } from 'vuex'
-    import GoogleMapsLoader from "google-maps"
-    import axios from 'axios'
-    import _ from 'lodash'
+import { mapGetters, mapActions } from "vuex";
+import GoogleMapsLoader from "google-maps";
+import axios from "axios";
+import _ from "lodash";
+import MaskedInput from "vue-masked-input";
 
-    const gmapkey = "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754"
+const gmapkey = "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754";
 
-    export default {
-		components: {
-		},
-        data: function() {
-            return {
-                openfrequenciespopover: false,
-                openservicespopover: false,
-                appservices: null,
-                address: {
-                    Street: "",
-                    City: "",
-                    PostalCode: "",
-                    lat: null,
-                    lng: null,
-                    AppClientId: null
-                },
-                client: {
-                    FirstName: "",
-                    LastName: "",
-                    Phone: "",
-                    Email: ""
-                },
-                routeNode: {
-                    Sequence: null,
-                    ClientId: null,
-                    AddressId: null
-                },
-                services: [],
-                frequencies: [
-                    {
-                        FrequencyType: "ONE",
-                        FrequencyDescription: "One-time"
-                    },
-                    {
-                        FrequencyType: "WEEK",
-                        FrequencyDescription: "Weekly"
-                    },
-                    {
-                        FrequencyType: "BIWEEK",
-                        FrequencyDescription: "Bi-weekly"
-                    },
-                    {
-                        FrequencyType: "MONTH",
-                        FrequencyDescription: "Monthly"
-                    },
-                    {
-                        FrequencyType: "BIMONTH",
-                        FrequencyDescription: "Bi-Monthly"
-                    },
-                    {
-                        FrequencyType: "BIANNUM",
-                        FrequencyDescription: "Bi-Annually"
-                    },
-                ]
-            }
+export default {
+  components: {
+    MaskedInput
+  },
+  props: ['caller', 'appclientid'],
+  data: function() {
+    return {
+      openfrequenciespopover: false,
+      openservicespopover: false,
+      appservices: null,
+      address: {
+        Street: "",
+        City: "",
+        PostalCode: "",
+        lat: null,
+        lng: null,
+        AppClientId: null
+      },
+      client: {
+        FirstName: "",
+        LastName: "",
+        Phone: "",
+        Email: ""
+      },
+      routeNode: {
+        Sequence: null,
+        ClientId: null,
+        AddressId: null
+      },
+      services: [],
+      frequencies: [
+        {
+          FrequencyType: "ONE",
+          FrequencyDescription: "One-time"
         },
-		created() {
-		},
-        mounted() {
-            
-            let instance = this;
+        {
+          FrequencyType: "WEEK",
+          FrequencyDescription: "Weekly"
+        },
+        {
+          FrequencyType: "BIWEEK",
+          FrequencyDescription: "Bi-weekly"
+        },
+        {
+          FrequencyType: "MONTH",
+          FrequencyDescription: "Monthly"
+        },
+        {
+          FrequencyType: "BIMONTH",
+          FrequencyDescription: "Bi-Monthly"
+        },
+        {
+          FrequencyType: "BIANNUM",
+          FrequencyDescription: "Bi-Annually"
+        }
+      ]
+    };
+  },
+  created() {},
+  mounted() {
+		let instance = this;
 
-            setTimeout(function() {
-                // instance.$f7.notification.create({
-                //     closeOnClick: true,
-                //     title: "FreshRoute",
-                //     subtitle: "For Demo purposes",
-                //     closeTimeout: 3000,
-                //     text: 'New Addresses will be appended to the end of the route.',
-                // }).open();
+		setTimeout(function() {
+			// instance.$f7.notification.create({
+			//     closeOnClick: true,
+			//     title: "FreshRoute",
+			//     subtitle: "For Demo purposes",
+			//     closeTimeout: 3000,
+			//     text: 'New Addresses will be appended to the end of the route.',
+			// }).open();
 
-                cordova.plugins.notification.local.schedule({
-                    title: 'FreshRoute Notification',
-                    text: 'New Addresses will be appended to the end of the route',
-                    foreground: true
-                });
-            }, 500);
+			cordova.plugins.notification.local.schedule({
+				title: "FreshRoute Notification",
+				text: "New Addresses will be appended to the end of the route",
+				foreground: true
+			});
+		}, 500);
 
-            // get the list of Services
-            instance.$firebase.database().ref("AppServices")
-            .once("value", function(data) {
-                instance.appservices = data.val();
-                instance.services.push({
-                    AppServiceType: "",
-                    Frequency: "",
-                    Price: 0
-                })
-            });
+		// get the list of Services
+		instance.$firebase
+		.database()
+		.ref("AppServices")
+		.once("value", function(data) {
+			instance.appservices = data.val();
+			instance.services.push({
+			AppServiceType: "",
+			Frequency: "",
+			Price: 0.00
+			});
+		});
 
-		},
-		methods: {
-            ...mapActions({
-                addNodeToRoute: 'Route/addNodeToRoute'
-            }),
-            closeAddRouteNode: function() {
-                let instance = this;
-                instance.$f7.router.back();
-            },
-            geocodeAddress: function() {
+		if(instance.appclientid) {
 
-                let instance = this;
+			instance.$firebase.database().ref("AppClients/"+ instance.appclientid)
+			.once("value", function(data) {
+				let c = data.val();
+				instance.client = c;
+				instance.client.AppClientId = instance.appclientid;
+			})
 
-                instance.$f7.preloader.show();
+		}
+		
+		
+  },
+  methods: {
+    ...mapActions({
+      addNodeToRoute: "Route/addNodeToRoute"
+    }),
+    closeAddRouteNode: function() {
+      let instance = this;
+      instance.$f7.router.back();
+    },
+    geocodeAddress: function() {
+      let instance = this;
 
-                // GoogleMapsLoader.KEY = gmapkey;
+      // GoogleMapsLoader.KEY = gmapkey;
 
-                return new Promise(function(resolve, reject) {
-                    
-                    // GoogleMapsLoader.load(function(google) {
-                    
-                        let geocoder = new google.maps.Geocoder();
+      return new Promise(function(resolve, reject) {
+        // GoogleMapsLoader.load(function(google) {
 
-                        geocoder.geocode({ 'address': instance.address.Street + " " + instance.address.City + " " + instance.address.PostalCode },
-                            function(results, status) {
+        let geocoder = new google.maps.Geocoder();
 
-                                instance.$f7.preloader.hide();
-                                if (status == google.maps.GeocoderStatus.OK) {
-                                    instance.address.lat = results[0].geometry.location.lat();
-                                    instance.address.lng = results[0].geometry.location.lng();
-                                    resolve(results);
-                                }
-                            }, function(err) {
-                                instance.$f7.preloader.hide();
-                                reject(err);
-                            }
-                        )
-                    // });
-
-                });
-
-            },
-            createService: function() {
-                this.services.push({
-                    AppServiceId: "",
-                    Rate: null, // on init, use Default Price
-                });
-            },
-            selectService: function(serviceobj, srv) {
-                serviceobj.AppServiceType = srv.AppServiceType;
-            },
-            selectFrequency: function(serviceobj, frq) {
-                serviceobj.Frequency = frq.FrequencyType;
-            },
-            addService: function(service) {
-                this.services.push(service);
-            },
-            updatePrice: function(serviceobj, evt) {
-                serviceobj.Price = evt;
-                this.$forceUpdate();
-            },
-
-            collectAndSave: async function() {
-
-                let instance = this;
-                let gp = await instance.geocodeAddress();
-                let cp = await instance.saveClient();
-                let ap = await instance.saveAddress(cp, gp);
-                let rp = await instance.saveRouteWithNewNode(ap);
-                let rn = await instance.saveServices(rp);
-                let np = await instance.addNodeToLocalRoute(rn);
-
-                instance.$f7.router.back();
-            },
-
-            saveClient: function() {
-                let instance = this;
-                // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
-                return instance.$firebase.database().ref('AppClients').push(instance.client);
-                // instance.client.AppClientId = clientpush.key;
-            },
-
-            saveAddress: function(cp, gp) {
-                let instance = this;
-                // let addresspush = await instance.$firebase.database().ref('AppAddresses').push(instance.address);
-                instance.address.AppClientId = cp.key;
-                instance.client.AppClientId = cp.key;
-                return instance.$firebase.database().ref('AppAddresses').push(instance.address);
-                // instance.address.AppAddressId = addresspush.key;
-            },
-
-            saveRouteWithNewNode: function(ap) {
-
-                let instance = this;
-                instance.address.AppAddressId = ap.key;
-                let routelength = instance.route.length;
-
-                instance.routenode = {
-                    ClientId: instance.client.AppClientId,
-                    AddressId: instance.address.AppAddressId,
-                    Sequence: routelength // the current length (zero index) + 1
-                }
-
-                return instance.$firebase
-                    .database()
-                    .ref('AppRoutes/' + instance.routeid + '/Nodes')
-                    // create a new child using the custom id (integer index)
-                    // and use .set() to create properties for the child
-                    .child(instance.routenode.Sequence)
-                    .set(instance.routenode);
-                
-            },
-
-            saveServices: function(rn) {
-
-                let instance = this;
-
-                return instance.$firebase
-                    .database()
-                    .ref('AppRoutes/' + instance.routeid + '/Nodes/' + instance.routenode.Sequence + '/AppServices')
-                    .push(instance.services[0]);
-            },
-
-            frequencyDescription: function(val) {
-                let instance = this;
-                let s = _.find(instance.frequencies, function(obj) {
-                    return obj.FrequencyType.toLowerCase() === val.toLowerCase();
-                });
-                return s.FrequencyDescription;
-            },
-
-            addNodeToLocalRoute: function(np) {
-                
-                let instance = this;
-                instance.$firebase
-                    .database()
-                    .ref('AppRoutes/' + instance.routeid + '/Nodes/' + instance.routenode.Sequence + '/AppServices')
-                    .once("value", function(data) {
-                        let s = data.val();
-                        instance.routenode.AppServices = {};
-                        for(var p in s) {
-                            instance.routenode.AppServices[p] = s[p];
-                            break;
-                        }
-
-                        instance.addNodeToRoute(instance.routenode);
-                    })
-
+        geocoder.geocode(
+          {
+            address:
+              instance.address.Street +
+              " " +
+              instance.address.City +
+              " " +
+              instance.address.PostalCode
+          },
+          function(results, status) {
+            instance.$f7.preloader.hide();
+            if (status == google.maps.GeocoderStatus.OK) {
+              instance.address.lat = results[0].geometry.location.lat();
+              instance.address.lng = results[0].geometry.location.lng();
+              resolve(results);
+            } else {
+              instance.$f7.dialog.alert(
+                "Address could not be found. Please check your address again.",
+                "Hold on..."
+              );
+              reject();
             }
-		},
-		computed: {
-            ...mapGetters({
-                routename: 'Route/RouteName',
-                route: 'Route/Route',
-                routeid: 'Route/RouteId'
-            })
-		},
-    } 
+          },
+          function(err) {}
+        );
+        // });
+      });
+    },
+    createService: function() {
+      this.services.push({
+        AppServiceId: "",
+        Rate: null // on init, use Default Price
+      });
+    },
+    selectService: function(serviceobj, srv) {
+      serviceobj.AppServiceType = srv.AppServiceType;
+    },
+    selectFrequency: function(serviceobj, frq) {
+      serviceobj.Frequency = frq.FrequencyType;
+    },
+    addService: function(service) {
+      this.services.push(service);
+    },
+    updatePrice: function(serviceobj, evt) {
+      serviceobj.Price = evt;
+      this.$forceUpdate();
+    },
+
+    collectAndSave: async function() {
+	  let instance = this;
+	  let xc = null;
+
+	  instance.$f7.preloader.show();
+	  
+      let gp = await instance.geocodeAddress();
+      let cp = await instance.saveClient();
+      let ap = await instance.saveAddress(cp, gp);
+      let rp = await instance.saveRouteWithNewNode(ap);
+	  let rn = await instance.saveServices(rp);
+	  if(instance.caller == "track")
+	      xc = await instance.addNodeToLocalRoute(rn);
+
+      instance.$f7.preloader.hide();
+      instance.$f7.router.back();
+    },
+
+    saveClient: function() {
+      let instance = this;
+      // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
+      return instance.$firebase
+        .database()
+        .ref("AppClients")
+        .push(instance.client);
+      // instance.client.AppClientId = clientpush.key;
+    },
+
+    saveAddress: function(cp, gp) {
+      let instance = this;
+      // let addresspush = await instance.$firebase.database().ref('AppAddresses').push(instance.address);
+      instance.address.AppClientId = cp.key;
+      instance.client.AppClientId = cp.key;
+      return instance.$firebase
+        .database()
+        .ref("AppAddresses")
+        .push(instance.address);
+      // instance.address.AppAddressId = addresspush.key;
+    },
+
+    saveRouteWithNewNode: function(ap) {
+      let instance = this;
+      instance.address.AppAddressId = ap.key;
+      let routelength = instance.route.length;
+
+      instance.routenode = {
+        ClientId: instance.client.AppClientId,
+        AddressId: instance.address.AppAddressId,
+        Sequence: routelength // the current length (zero index) + 1
+      };
+
+      return (
+        instance.$firebase
+          .database()
+          .ref("AppRoutes/" + instance.routeid + "/Nodes")
+          // create a new child using the custom id (integer index)
+          // and use .set() to create properties for the child
+          .child(instance.routenode.Sequence)
+          .set(instance.routenode)
+      );
+    },
+
+    saveServices: function(rn) {
+	  let instance = this;
+	  
+	  if(instance.services[0] && 
+		(!instance.services[0].AppServiceType ||
+		 !instance.services[0].Frequency ||
+		 !instance.services[0].Price)) return;
+
+      return instance.$firebase
+        .database()
+        .ref(
+          "AppRoutes/" +
+            instance.routeid +
+            "/Nodes/" +
+            instance.routenode.Sequence +
+            "/AppServices"
+        )
+        .push(instance.services[0]);
+    },
+
+    frequencyDescription: function(val) {
+      let instance = this;
+      let s = _.find(instance.frequencies, function(obj) {
+        return obj.FrequencyType.toLowerCase() === val.toLowerCase();
+      });
+      return s.FrequencyDescription;
+    },
+
+    addNodeToLocalRoute: function(np) {
+      let instance = this;
+      instance.$firebase
+        .database()
+        .ref(
+          "AppRoutes/" +
+            instance.routeid +
+            "/Nodes/" +
+            instance.routenode.Sequence +
+            "/AppServices"
+        )
+        .once("value", function(data) {
+          let s = data.val();
+          instance.routenode.AppServices = {};
+          for (var p in s) {
+            instance.routenode.AppServices[p] = s[p];
+            break;
+          }
+
+          instance.addNodeToRoute(instance.routenode);
+        });
+    }
+  },
+  computed: {
+    ...mapGetters({
+      routename: "Route/RouteName",
+      route: "Route/Route",
+      routeid: "Route/RouteId"
+	}),
+	price: function() {
+		let instance = this;
+		return parseFloat(instance.services[0].Price).toFixed(2);
+	},
+	title: function() {
+		let instance = this;
+		if(instance.caller == "track")
+			return "Add to " + instance.routename;
+		else if(instance.caller == "clients")
+			return "Add Client";
+		else if(instance.caller == "editclients")
+			return "Edit Client";
+
+	}
+  }
+};
 </script>

@@ -135,7 +135,7 @@
 		<f7-block></f7-block>
 
 		<div v-if="!locationopened && tracking != TRACK.DONE" class="fab fab-right-bottom color-red">
-			<a href="./addroutenode/" style="width: 35px; height: 35px; bottom: 1px; right: 1px;">
+			<a href="./addroutenode/track" style="width: 35px; height: 35px; bottom: 1px; right: 1px;">
 				<i class="icon f7-icons">add</i>
 			</a>
 		</div>

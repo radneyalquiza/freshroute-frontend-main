@@ -5,13 +5,15 @@
 		
 		<f7-list v-if="clients.length > 0">
 			<f7-list-item 
-				accordion-item v-for="client in clients"
+				 v-for="client in clients"
 				:title="client.FirstName + ' ' + client.LastName "
 				after=""
-				:key="client.Id"
+				:key="client.AppClientId"
 				style="font-weight: 600; font-size: 14px; color: #595959"
+				@click="setActiveClient(client)"
+				sheet-open="client-details"
 				>
-				<f7-accordion-content style="font-weight: 500">
+				<!-- <f7-accordion-content style="font-weight: 500">
 					<f7-block class='clientinfo'>
 						<f7-block-title>Info</f7-block-title>
 						<f7-block class="infocontainer">
@@ -25,9 +27,6 @@
 							<div>Street: {{ address.Street }}</div>
 							<div>City: {{ address.City }}</div>
 							<div>Postal Code: {{ address.PostalCode }}</div>
-							<!-- <f7-badge class='service-badge' v-for="service in address.AppServices" color="green">
-								{{ service.AppServiceType }} | {{ service.Frequency }}
-							</f7-badge> -->
 							<f7-chip class="service-badge"
 									@click="removeService"
 							        deleteable media-bg-color="green"
@@ -39,7 +38,9 @@
 
 
 					</f7-block>
-				</f7-accordion-content>
+				</f7-accordion-content> -->
+
+				
 			</f7-list-item>
 		</f7-list>
 
@@ -51,9 +52,38 @@
 			</f7-list-item>
 		</f7-list>
 
-		<f7-fab style="transform:translateY(-50px);" color="orange" @click="doSomething">
-			<f7-icon icon="icon-plus" ></f7-icon>
+		<f7-fab color="orange" href="./clientform/clients">
+			<f7-icon fa="plus" ></f7-icon>
 		</f7-fab>
+
+		<div class='sheet-modal sheet-client-details scrollable'>
+
+			<div class="toolbar">
+				<div class="toolbar-inner">
+					<div class="left">Client Details</div>
+					<div class="right"><a class="link" v-if="activeclient" @click="closeViewDetails()" v-bind:href="'./clientform/editclients/' + activeclient.AppClientId" >Edit</a></div>
+				</div>
+			</div>
+
+			<div class="sheet-modal-inner" style="overflow-y: auto">
+				<f7-block class='clientinfo'  v-if="activeclient">
+					<f7-block-title>Info</f7-block-title>
+					<f7-block class="infocontainer">
+						<div>Phone: <a v-bind:href="phone(activeclient.Phone)">{{ activeclient.Phone }}</a></div>
+						<div>Email: {{ activeclient.Email }}</div>
+					</f7-block>
+				</f7-block>
+				<f7-block class='clientinfo'  v-if="activeclient">
+					<f7-block-title>Addresses</f7-block-title>
+					<f7-block class="infocontainer" v-for="vaddress in activeclient.AppAddresses" :key="vaddress.AppAddressId">
+						<div>Street: {{ vaddress.Street }}</div>
+						<div>City: {{ vaddress.City }}</div>
+						<div>Postal Code: {{ vaddress.PostalCode }}</div>
+					</f7-block>
+				</f7-block>
+			</div>
+			
+		</div>
 
 	</f7-page>
 	
@@ -79,12 +109,14 @@
 	padding-left: 0;
 	padding-right: 0;
 }
-.clientinfo .content-block-title {
+.clientinfo .block-title {
 	font-weight: 600;
-	padding-top: 1px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 .clientinfo .infocontainer {
-	padding-bottom: 15px;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
 }
 .service-badge {
     font-size: 11px;
@@ -100,7 +132,14 @@
 .service-badge .chip-delete {
 	color: white;
 }
-
+.accordion-item-opened .accordion-item-content {
+	box-shadow: 0px 0px 6px 0px inset;
+}
+.sheet-client-details .left {
+	padding: 5px;
+	padding-left: 15px;
+	font-weight: 600;
+}
 </style>
 
 <script>
@@ -112,50 +151,51 @@ export default {
 	data: function () {
 		return {
 			sorting: false,
-			clients: []
+			clients: [],
+			activeclient: null
 		}
 	},
 	computed: mapGetters({
-		UserModel: 'User/UserModel',
-		Model: 'Model/Model'
+		UserModel: 'User/UserModel'
 	}),
     mounted() {
 		let instance = this;
-
-		showPreloader();
-
-		setTimeout(function() {
-			hidePreloader();
-			instance.clients = instance.UserModel.AppClients || [];
-		}, 1000);
-
-		// Dom7.ajax({
-		// 	url: "http://localhost:5000/api/clients/GetByAppUser",
-		// 	method: "POST",
-		// 	dataType: "json",
-		// 	contentType: "application/json",
-		// 	beforeSend: function() {
-		// 		showPreloader();
-		// 	},
-		// 	data: JSON.stringify({
-		// 		AppUserId: sessionStorage.getItem("AppUserId") ? parseInt(sessionStorage.getItem("AppUserId")) : 0,
-		// 	}),
-		// 	success: function(response) {
-		// 		hidePreloader();
-		// 		console.log('dsdsds', response);
-		// 		if(response && response.length) {
-		// 			instance.clients = response;
-		// 		}
-		// 	},
-		// 	statusCode: {
-		// 		400: function (xhr) {
-		// 			hidePreloader();
-		// 			var respjson = parseResponseText(xhr.responseText);
-		// 		}
-		// 	}
-		// });
+		instance.getClients();
 	},
 	methods: {
+		getClients: async function() {
+			let instance = this;
+
+			instance.$f7.preloader.show();
+
+			// get clients 
+			let x = await instance.$firebase.database().ref("AppClients")
+				.on("child_added", function(data) {
+					let client = data.val();
+					let k = data.key;
+					
+					client.AppClientId = k;
+
+
+					// get addresses
+					instance.$firebase.database().ref("AppAddresses")
+					.orderByChild("AppClientId")
+					.equalTo(k)
+					.once("child_added", function(data) {
+						let d = data.val();
+						let kk = data.key;
+						d.AppAddressId = kk;
+						client.AppAddresses = [];
+						client.AppAddresses.push(d);
+						instance.clients.push(client);
+
+						instance.$f7.preloader.hide();
+					}).catch(function(err) {
+						console.log('No Address Found');
+					});
+
+				});
+		},
 		phone: function(num) {
 			return "+1-" + num;
 		},
@@ -164,10 +204,10 @@ export default {
 			return type + " | " + freq;
 		},
 		doSomething: function() {
-			this.$f7.alert("Will allow adding Clients.", "Next Release");
+			this.$f7.dialog.alert("Will allow adding Clients.", "Next Release");
 		},
 		removeService: function() {
-			this.$f7.confirm(
+			this.$f7.dialog.confirm(
 				"Delete this service?",
 				"Confirm Delete",
 				function() {
@@ -176,6 +216,17 @@ export default {
 				function() {
 					console.log('no?', arguments);
 				})
+		},
+		setActiveClient: function(client) {
+			this.activeclient = client;
+			console.log(client)
+			this.$f7.sheet.open(".sheet-client-details", true);
+		},
+		closeViewDetails: function() {
+			let i = this;
+			setTimeout(function() {
+				i.$f7.sheet.close(".sheet-client-details", true);
+			}, 500);
 		}
 	},
     created() {

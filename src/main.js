@@ -40,6 +40,8 @@ import AppStyles from './assets/sass/main.scss'
 // Import vue2 hammer wrapper
 import { VueHammer } from "vue2-hammer";
 
+import MaskedInput from 'vue-masked-input';
+
 // Import App Component
 import app from './main.vue'
 
@@ -63,6 +65,8 @@ import { gmapload, gmaploaded } from './assets/js/async-map-manager.js';
 Vue.use(Framework7Vue, Framework7);
 
 Vue.use(VueHammer);
+
+Vue.use(MaskedInput);
 
 
 

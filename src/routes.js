@@ -12,13 +12,18 @@ export default [{
     // },
     {
         path: "/clients/",
-        component: require("./assets/vue/pages/client/clients.vue")
+        component: require("./assets/vue/pages/client/clients.vue"),
+        routes: [{
+                path: "clientform/:caller/:appclientid",
+                component: require("./assets/vue/pages/client/add.vue")
+            }
+        ]
     },
     {
         path: "/track/",
         component: require("./assets/vue/pages/track.vue"),
         routes: [{
-                path: "addroutenode/",
+                path: "addroutenode/:caller",
                 component: require("./assets/vue/pages/client/add.vue")
             },
             {
