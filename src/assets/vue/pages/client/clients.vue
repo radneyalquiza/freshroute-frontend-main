@@ -151,50 +151,60 @@ export default {
 	data: function () {
 		return {
 			sorting: false,
-			clients: [],
+			// clients: [],
 			activeclient: null
 		}
 	},
 	computed: mapGetters({
-		UserModel: 'User/UserModel'
+		UserModel: 'User/UserModel',
+		clients: 'Model/Clients'
 	}),
     mounted() {
 		let instance = this;
 		instance.getClients();
 	},
 	methods: {
+		...mapActions({
+			getClientsAndAddresses: 'Model/getClientsAndAddresses'
+		}),
 		getClients: async function() {
 			let instance = this;
 
 			instance.$f7.preloader.show();
 
+			instance.getClientsAndAddresses(function() {
+				instance.$f7.preloader.hide();
+			});
+
+			console.log(window.history)
+
 			// get clients 
-			let x = await instance.$firebase.database().ref("AppClients")
-				.on("child_added", function(data) {
-					let client = data.val();
-					let k = data.key;
+			// let x = await instance.$firebase.database().ref("AppClients")
+			// 	.on("child_added", function(data) {
+			// 		let client = data.val();
+			// 		let k = data.key;
 					
-					client.AppClientId = k;
+			// 		client.AppClientId = k;
 
 
-					// get addresses
-					instance.$firebase.database().ref("AppAddresses")
-					.orderByChild("AppClientId")
-					.equalTo(k)
-					.once("child_added", function(data) {
-						let d = data.val();
-						let kk = data.key;
-						d.AppAddressId = kk;
-						client.AppAddresses = [];
-						client.AppAddresses.push(d);
-						instance.clients.push(client);
+			// 		// get addresses
+			// 		instance.$firebase.database().ref("AppAddresses")
+			// 		.orderByChild("AppClientId")
+			// 		.equalTo(k)
+			// 		.once("child_added", function(data) {
+			// 			let d = data.val();
+			// 			let kk = data.key;
+			// 			d.AppAddressId = kk;
+			// 			client.AppAddresses = [];
+			// 			client.AppAddresses.push(d);
+			// 			instance.clients.push(client);
 
-						instance.$f7.preloader.hide();
-					}).catch(function(err) {
-						console.log('No Address Found');
-					});
+			// 			instance.$f7.preloader.hide();
+			// 		}).catch(function(err) {
+			// 			console.log('No Address Found');
+			// 		});
 
-				});
+			// 	});
 		},
 		phone: function(num) {
 			return "+1-" + num;

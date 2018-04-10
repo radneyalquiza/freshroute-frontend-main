@@ -78,7 +78,7 @@ export default {
 	// this.$f7 ----> main APP Framework7 instance
 	computed: mapGetters({
 		CurrentLocation: 'User/currentLocation',
-		Model: 'Model/Model',
+		// Model: 'Model/Model',
 		UserModel: 'User/UserModel'
 	}),
 	methods: {

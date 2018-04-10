@@ -1,30 +1,32 @@
 import Vue from 'vue'
-
-// temporary until we can use HTTP
-import Model from '../../../assets/js/atlas-identity-model.js'
 import _ from 'lodash'
+import * as firebase from 'firebase'
 
 const STATE = {
-    Model: null,
-    UserModel: null,
-    loading: false
+    Clients: [],
+    Services: []
 }
 
 
 const GETTERS = {
-    Model(state) {
-        return state.Model;
+
+    Clients: function(state) {
+        return state.Clients;
     },
-    UserModel(state) {
-        return state.UserModel;
-    },
-    loading(state) {
-        return state.loading;
+
+    Services: function(state) {
+        return state.Services;
     }
+
 }
 
 
 const MUTATIONS = {
+
+    SET_CLIENTS(state, clients) {
+        state.Clients = clients;
+    },
+
     setModel(state, model) {
         if (model)
             state.Model = model;
@@ -38,8 +40,45 @@ const MUTATIONS = {
 
 const ACTIONS = {
 
-    getModelData({ commit }) {
-        commit('setModel', Model);
+    getClientsAndAddresses({ commit }, cb) {
+
+        let promise = firebase.database()
+            .ref("AppClients")
+            .orderByKey()
+            // get array of clients
+            .on("value", async function(data) {
+                let cs = data.val();
+                let clients = [];
+                console.log('ssss', cs)
+
+                if(cs) {
+                    for(var x in cs) {
+                        cs[x].AppClientId = x;
+                        await firebase.database()
+                            .ref("AppAddresses")
+                            .orderByChild("AppClientId")
+                            .limitToFirst(1)
+                            .once("value", function(address) {
+                                let a = address.val();
+                                cs[x].AppAddresses = [];
+                                for(var p in a) {
+                                    a[p].AppAddressId = p;
+                                    cs[x].AppAddresses.push(a[p]);
+                                }
+                                clients.push(cs[x]);
+                                console.log('dddd', clients);
+
+                            })
+                    }
+                }
+
+                if(typeof cb == "function")
+                    cb();
+                commit("SET_CLIENTS", clients);
+
+            });
+        return promise;
+
     },
 
 }

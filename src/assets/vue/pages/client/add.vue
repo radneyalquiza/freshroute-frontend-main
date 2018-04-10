@@ -50,65 +50,11 @@
 					</li>
 				</ul>
 			</div>
-
-
-            <!-- <f7-list no-hairlines-md>
-                <f7-list-item>
-                    <f7-label floating>First Name</f7-label>
-                    <f7-input required validate type="text" :value="client.FirstName"
-    			        		@input="client.FirstName = $event.target.value" placeholder="Your name" clear-button></f7-input>
-                </f7-list-item>
-                <f7-list-item>
-                    <f7-label floating>Last Name</f7-label>
-                    <f7-input required validate type="text" :value="client.LastName"
-    			        		@input="client.LastName = $event.target.value" placeholder="Your name" clear-button></f7-input>
-                </f7-list-item>
-
-                <li>
-
-                    <div class="item-content item-input">
-                        <div class="item-inner">
-                            <div class="item-title item-floating-label">Phone</div>
-                            <div class="item-input-wrap">
-                                <masked-input v-model="client.Phone" mask="\+\1 (111) 111-1111" placeholder="Phone number" type="tel" />
-                                <span class="input-clear-button"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                </li>
-
-                <f7-list-item>
-                    <f7-label floating>E-mail</f7-label>
-                    <f7-input type="email" :value="client.Email"
-    			        		@input="client.Email = $event.target.value" placeholder="Your e-mail" clear-button></f7-input>
-                </f7-list-item>
-
-            </f7-list> -->
         </f7-block>
 
         <f7-block>
             <f7-block-title>Address Info</f7-block-title>
-            <!-- <f7-list no-hairlines-md>
-                <f7-list-item>
-                    <f7-label floating>Street Address</f7-label>
-                    <f7-input type="text" :value="address.Street"
-    			        		@input="address.Street = $event.target.value" placeholder="Your name" clear-button></f7-input>
-                </f7-list-item>
-                <f7-list-item>
-                    <f7-label floating>City</f7-label>
-                    <f7-input type="text" :value="address.City"
-    			        		@input="address.City = $event.target.value" placeholder="Your name" clear-button></f7-input>
-                </f7-list-item>
-
-                <f7-list-item>
-                    <f7-label floating>Postal Code</f7-label>
-                    <f7-input type="text" :value="address.PostalCode"
-    			        		@input="address.PostalCode = $event.target.value" placeholder="Your phone number" clear-button></f7-input>
-                </f7-list-item>
-
-            </f7-list> -->
-
+          
 			<div class="list no-hairlines-md">
 
 				<ul>
@@ -287,14 +233,6 @@ export default {
 		let instance = this;
 
 		setTimeout(function() {
-			// instance.$f7.notification.create({
-			//     closeOnClick: true,
-			//     title: "FreshRoute",
-			//     subtitle: "For Demo purposes",
-			//     closeTimeout: 3000,
-			//     text: 'New Addresses will be appended to the end of the route.',
-			// }).open();
-
 			cordova.plugins.notification.local.schedule({
 				title: "FreshRoute Notification",
 				text: "New Addresses will be appended to the end of the route",
@@ -322,6 +260,7 @@ export default {
 				let c = data.val();
 				instance.client = c;
 				instance.client.AppClientId = instance.appclientid;
+				
 			})
 
 		}

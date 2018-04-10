@@ -16,7 +16,11 @@ export default [{
         routes: [{
                 path: "clientform/:caller/:appclientid",
                 component: require("./assets/vue/pages/client/add.vue")
-            }
+            },
+            {
+              path: "clientform/:caller",
+              component: require("./assets/vue/pages/client/add.vue")
+          }
         ]
     },
     {
@@ -75,5 +79,9 @@ export default [{
     {
         path: "/vuex/",
         component: require("./assets/vue/pages/vuex.vue")
+    },
+    {
+      path: '(.*)',
+      component: require("./assets/vue/pages/404.vue")
     }
 ];

@@ -78,7 +78,7 @@ export default {
     methods: {
         ...mapActions({
             __getCurrentLocation:	'User/getCurrentLocation',
-            __populateModelData: 'Model/getModelData',
+            // __populateModelData: 'Model/getModelData',
             __findUser: 'User/findUser',
             __getUserRoutes: 'User/getRoutesOfUser',
             __selectRoute: 'User/setSelectedAppRouteId'
