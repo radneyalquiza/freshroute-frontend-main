@@ -58,7 +58,7 @@
   "cordova.plugins.diagnostic": {
     "source": {
       "type": "registry",
-      "id": "cordova.plugins.diagnostic"
+      "id": "cordova.plugins.diagnostic@^4.0.5"
     },
     "is_top_level": true,
     "variables": {}
@@ -66,7 +66,7 @@
   "cordova-plugin-network-information": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-network-information"
+      "id": "cordova-plugin-network-information@^2.0.1"
     },
     "is_top_level": true,
     "variables": {}
@@ -74,7 +74,15 @@
   "cordova-plugin-dialogs": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-dialogs"
+      "id": "cordova-plugin-dialogs@^2.0.1"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-request-location-accuracy": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-request-location-accuracy"
     },
     "is_top_level": true,
     "variables": {}

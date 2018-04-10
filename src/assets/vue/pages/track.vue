@@ -630,7 +630,7 @@
 				routeheight: "640px",
 				routevisible: true,
 				pollGPS: null,
-				pollRate: 10000,
+				pollRate: 15000,
 				// locationopened: false,
 				ExternalExpenses: [],
 				showingsummary: false,
@@ -695,13 +695,15 @@
 				let instance = this;
 				let Dom7 = instance.Dom7;
 
+				instance.$f7.preloader.show();
 
-				if(instance.route && instance.started)
+				if(instance.route && instance.started) {
+					instance.$f7.preloader.hide();
 					return;
+				}
 
 				if(!instance.route || !instance.route.length) {
 
-					instance.$f7.preloader.show();
 
 					if(!instance.selectedRouteId){
 						instance.__selectRoute(sessionStorage.getItem('SelectedAppRouteId'));
@@ -720,7 +722,7 @@
 
 							instance.pollGPS = null;
 
-							// start polling GPS location (default 5s)
+							// start polling GPS location (default 15s)
 							instance.pollGPS = setInterval(function() {
 								instance.__getCurrentLocation();
 							}, instance.pollRate);
@@ -882,7 +884,8 @@
 						cordova.plugins.notification.local.schedule({
 							title: 'FreshRoute Notification',
 							text: 'Tap on [Open Location] on the next available Location to begin working.',
-							foreground: true
+							foreground: true,
+        					priority: 1
 						});
 
 						instance.__startRoute();

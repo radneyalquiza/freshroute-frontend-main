@@ -90,7 +90,7 @@ export default {
 			let f7 = this.$f7;
 			f7.router.navigate({
 				url: '/',
-				pushState: true,
+				// pushState: true,
 				// history: false,
 				clearPreviousHistory: true,
 				reloadAll: true,
@@ -101,81 +101,41 @@ export default {
 			let instance = this;
 			var root = this.$root;
 
-			console.log('test', instance.username, instance.password)
-
 			sessionStorage.removeItem("AppUserId");
 
 			instance.$f7.preloader.show();
 
-			// setTimeout(function() {
+			instance.__findUser({
+				username: instance.username,
+				password: instance.password
+			})
+			.then(function(obj) {
+
+				instance.$f7.preloader.hide();
+
+				console.log('bbbb', obj);
+
+				instance.loginMessage = "Success! Welcome " + obj.user.FirstName + " " + obj.user.LastName + "!";
+				instance.isError = false;
 				
-				instance.__findUser({
-					username: instance.username,
-					password: instance.password
-				})
-				.then(function(obj) {
+				setTimeout(function() {
+					sessionStorage.setItem("AppUserId", obj.id);
+					instance.closeLogin(); 
+					// instance.resetHistoryToHome();
+				}, 1000);
+			})
+			.catch(function(faildata) {
 
-					instance.$f7.preloader.hide();
+				instance.$f7.preloader.hide();
 
-					console.log('bbbb', obj);
-
-					instance.loginMessage = "Success! Welcome " + obj.user.FirstName + " " + obj.user.LastName + "!";
-					instance.isError = false;
-					
-					setTimeout(function() {
-						sessionStorage.setItem("AppUserId", obj.id);
-						instance.closeLogin();
-					}, 1000);
-				})
-				.catch(function(faildata) {
-
-					instance.$f7.preloader.hide();
-
-					instance.$f7.notification.create({
-							text: faildata
-						}).open();
-
-					instance.loginMessage = "No User Found.";
-					instance.isError = true;
-				})
+				instance.loginMessage = "No User Found.";
+				instance.isError = true;
+			})
 				
-
-			// }, 2000);
-
-		//   return;
-		//   Dom7.ajax({
-		//     url: "https://api.wawawa.bid/api/users/Login",
-		//     method: "POST",
-		//     dataType: "json",
-		// 	contentType: "application/json",
-		// 	beforeSend: function() {
-		// 		showPreloader();
-		// 	},
-		//     data: JSON.stringify({
-		// 		UserName: instance.username,
-		// 		Password: instance.password
-		// 	}),
-		//     success: function(response) {
-		// 		hidePreloader();
-		// 		instance.loginMessage = "Success! Welcome " + response.FirstName + " " + response.LastName + "!";
-		// 		instance.isError = false;
-		// 		setTimeout(function() {
-		// 			sessionStorage.setItem("session", response._encryptPassword);
-		// 			sessionStorage.setItem("AppUserId", response.Id);
-		// 			instance.closeLogin();
-		// 		}, 2000);
-		//     },
-		// 	statusCode: {
-		// 		400: function (xhr) {
-		// 			hidePreloader();
-		// 			var respjson = parseResponseText(xhr.responseText);
-		// 			instance.loginMessage = respjson.Value;
-		// 			instance.AppUserId = "";
-		// 			instance.isError = true;
-		// 		}
-		// 	}
-		//   });
-
+		},
+		resetHistoryToHome: function() {
+			// console.log(this.$f7.views.main.history);
+			// this.$f7.router.back({ url: this.$f7.views.main.history[1], force: true })
 		}
 	}
 };

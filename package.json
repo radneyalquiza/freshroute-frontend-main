@@ -57,6 +57,7 @@
     "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-local-notification": "^0.9.0-beta.2",
     "cordova-plugin-network-information": "^2.0.1",
+    "cordova-plugin-request-location-accuracy": "^2.2.2",
     "cordova-plugin-whitelist": "git+https://github.com/apache/cordova-plugin-whitelist.git",
     "cordova.plugins.diagnostic": "^4.0.5",
     "countup.js": "^1.9.3",
@@ -92,7 +93,8 @@
       "cordova-plugin-whitelist": {},
       "cordova.plugins.diagnostic": {},
       "cordova-plugin-network-information": {},
-      "cordova-plugin-dialogs": {}
+      "cordova-plugin-dialogs": {},
+      "cordova-plugin-request-location-accuracy": {}
     },
     "platforms": [
       "android",

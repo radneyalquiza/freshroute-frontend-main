@@ -501,25 +501,25 @@ export default {
 			takeBeforePhoto: function() {
 				let instance = this;
 				navigator.camera.getPicture(function() {
-					instance.$f7.notification.create({
-						text: "Will save the before photo."
-					}).open();
+					// instance.$f7.notification.create({
+					// 	text: "Will save the before photo."
+					// }).open();
 				}, function(data) {
-					instance.$f7.notification.create({
-						text: "Failed to take photo."
-					}).open();
+					// instance.$f7.notification.create({
+					// 	text: "Failed to take photo."
+					// }).open();
 				});
 			},
 			takeAfterPhoto: function() {
 				let instance = this;
 				navigator.camera.getPicture(function() {
-					instance.$f7.notification.create({
-						text: "Will save the after photo."
-					}).open();
+					// instance.$f7.notification.create({
+					// 	text: "Will save the after photo."
+					// }).open();
 				}, function(data) {
-					instance.$f7.notification.create({
-						text: "Failed to take photo."
-					}).open();
+					// instance.$f7.notification.create({
+					// 	text: "Failed to take photo."
+					// }).open();
 				});
 			},
 			backToTimeline: function() {
@@ -531,11 +531,11 @@ export default {
 			},
 			enableGPSValidation: function() {
 				this.gpsvalidation = true;
-				this.$f7.notification.create({
-					title: "FreshRoute",
-					closeTimeout: 3000,
-					text: "This will validate if your location is too far from the job site. On production, it will be always active. Press [Back] to redo the Route."
-				}).open();
+				// this.$f7.notification.create({
+				// 	title: "FreshRoute",
+				// 	closeTimeout: 3000,
+				// 	text: "This will validate if your location is too far from the job site. On production, it will be always active. Press [Back] to redo the Route."
+				// }).open();
 			}
 	})
 };

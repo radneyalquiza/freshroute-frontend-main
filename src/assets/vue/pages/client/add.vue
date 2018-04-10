@@ -236,7 +236,8 @@ export default {
 			cordova.plugins.notification.local.schedule({
 				title: "FreshRoute Notification",
 				text: "New Addresses will be appended to the end of the route",
-				foreground: true
+        foreground: true,
+        priority: 1
 			});
 		}, 500);
 
