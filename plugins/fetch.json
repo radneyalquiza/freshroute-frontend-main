@@ -39,14 +39,6 @@
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-local-notification": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-plugin-local-notification"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-whitelist": {
     "source": {
       "type": "registry",
@@ -71,18 +63,18 @@
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-dialogs": {
+  "cordova-plugin-request-location-accuracy": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-dialogs@^2.0.1"
+      "id": "cordova-plugin-request-location-accuracy@^2.2.2"
     },
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-request-location-accuracy": {
+  "cordova-plugin-local-notification": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-request-location-accuracy"
+      "id": "https://github.com/katzer/cordova-plugin-local-notifications.git"
     },
     "is_top_level": true,
     "variables": {}

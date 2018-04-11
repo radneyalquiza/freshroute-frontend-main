@@ -232,14 +232,15 @@ export default {
   mounted() {
 		let instance = this;
 
-		setTimeout(function() {
-			cordova.plugins.notification.local.schedule({
-				title: "FreshRoute Notification",
-				text: "New Addresses will be appended to the end of the route",
-        foreground: true,
-        priority: 1
-			});
-		}, 500);
+			// cordova.plugins.notification.local.requestPermission(function (granted) {
+				cordova.plugins.notification.local.schedule({
+					title: "FreshRoute Notification",
+					text: "New Addresses will be appended to the end of the route",
+					foreground: true,
+					priority: 2
+				});
+			// });
+
 
 		// get the list of Services
 		instance.$firebase
