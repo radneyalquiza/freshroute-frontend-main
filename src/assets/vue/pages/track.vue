@@ -687,7 +687,8 @@
 				__endRoute: 'Route/endRoute',
 				__closeActiveLocation: 'Route/closeProperty',
 				__selectRoute: 'User/setSelectedAppRouteId',
-				__getCurrentLocation: 'User/getCurrentLocation'
+				__getCurrentLocation: 'User/getCurrentLocation',
+				gpsGranted: 'User/gpsGranted'
 			}),
 			onF7Ready: function() {
 
@@ -704,33 +705,62 @@
 
 				if(!instance.route || !instance.route.length) {
 
-
-					if(!instance.selectedRouteId){
+					if(!instance.selectedRouteId)
 						instance.__selectRoute(sessionStorage.getItem('SelectedAppRouteId'));
-					}
 
-					console.log('dddd', instance.currentLocation)
-
+					instance.__getRouteData(instance.selectedRouteId);
+								
 					if(!instance.currentLocation) {
 
-						instance.$f7.preloader.show("Getting Location...");
-						instance.__getCurrentLocation(function() {
+						instance.$f7.preloader.show();
+						
+						instance.__getCurrentLocation({
+							
+							success: function() {
 
-							instance.__getRouteData(instance.selectedRouteId);
+								instance.$f7.preloader.hide();
+								
+								setupmapview();
 
-							instance.$f7.preloader.hide();
+								instance.pollGPS = null;
+								
+								// start polling GPS location (default 15s)
+								instance.pollGPS = setInterval(function() {
+									instance.__getCurrentLocation();
+								}, instance.pollRate);
 
-							instance.pollGPS = null;
-
-							// start polling GPS location (default 15s)
-							instance.pollGPS = setInterval(function() {
-								instance.__getCurrentLocation();
-							}, instance.pollRate);
-
+							},
+							
+							fail: function() {
+								// didn't allow GPS
+								instance.$f7.preloader.hide();
+								instance.$f7.dialog.alert(
+									"This application needs device location to be active. Closing now.",
+									"Hold on...",
+									function() {
+										navigator.app.exitApp();
+									}
+								);
+							}
 						});
 					}
 
 				
+				}
+				else {
+					setTimeout(setupmapview,1000);
+				}
+
+				function setupmapview() {
+					instance.$f7.preloader.hide();
+
+					instance.zoom = 15;
+
+					if(Dom7(".route-timeline").length) {
+						instance.routeheight = Dom7(".track-container .page-content").outerHeight(true) - 120
+						instance.mapheight = Dom7(".track-container .page-content").outerHeight(true);
+						Dom7(".track-container .page-content").css("overflow-y", "hidden");
+					}
 				}
 
 				// for(var x=0;x<instance.route.length;x++)
@@ -761,17 +791,6 @@
 				// });
 
 				// custom height for the map background and the timeline
-				setTimeout(function() {
-					instance.$f7.preloader.hide();
-
-					instance.zoom = 15;
-
-					if(Dom7(".route-timeline").length) {
-						instance.routeheight = Dom7(".track-container .page-content").outerHeight(true) - 120
-						instance.mapheight = Dom7(".track-container .page-content").outerHeight(true);
-						Dom7(".track-container .page-content").css("overflow-y", "hidden");
-					}
-				},1000);
 			},
 			hideRouteTimeline: function() {
 				this.routevisible = false;
@@ -905,7 +924,10 @@
 					return obj.Status === instance.STATUS.DOING;
 				});
 				if(doing) {
-					instance.$f7.alert.show("You have unfinished Locations. Please complete before finishing Route.", "Hold on...");
+					instance.$f7.dialog.alert(
+						"You have unfinished Locations. Please complete before finishing Route.",
+						"Hold on..."
+					);
 					return;
 				}
 				instance.$f7.dialog.confirm(

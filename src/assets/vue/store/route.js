@@ -349,16 +349,17 @@ const ACTIONS = {
                         firebase.database().ref('AppAddresses/' + route[idx].AddressId)
                             .once("value", function(data) {
                                 let a = data.val();
+                                let pos = {
+                                    lat: a.lat,
+                                    lng: a.lng
+                                }
                                 commit('INIT_ADDRESS_AS_LOCATION', {
                                     sequence: idx,
                                     address: a
                                 });
                                 commit('UPDATE_ROUTE_MARKERS', {
                                     sequence: idx,
-                                    position: {
-                                        lat: a.lat,
-                                        lng: a.lng
-                                    }
+                                    position: pos
                                 });
 
                                 if (idx == route.length - 1) {
@@ -366,8 +367,20 @@ const ACTIONS = {
                                         position: rootGetters['User/currentLocation'],
                                         sequence: idx + 1
                                     }
-                                    commit('UPDATE_ROUTE_MARKERS', routecenter);
-                                    commit('UPDATE_ROUTE_CENTER', routecenter);
+                                    if(routecenter.position) {
+                                        commit('UPDATE_ROUTE_MARKERS', routecenter);
+                                        commit('UPDATE_ROUTE_CENTER', routecenter);
+                                    }
+                                    else {
+                                        console.log('qwqwqqwq', pos)
+                                        commit('UPDATE_ROUTE_CENTER', pos);
+                                        cordova.plugins.notification.local.schedule({
+                                            title: 'FreshRoute Notification',
+                                            text: 'Set center bro.',
+                                            foreground: true,
+                                            priority: 1
+                                        });
+                                    }
                                 }
                             });
                     })(x);

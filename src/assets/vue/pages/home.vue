@@ -34,6 +34,8 @@
             <f7-list-item title="Nothing found"></f7-list-item>
         </f7-list>
 
+        <p style="text-align: center; width: 90%; margin:auto; font-size: 12px; margin-bottom:10px;">Please make sure your device's GPS Location is turned on.</p>
+
         <f7-button class="trackbutton"
                     big :fill=true raised color="blue"
                     @click="openRoutes()">
@@ -92,7 +94,8 @@
             console.log('in home created');
 		},
 		mounted() {
-			// let instance = this;
+
+            // let instance = this;
             // // instance.useragent = navigator.userAgent;
             
 
@@ -119,6 +122,7 @@
             //     instance.__findUser(sessionStorage.getItem("AppUserId").toString());
             //     instance.$root.CurrentUserJobModel = root.JobModel;
             // }
+
 		},
         computed: {
             ...mapGetters({
@@ -163,7 +167,6 @@
                 sessionStorage.setItem("SelectedAppRouteId", approuteid);
 
                 instance.closeRoutes();
-                console.log(instance.$f7)
                 instance.$f7.router.navigate({ url: '/track/'});
             },
             closeRoutes: function() {

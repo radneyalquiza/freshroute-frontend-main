@@ -101,6 +101,7 @@ document.addEventListener("deviceready", function() {
         //     }, 800);
         // }
     };
+    console.log(cordova);
 
     store = new Vuex.Store({
         modules: {

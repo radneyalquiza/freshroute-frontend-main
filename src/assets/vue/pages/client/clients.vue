@@ -152,12 +152,12 @@ export default {
 		return {
 			sorting: false,
 			// clients: [],
-			activeclient: null
 		}
 	},
 	computed: mapGetters({
 		UserModel: 'User/UserModel',
-		clients: 'Model/Clients'
+		clients: 'Model/Clients',
+		activeclient: 'Model/ActiveClient'
 	}),
     mounted() {
 		let instance = this;
@@ -165,18 +165,17 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			getClientsAndAddresses: 'Model/getClientsAndAddresses'
+			getClientsAddresses: 'Model/getClientsAddresses',
+			__setActiveClient: 'Model/selectClient'
 		}),
 		getClients: async function() {
 			let instance = this;
 
 			instance.$f7.preloader.show();
 
-			instance.getClientsAndAddresses(function() {
+			instance.getClientsAddresses(function() {
 				instance.$f7.preloader.hide();
 			});
-
-			console.log(window.history)
 
 			// get clients 
 			// let x = await instance.$firebase.database().ref("AppClients")
@@ -228,9 +227,8 @@ export default {
 				})
 		},
 		setActiveClient: function(client) {
-			this.activeclient = client;
-			console.log(client)
 			this.$f7.sheet.open(".sheet-client-details", true);
+			this.__setActiveClient(client.AppClientId);
 		},
 		closeViewDetails: function() {
 			let i = this;

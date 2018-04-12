@@ -4,7 +4,8 @@ import * as firebase from 'firebase'
 
 const STATE = {
     Clients: [],
-    Services: []
+    Services: [],
+    ActiveClient: null
 }
 
 
@@ -16,8 +17,11 @@ const GETTERS = {
 
     Services: function(state) {
         return state.Services;
-    }
+    },
 
+    ActiveClient: function(state) {
+        return state.ActiveClient;
+    }
 }
 
 
@@ -34,13 +38,21 @@ const MUTATIONS = {
     setUserModel(state, umodel) {
         if (umodel)
             state.UserModel = umodel;
+    },
+    SET_ACTIVE_CLIENT(state, appclientid) {
+        state.ActiveClient = _.find(state.Clients, function(obj) {
+            return obj.AppClientId === appclientid;
+        })
+    },
+    UNSET_ACTIVE_CLIENT(state) {
+        state.ActiveClient = null;
     }
 }
 
 
 const ACTIONS = {
 
-    getClientsAndAddresses({ commit }, cb) {
+    getClientsAddresses({ commit }, cb) {
 
         let promise = firebase.database()
             .ref("AppClients")
@@ -49,8 +61,6 @@ const ACTIONS = {
             .on("value", async function(data) {
                 let cs = data.val();
                 let clients = [];
-                console.log('ssss', cs)
-
                 if(cs) {
                     for(var x in cs) {
                         cs[x].AppClientId = x;
@@ -81,6 +91,13 @@ const ACTIONS = {
 
     },
 
+    selectClient({ commit }, appclientid) {
+        commit("SET_ACTIVE_CLIENT", appclientid);
+    },
+
+    deselectClient({ commit }) {
+        commit("UNSET_ACTIVE_CLIENT");
+    }
 }
 
 

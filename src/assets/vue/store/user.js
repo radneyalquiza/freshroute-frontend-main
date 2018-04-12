@@ -7,13 +7,17 @@ const STATE = {
     loading: false,
     UserModel: null,
     currentAddress: null,
-    MyRoutes: [],
+    GPSGranted: false,
     selectedAppRouteId: null
 };
 
 const GETTERS = {
     currentLocation(state) {
         return state.currentLocation;
+    },
+
+    gpsGranted(state) {
+        return state.GPSGranted;
     },
 
     loading(state) {
@@ -48,6 +52,10 @@ const MUTATIONS = {
         }
     },
 
+    setGPSGranted(state, granted) {
+        state.GPSGranted = granted;
+    },
+
     setLoading(state, status) {
         if (typeof status == 'boolean') state.loading = status;
     },
@@ -70,7 +78,7 @@ const MUTATIONS = {
 };
 
 const ACTIONS = {
-    getCurrentLocation({ commit, getters }, onsuccess, onfail) {
+    getCurrentLocation({ commit, getters }, handlers) {
         if (getters.loading == true) return;
 
         commit("setLoading", true);
@@ -85,22 +93,30 @@ const ACTIONS = {
         //     if (typeof onsuccess == "function") onsuccess();
         // }, 1);
 
-        navigator.geolocation.getCurrentPosition(function(pos) {
-            if (pos && pos.coords) {
-                console.log(pos);
+        if(device.platform !== "browser") {
+            checkAvailability(_getGPS, handlers.fail);
+        }
+        else
+            _getGPS();
+
+
+        function _getGPS() {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                if (pos && pos.coords) {
+                    commit('setLoading', false);
+                    commit("setCurrentLocation", {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    });
+                    commit('setGPSGranted', true);
+                    if (typeof handlers.success == "function") handlers.success();
+                }
+            }, function(err) {
                 commit('setLoading', false);
-                commit("setCurrentLocation", {
-                    lat: pos.coords.latitude,
-                    lng: pos.coords.longitude
-                });
-                if (typeof onsuccess == "function") onsuccess();
-            }
-        }, function(err) {
-            console.log(err);
-            commit('setLoading', false);
-            if (typeof onfail == "function")
-                onfail(err);
-        })
+                if (typeof handlers.fail == "function")
+                    handlers.fail(err);
+            })
+        }
 
         // navigator.geolocation.watchPosition(
         //     function(pos) {
@@ -141,57 +157,56 @@ const ACTIONS = {
 
     findUser({ commit, getters }, payload) {
         return new Promise(function(resolve, reject) {
-            let v = firebase.database().ref("AppUsers").once("value");
-            v.then(function(data) {
-                    const users = data.val();
-                    if (typeof payload == 'string') {
-                        let id = payload;
-                        for (var key in users) {
-                            if (key == id) {
-                                commit("setUserModel", Object.assign({}, users[key], { id: key }));
-                                resolve({ id: key, user: users[key] });
-                                break;
-                            }
-                        }
-                        reject();
-
-                    } else if (typeof payload == "object") {
-                        let usr = payload.username;
-                        let pass = payload.password;
-                        console.log('look for', usr, pass)
-                        for (var key in users) {
-                            if (users[key].UserName == usr &&
-                                users[key].Password == pass) {
-                                console.log("qwqwqq", usr, pass)
-                                commit("setUserModel", Object.assign({}, users[key], { id: key }));
-                                resolve({ id: key, user: users[key] });
-                                break;
-                            }
-                        }
-                        reject();
-                    }
-                })
-                .catch(function(err) {
-                    reject(err);
+            if (typeof payload == 'string') {
+                let v = firebase.database().ref("AppUsers/" + payload)
+                .once("value", function(a) {
+                    console.log(a.val());
                 });
+            }
+            else if (typeof payload == "object") {
+                let v = firebase.database().ref("AppUsers")
+                .orderByChild("username")
+                .limitToFirst(1)
+                .once("value", function(b) {
+                    console.log(b.val());
+                });
+            }
+
+
+
+
+            // v.then(function(data) {
+            //         const users = data.val();
+            //         if (typeof payload == 'string') {
+            //             let id = payload;
+            //             for (var key in users) {
+            //                 if (key == id) {
+            //                     commit("setUserModel", Object.assign({}, users[key], { id: key }));
+            //                     resolve({ id: key, user: users[key] });
+            //                     break;
+            //                 }
+            //             }
+            //             reject();
+
+            //         } else if (typeof payload == "object") {
+            //             let usr = payload.username;
+            //             let pass = payload.password;
+            //             for (var key in users) {
+            //                 if (users[key].UserName == usr &&
+            //                     users[key].Password == pass) {
+            //                     commit("setUserModel", Object.assign({}, users[key], { id: key }));
+            //                     resolve({ id: key, user: users[key] });
+            //                     break;
+            //                 }
+            //             }
+            //             reject();
+            //         }
+            //     })
+            //     .catch(function(err) {
+            //         reject(err);
+            //     });
         });
 
-    },
-
-    getRoutesOfUser({ commit }, payload) {
-
-        firebase.database().ref('AppUserRoutes').
-        orderByChild('AppUserId').
-        equalTo(payload).
-        once("value", function(data) {
-            let r = data.val();
-            let routes = [];
-            for (var x in r)
-                for (var p in r[x].AppRoutes)
-                    routes.push({ RouteName: r[x].AppRoutes[p], AppRouteId: p });
-            commit('setUserRoutes', routes);
-
-        });
     },
 
     setSelectedAppRouteId({ commit }, id) {
@@ -199,66 +214,81 @@ const ACTIONS = {
     }
 };
 
-function checkAvailability(){
+
+// NOTE!!!!!!!!!!!!!!
+// If getting issues in the future with iOS, check this https://stackoverflow.com/a/43882878
+// NOTE!!!!!!!!!!!!!!
+function checkAvailability(getGPSFn, failGetFn){
     cordova.plugins.diagnostic.isGpsLocationAvailable(function(available){
-        console.log("GPS location is " + (available ? "available" : "not available"));
         if(!available){
-           checkAuthorization();
+           checkAuthorization(getGPSFn, failGetFn);
         }else{
-            console.log("GPS location is ready to use");
+            if(typeof getGPSFn == "function")
+                getGPSFn();
         }
     }, function(error){
-        console.error("The following error occurred: "+error);
+        if(typeof failGetFn == "function")
+            failGetFn();
     });
 }
 
-function checkAuthorization(){
+function checkAuthorization(getGPSFn, failGetFn){
     cordova.plugins.diagnostic.isLocationAuthorized(function(authorized){
-        console.log("Location is " + (authorized ? "authorized" : "unauthorized"));
         if(authorized){
-            checkDeviceSetting();
+            checkDeviceSetting(getGPSFn, failGetFn);
         }else{
             cordova.plugins.diagnostic.requestLocationAuthorization(function(status){
                 switch(status){
                     case cordova.plugins.diagnostic.permissionStatus.GRANTED:
-                        console.log("Permission granted");
-                        checkDeviceSetting();
+                        checkDeviceSetting(getGPSFn, failGetFn);
                         break;
                     case cordova.plugins.diagnostic.permissionStatus.DENIED:
-                        console.log("Permission denied");
+                        if(typeof failGetFn == "function")
+                            failGetFn();
                         // User denied permission
                         break;
                     case cordova.plugins.diagnostic.permissionStatus.DENIED_ALWAYS:
-                        console.log("Permission permanently denied");
+                        if(typeof failGetFn == "function")
+                            failGetFn();
                         // User denied permission permanently
                         break;
                 }
             }, function(error){
-                console.error(error);
+                if(typeof failGetFn == "function")
+                    failGetFn();
             });
         }
     }, function(error){
-        console.error("The following error occurred: "+error);
+        if(typeof failGetFn == "function")
+            failGetFn();
     });
 }
 
-function checkDeviceSetting(){
+function checkDeviceSetting(getGPSFn, failGetFn){
     cordova.plugins.diagnostic.isGpsLocationEnabled(function(enabled){
-        console.log("GPS location setting is " + (enabled ? "enabled" : "disabled"));
         if(!enabled){
             cordova.plugins.locationAccuracy.request(function (success){
-                console.log("Successfully requested high accuracy location mode: "+success.message);
+                if(typeof getGPSFn == "function")
+                    getGPSFn();
             }, function onRequestFailure(error){
-                console.error("Accuracy request failed: error code="+error.code+"; error message="+error.message);
+                if(typeof failGetFn == "function")
+                    failGetFn();
+
                 if(error.code !== cordova.plugins.locationAccuracy.ERROR_USER_DISAGREED){
                     if(confirm("Failed to automatically set Location Mode to 'High Accuracy'. Would you like to switch to the Location Settings page and do this manually?")){
                         cordova.plugins.diagnostic.switchToLocationSettings();
+                        // check again
+                        checkAvailability(getGPSFn, failGetFn);
                     }
                 }
             }, cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
+        } else {
+            if(typeof getGPSFn == "function")
+                getGPSFn();
         }
     }, function(error){
-        console.error("The following error occurred: "+error);
+        if(typeof failGetFn == "function")
+            failGetFn();
     });
 }
 

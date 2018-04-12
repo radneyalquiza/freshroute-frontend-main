@@ -1,0 +1,256 @@
+{
+  "AppAddresses" : {
+    "-L8rAkRB-g_NZz-rycEY" : {
+      "AppClientId" : "-L8qoShdyMKoeUq_eQFj",
+      "City" : "Toronto",
+      "PostalCode" : "L4J 5G3",
+      "Street" : "131 Joanna Crescent",
+      "lat" : 43.8038666,
+      "lng" : -79.42593219999999
+    },
+    "-L8rAkRGbW0oZgY5g0NB" : {
+      "AppClientId" : "-L8qoShiM94AyUyh9EjH",
+      "City" : "Toronto",
+      "PostalCode" : "L4J 5E9",
+      "Street" : "66 Joanna Cr",
+      "lat" : 43.80478666,
+      "lng" : -79.4267437
+    },
+    "-L8rAkRH-vndmpyvuQQj" : {
+      "AppClientId" : "-L8qoShiM94AyUyh9EjI",
+      "City" : "Toronto",
+      "PostalCode" : "M2M 2W8",
+      "Street" : "39 Arran Crescent",
+      "lat" : 43.8160999,
+      "lng" : -79.4274989
+    },
+    "-L8rAkRIWHx_0tNro1rV" : {
+      "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
+      "City" : "Toronto",
+      "PostalCode" : "L3T 1E9",
+      "Street" : "124 Woodward Avenue",
+      "lat" : 43.8025869,
+      "lng" : -79.4117149
+    },
+    "-L8rAkRIWHx_0tNro1rW" : {
+      "AppClientId" : "-L8qoShjmzSCxTkNXlMU",
+      "City" : "Toronto",
+      "PostalCode" : "L3T",
+      "Street" : "7560 Bayview Ave",
+      "lat" : 43.8165433,
+      "lng" : -79.4030897
+    }
+  },
+  "AppClients" : {
+    "-L8qoShdyMKoeUq_eQFj" : {
+      "Email" : "a@a.com",
+      "FirstName" : "David",
+      "LastName" : "Yu",
+      "Phone" : "647-292-1759"
+    },
+    "-L8qoShiM94AyUyh9EjH" : {
+      "Email" : "a@a.com",
+      "FirstName" : "Jenny",
+      "LastName" : "",
+      "Phone" : "647-333-4444"
+    },
+    "-L8qoShiM94AyUyh9EjI" : {
+      "Email" : "a@a.com",
+      "FirstName" : "Michael",
+      "LastName" : "Leung",
+      "Phone" : "647-555-6666"
+    },
+    "-L8qoShiM94AyUyh9EjJ" : {
+      "Email" : "a@a.com",
+      "FirstName" : "SK",
+      "LastName" : "Ho",
+      "Phone" : "647-111-2222"
+    },
+    "-L8qoShjmzSCxTkNXlMU" : {
+      "Email" : "a@a.com",
+      "FirstName" : "Dr. Abbas",
+      "LastName" : "Azadian",
+      "Phone" : "416-737-6129"
+    }
+  },
+  "AppRoutes" : {
+    "-L8s7SOaiX7EMVv5adwI" : {
+      "Name" : "Route1",
+      "Nodes" : [ {
+        "AddressId" : "-L8rAkRB-g_NZz-rycEY",
+        "AppServices" : {
+          "-L9L6vZKAgHMv_xkwsNF" : {
+            "AppServiceType" : "CUT",
+            "Frequency" : "Bi-Weekly",
+            "Price" : 20
+          }
+        },
+        "ClientId" : "-L8qoShdyMKoeUq_eQFj",
+        "Sequence" : 0
+      }, {
+        "AddressId" : "-L8rAkRGbW0oZgY5g0NB",
+        "AppServices" : {
+          "-L9L71B-ndK3c8fVaspp" : {
+            "AppServiceType" : "CUT",
+            "Frequency" : "Bi-Weekly",
+            "Price" : 20
+          }
+        },
+        "ClientId" : "-L8qoShiM94AyUyh9EjH",
+        "Sequence" : 1
+      }, {
+        "AddressId" : "-L8rAkRH-vndmpyvuQQj",
+        "AppServices" : {
+          "-L9L73rR9s4MGUaHgrSl" : {
+            "AppServiceType" : "CUT",
+            "Frequency" : "Bi-Weekly",
+            "Price" : 20
+          }
+        },
+        "ClientId" : "-L8qoShiM94AyUyh9EjI",
+        "Sequence" : 2
+      }, {
+        "AddressId" : "-L8rAkRIWHx_0tNro1rV",
+        "AppServices" : {
+          "-L9L78m3L5qaj9dCQsYH" : {
+            "AppServiceType" : "CUT",
+            "Frequency" : "Monthly",
+            "Price" : 20
+          },
+          "-L9L7ByVxGLPExwDCQcw" : {
+            "AppServiceType" : "WEED",
+            "Frequency" : "Bi-Monthly",
+            "Price" : 30
+          }
+        },
+        "ClientId" : "-L8qoShiM94AyUyh9EjJ",
+        "Sequence" : 3
+      }, {
+        "AddressId" : "-L8rAkRIWHx_0tNro1rW",
+        "AppServices" : {
+          "-L9TBE2vpPmW8gzHQ7Lh" : {
+            "AppServiceType" : "CUT",
+            "Frequency" : "WEEK",
+            "Price" : 30
+          }
+        },
+        "ClientId" : "-L8qoShjmzSCxTkNXlMU",
+        "Sequence" : 4
+      } ],
+      "Workers" : {
+        "-L8q8PuMk_jBd1V8IQCJ" : "atlaswing",
+        "-L8q8PuQ0oZ7YMytvA_e" : "jbrettler",
+        "-L8q8jNKlVYEXHDpQDMs" : "brian"
+      },
+      "createdate" : 1522433851770,
+      "creator" : "jbrettler"
+    },
+    "-L8wcmTBRAVYxU5kTOYq" : {
+      "Name" : "Brian's Route",
+      "Nodes" : [ {
+        "AddressId" : "-L8rAkRB-g_NZz-rycEY",
+        "AppServices" : {
+          "-L9L7Oee1vGs2vISRmlD" : {
+            "AppServiceType" : "CUT",
+            "Frequency" : "Monthly",
+            "Price" : 30
+          }
+        },
+        "ClientId" : "-L8qoShdyMKoeUq_eQFj",
+        "Sequence" : 0
+      }, {
+        "AddressId" : "-L8rAkRGbW0oZgY5g0NB",
+        "AppServices" : {
+          "-L9L7WF3og1N6RbdxDc4" : {
+            "AppServiceType" : "WEED",
+            "Frequency" : "Bi-Monthly",
+            "Price" : 30
+          }
+        },
+        "ClientId" : "-L8qoShiM94AyUyh9EjH",
+        "Sequence" : 1
+      } ],
+      "Workers" : {
+        "-L8q8PuMk_jBd1V8IQCJ" : "atlaswing"
+      },
+      "createdate" : 1522509117421,
+      "creator" : "brian"
+    }
+  },
+  "AppServices" : {
+    "-L9LUZvien6rTayg8s72" : {
+      "AppServiceDescription" : "Cut Grass",
+      "AppServiceType" : "CUT",
+      "DefaultPrice" : 20
+    },
+    "-L9LUZvkzqGwxMYM3oqF" : {
+      "AppServiceDescription" : "Apply Fertilizer",
+      "AppServiceType" : "FERT",
+      "DefaultPrice" : 30
+    },
+    "-L9LUZvlngI6NaiGzmem" : {
+      "AppServiceDescription" : "Remove weed",
+      "AppServiceType" : "WEED",
+      "DefaultPrice" : 40
+    },
+    "-L9LUg09cZF5GgLUbSK5" : {
+      "AppServiceDescription" : "Fell a tree",
+      "AppServiceType" : "CUTTREE",
+      "DefaultPrice" : 60
+    }
+  },
+  "AppUserRoutes" : {
+    "-L8xjgwum473qEOzdYQq" : {
+      "AppRoutes" : {
+        "-L8s7SOaiX7EMVv5adwI" : "Route1"
+      },
+      "AppUserId" : "-L8q8PuQ0oZ7YMytvA_e"
+    },
+    "-L8xjgwum473qEOzdYQr" : {
+      "AppRoutes" : {
+        "-L8s7SOaiX7EMVv5adwI" : "Route1",
+        "-L8wcmTBRAVYxU5kTOYq" : "Brian's Route"
+      },
+      "AppUserId" : "-L8q8PuMk_jBd1V8IQCJ"
+    },
+    "-L8xjgwvuvE3xK-fZ1j_" : {
+      "AppRoutes" : {
+        "-L8s7SOaiX7EMVv5adwI" : "Route1"
+      },
+      "AppUserId" : "-L8q8jNKlVYEXHDpQDMs"
+    }
+  },
+  "AppUsers" : {
+    "-L8q8PuMk_jBd1V8IQCJ" : {
+      "Email" : "atlaswingpasaway@hotmail.com",
+      "FirstName" : "Radney",
+      "LastName" : "Alquiza",
+      "Password" : "11",
+      "Role" : "Employee",
+      "UserName" : "aa"
+    },
+    "-L8q8PuQ0oZ7YMytvA_e" : {
+      "Email" : "jacobbrettler@gmail.com",
+      "FirstName" : "Jacob",
+      "LastName" : "Brettler",
+      "Password" : "qwe123123",
+      "UserName" : "jbrettler"
+    },
+    "-L8q8jNF1KZUk7OtbsX7" : {
+      "Email" : "seth@gmail.com",
+      "FirstName" : "Seth",
+      "LastName" : "R",
+      "Password" : "qwe123123",
+      "Role" : "Admin",
+      "UserName" : "seth"
+    },
+    "-L8q8jNKlVYEXHDpQDMs" : {
+      "Email" : "brian@gmail.com",
+      "FirstName" : "Brian",
+      "LastName" : "G",
+      "Password" : "qwe123123",
+      "Role" : "Admin",
+      "UserName" : "brian"
+    }
+  }
+}

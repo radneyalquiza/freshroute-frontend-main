@@ -56,6 +56,8 @@ export default {
 	},
 	mounted: function() {
 
+		console.log('sasasaaas');
+
 		// GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
 
 		let instance = this;
@@ -74,17 +76,27 @@ export default {
 			// GoogleMapsLoader.KEY = instance.key;
 			// GoogleMapsLoader.load(function(google) {
 			gmaploaded.then(() => {
+
+console.log('qqqq')
+				cordova.plugins.notification.local.schedule({
+					title: 'FreshRoute Notification',
+					text: 'draw map bro.',
+					foreground: true,
+					priority: 1
+				});
+
 				instance.bounds = new google.maps.LatLngBounds();
 				instance.element = document.getElementById(instance.id);
-				let options = null;
+				let options = {
+					zoom: instance.zoom,
+					disableDefaultUI: true
+				};
 
-				if(instance.center) {
-					options = {
-						center: new google.maps.LatLng(instance.center.lat, instance.center.lng),
-						zoom: instance.zoom,
-						disableDefaultUI: true
-					};
-				}
+				if(instance.center)
+					options.center = new google.maps.LatLng(instance.center.lat, instance.center.lng);
+				else
+					options.center= new google.maps.LatLng(43.653908, -79.384293);
+
 				instance.map = new google.maps.Map(instance.element, options);
 			});
 		},

@@ -92,7 +92,14 @@
         </f7-block>
 
         <f7-block>
-            <f7-block-title>Service Info (for now 1 service per Address)</f7-block-title>
+            <f7-block-title>Service Info</f7-block-title>
+
+			<div v-for="aras in ras">
+
+
+			</div>
+
+
             <div style="border:1px solid #e0e0e0; width:85%; text-align: center; margin:auto; padding: 8px; border-radius:3px;" v-for="serv in services" :key="serv.$index">
                 <div style="display: flex">
                     <div class="servicetype" style="width:50%">
@@ -199,7 +206,8 @@ export default {
         ClientId: null,
         AddressId: null
       },
-      services: [],
+	  services: [],
+      ras: [],
       frequencies: [
         {
           FrequencyType: "ONE",
@@ -224,7 +232,7 @@ export default {
         {
           FrequencyType: "BIANNUM",
           FrequencyDescription: "Bi-Annually"
-        }
+		}
       ]
     };
   },
@@ -249,21 +257,37 @@ export default {
 		.once("value", function(data) {
 			instance.appservices = data.val();
 			instance.services.push({
-			AppServiceType: "",
-			Frequency: "",
-			Price: 0.00
+				AppServiceType: "",
+				Frequency: "",
+				Price: 0.00
 			});
 		});
 
 		if(instance.appclientid) {
 
-			instance.$firebase.database().ref("AppClients/"+ instance.appclientid)
-			.once("value", function(data) {
-				let c = data.val();
-				instance.client = c;
-				instance.client.AppClientId = instance.appclientid;
+			// instance.$firebase.database().ref("AppClients/"+ instance.appclientid)
+			// .once("value", function(data) {
+			// 	let c = data.val();
+			// 	instance.client = c;
+			// 	instance.client.AppClientId = instance.appclientid;
 				
-			})
+			// });
+
+			instance.client = instance.activeClient;
+			instance.address = instance.activeClient.AppAddresses &&
+							   instance.activeClient.AppAddresses.length ? 
+							   instance.activeClient.AppAddresses[0] : null;
+			if(instance.address && instance.address.AppAddressId) {
+				instance.$firebase.database().ref("AppRouteAddressService")
+				.orderByChild("AppAddressId")
+				.equalTo(instance.address.AppAddressId)
+				.once("value", function(data) {
+					let ras = data.val();
+					console.log(ras, data.ref);
+
+				})
+
+			}
 
 		}
 		
@@ -271,12 +295,15 @@ export default {
   },
   methods: {
     ...mapActions({
-      addNodeToRoute: "Route/addNodeToRoute"
+	  addNodeToRoute: "Route/addNodeToRoute",
+	  deselectClient: "Model/deselectClient"
     }),
     closeAddRouteNode: function() {
-      let instance = this;
+	  let instance = this;
+	  instance.deselectClient();
       instance.$f7.router.back();
-    },
+	},
+	// only use this when saving a record
     geocodeAddress: function() {
       let instance = this;
 
@@ -452,7 +479,8 @@ export default {
     ...mapGetters({
       routename: "Route/RouteName",
       route: "Route/Route",
-      routeid: "Route/RouteId"
+	  routeid: "Route/RouteId",
+	  activeClient: "Model/ActiveClient"
 	}),
 	price: function() {
 		let instance = this;
