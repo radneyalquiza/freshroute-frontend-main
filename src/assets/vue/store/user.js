@@ -8,7 +8,8 @@ const STATE = {
     UserModel: null,
     currentAddress: null,
     GPSGranted: false,
-    selectedAppRouteId: null
+	selectedAppRouteId: null,
+	MyRoutes: null
 };
 
 const GETTERS = {
@@ -83,40 +84,41 @@ const ACTIONS = {
 
         commit("setLoading", true);
 
-        // commit("setLoading", false);
-        // commit("setCurrentLocation", {
-        //     lat: 44.19271,
-        //     lng: -79.14355
-        // });
+        commit("setLoading", false);
+        commit("setCurrentLocation", {
+            lat: 44.19271,
+            lng: -79.14355
+        });
 
-        // setTimeout(function() {
-        //     if (typeof onsuccess == "function") onsuccess();
-        // }, 1);
+		if(handlers)
+			setTimeout(function() {
+				if (typeof handlers.success == "function") handlers.success();
+			}, 1);
 
-        if(device.platform !== "browser") {
-            checkAvailability(_getGPS, handlers.fail);
-        }
-        else
-            _getGPS();
+        // if(device.platform !== "browser") {
+        //     checkAvailability(_getGPS, handlers.fail);
+        // }
+        // else
+        //     _getGPS();
 
 
-        function _getGPS() {
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                if (pos && pos.coords) {
-                    commit('setLoading', false);
-                    commit("setCurrentLocation", {
-                        lat: pos.coords.latitude,
-                        lng: pos.coords.longitude
-                    });
-                    commit('setGPSGranted', true);
-                    if (typeof handlers.success == "function") handlers.success();
-                }
-            }, function(err) {
-                commit('setLoading', false);
-                if (typeof handlers.fail == "function")
-                    handlers.fail(err);
-            })
-        }
+        // function _getGPS() {
+        //     navigator.geolocation.getCurrentPosition(function(pos) {
+        //         if (pos && pos.coords) {
+        //             commit('setLoading', false);
+        //             commit("setCurrentLocation", {
+        //                 lat: pos.coords.latitude,
+        //                 lng: pos.coords.longitude
+        //             });
+        //             commit('setGPSGranted', true);
+        //             if (handlers && typeof handlers.success == "function") handlers.success();
+        //         }
+        //     }, function(err) {
+        //         commit('setLoading', false);
+        //         if (handlers && typeof handlers.fail == "function")
+        //             handlers.fail(err);
+        //     })
+        // }
 
         // navigator.geolocation.watchPosition(
         //     function(pos) {
@@ -153,23 +155,45 @@ const ACTIONS = {
                 }
             }
         });
-    },
-
+	},
+	
     findUser({ commit, getters }, payload) {
         return new Promise(function(resolve, reject) {
             if (typeof payload == 'string') {
-                let v = firebase.database().ref("AppUsers/" + payload)
-                .once("value", function(a) {
-                    console.log(a.val());
-                });
+				let v = firebase.database()
+					.ref("AppUsers/" + payload)
+					.once("value", function(a) {
+						let cs = a.val();
+						let key = a.key;
+						if(cs) {
+							console.log(cs)
+							commit("setUserModel", Object.assign({}, cs, { id: key }));
+							resolve({ id: key, user: cs });
+							return;
+						}
+						reject("No user found.");
+					});
             }
             else if (typeof payload == "object") {
+              console.log(payload)
                 let v = firebase.database().ref("AppUsers")
-                .orderByChild("username")
-                .limitToFirst(1)
-                .once("value", function(b) {
-                    console.log(b.val());
-                });
+					.orderByChild("UserName")
+					.equalTo(payload.username)
+					.limitToFirst(1)
+					.once("value", function(b) {
+						let cs = b.val();
+						console.log(b.val());
+						if(cs) {
+							for(var key in cs) {
+								if(cs[key].Password == payload.password) {
+									commit("setUserModel", Object.assign({}, cs[key], { id: key }));
+									resolve({ id: key, user: cs[key] });
+									return;
+								}
+							}
+						}
+						reject("No user found.")
+					});
             }
 
 
@@ -207,8 +231,23 @@ const ACTIONS = {
             //     });
         });
 
-    },
+	},
+	
+    getRoutesOfUser({ commit }, payload) {
 
+        firebase.database().ref('AppUserRoutes')
+			.orderByChild('AppUserId')
+			.equalTo(payload)
+			.once("value", function(data) {
+				let r = data.val();
+				let routes = [];
+				for (var x in r)
+					for (var p in r[x].AppRoutes)
+						routes.push({ RouteName: r[x].AppRoutes[p], AppRouteId: p });
+				commit('setUserRoutes', routes);
+			});
+	},
+	
     setSelectedAppRouteId({ commit }, id) {
         commit('setSelectedAppRouteId', id);
     }

@@ -225,8 +225,8 @@ export default {
 						<div class="cont">
 
 							<div class="card-header">
-								{{ location.FirstName + " " + location.LastName }}
-								<span class='address'>{{ location.Street + " " + location.City + " " + location.PostalCode }}</span>
+								{{ location.AppClient.FirstName + " " + location.AppClient.LastName }}
+								<span class='address'>{{ location.AppAddress.Street + " " + location.AppAddress.City + " " + location.AppAddress.PostalCode }}</span>
 							</div>
 							<div class="card-content ">
 

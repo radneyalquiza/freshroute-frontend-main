@@ -64,21 +64,7 @@ const ACTIONS = {
                 if(cs) {
                     for(var x in cs) {
                         cs[x].AppClientId = x;
-                        await firebase.database()
-                            .ref("AppAddresses")
-                            .orderByChild("AppClientId")
-                            .limitToFirst(1)
-                            .once("value", function(address) {
-                                let a = address.val();
-                                cs[x].AppAddresses = [];
-                                for(var p in a) {
-                                    a[p].AppAddressId = p;
-                                    cs[x].AppAddresses.push(a[p]);
-                                }
-                                clients.push(cs[x]);
-                                console.log('dddd', clients);
-
-                            })
+                        clients.push(cs[x]);
                     }
                 }
 
@@ -89,6 +75,21 @@ const ACTIONS = {
             });
         return promise;
 
+    },
+
+    getClient({ commit }, id) {
+        firebase.database()
+            .ref("AppClients/"+id)
+            // get array of clients
+            .on("value", function(data) {
+                let cs = data.val();
+                if(cs) {
+                    for(var x in cs) {
+                        commit("SET_ACTIVE_CLIENT", cs[x]);
+                    }
+                }
+
+            });
     },
 
     selectClient({ commit }, appclientid) {

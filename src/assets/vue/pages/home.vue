@@ -52,7 +52,7 @@
         </f7-toolbar>
 
         <f7-actions class='routes-actions' :opened="gotroutes" @actions:closed="gotroutes=false">
-			<f7-actions-group>
+            <f7-actions-group>
 				<f7-actions-label>Select a Route</f7-actions-label>
 				<f7-actions-button
 				    v-for='route in UserRoutes'

@@ -62,9 +62,9 @@
 						<div class="item-inner">
 							<div class="item-title">Street Address</div>
 							<div class="item-input-wrap">
-								<f7-input type="text" :value="address.Street"
-    				        		@input="address.Street = $event.target.value" placeholder="" clear-button></f7-input>
-								<span class="input-clear-button" @click="address.Street = ''"></span>
+								<f7-input type="text" :value="client.AppAddress.Street"
+    				        		@input="client.AppAddress.Street = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="client.AppAddress.Street = ''"></span>
 							</div>
 						</div>
 					</li>
@@ -72,18 +72,18 @@
 						<div class="item-inner">
 							<div class="item-title">City</div>
 							<div class="item-input-wrap">
-								<f7-input type="text" :value="address.City"
-    			        			@input="address.City = $event.target.value" placeholder="" clear-button></f7-input>
-								<span class="input-clear-button" @click="address.City = ''"></span>
+								<f7-input type="text" :value="client.AppAddress.City"
+    			        			@input="client.AppAddress.City = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="client.AppAddress.City = ''"></span>
 							</div>
 						</div>
 					</li>
-					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': address.PostalCode }">
+					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': client.AppAddress.PostalCode }">
 						<div class="item-inner">
 							<div class="item-title" >Postal Code</div>
 							<div class="item-input-wrap">
-								<masked-input :class="{ 'input-with-value': address.PostalCode }" v-model="address.PostalCode" mask="A#A #A#" placeholder="" type="tel" />
-								<span class="input-clear-button" @click="address.PostalCode = ''"></span>
+								<masked-input :class="{ 'input-with-value': client.AppAddress.PostalCode }" v-model="client.AppAddress.PostalCode" mask="A#A #A#" placeholder="" type="tel" />
+								<span class="input-clear-button" @click="client.AppAddress.PostalCode = ''"></span>
 							</div>
 						</div>
 					</li>
@@ -273,21 +273,22 @@ export default {
 				
 			// });
 
-			instance.client = instance.activeClient;
-			instance.address = instance.activeClient.AppAddresses &&
-							   instance.activeClient.AppAddresses.length ? 
-							   instance.activeClient.AppAddresses[0] : null;
-			if(instance.address && instance.address.AppAddressId) {
-				instance.$firebase.database().ref("AppRouteAddressService")
-				.orderByChild("AppAddressId")
-				.equalTo(instance.address.AppAddressId)
-				.once("value", function(data) {
-					let ras = data.val();
-					console.log(ras, data.ref);
-
-				})
-
+			if(!instance.activeClient) {
+				instance.getClient(instance.appclientid);
 			}
+
+			instance.client = instance.activeClient;
+			// if(instance.client.AppAddresses) {
+			// 	instance.$firebase.database().ref("AppRouteAddressService")
+			// 	.orderByChild("AppAddressId")
+			// 	.equalTo(instance.address.AppAddressId)
+			// 	.once("value", function(data) {
+			// 		let ras = data.val();
+			// 		console.log(ras, data.ref);
+
+			// 	})
+
+			// }
 
 		}
 		
@@ -296,7 +297,8 @@ export default {
   methods: {
     ...mapActions({
 	  addNodeToRoute: "Route/addNodeToRoute",
-	  deselectClient: "Model/deselectClient"
+	  deselectClient: "Model/deselectClient",
+	  getClient: "Model/getClient"
     }),
     closeAddRouteNode: function() {
 	  let instance = this;

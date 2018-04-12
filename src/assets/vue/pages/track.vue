@@ -73,20 +73,20 @@
 					</div>
 					<div class="timeline-item-content">
 
-						<div v-if="!address.lat" class="card inc">
+						<div v-if="!address.AppAddress.lat" class="card inc">
 							<div class="card-header"></div>
 							<div class="card-content"><div style="width: 100%; text-align: center">LOADING...</div></div>
 							<div class="card-footer footer play"></div>
 						</div>
 
-						<div v-if="address.lat" class="card" v-bind:class="{ active: address.Status == STATUS.ACTIVE && tracking != TRACK.DONE,
+						<div v-if="address.AppAddress.lat" class="card" v-bind:class="{ active: address.Status == STATUS.ACTIVE && tracking != TRACK.DONE,
 														pulse: address.Status == STATUS.ACTIVE && tracking != TRACK.DONE,
 														skipped: address.Skipped == true,
 														inc: address.Status == STATUS.INCOMPLETE,
 														done: address.Status == STATUS.COMPLETE || tracking == TRACK.DONE }">
 							<div class="card-header">
-								{{ address.FirstName + " " + address.LastName }}
-								<a class="contact" v-bind:href="phone(address.Phone)">({{ address.Phone }})</a>
+								{{ address.AppClient.FirstName + " " + address.AppClient.LastName }}
+								<a class="contact" v-bind:href="phone(address.AppClient.Phone)">({{ address.AppClient.Phone }})</a>
 								<!-- <a class="button skip" v-if="address.Status != STATUS.COMPLETE" @click="skipNode($event, address)"><f7-icon color="blue" f7="fastforward_fill" size=20></f7-icon></a> -->
 								<!-- <a class="button complete" v-if="address.Status == STATUS.COMPLETE"><f7-icon color="blue" fa="check" size=20></f7-icon></a> -->
 								
@@ -100,7 +100,7 @@
 										{{address}}
 									</div>
 								</f7-button> -->
-								<p class="address-text">{{ address.Street + " " + address.City + " " + address.PostalCode }}</p>
+								<p class="address-text">{{ address.AppAddress.Street + " " + address.AppAddress.City + " " + address.AppAddress.PostalCode }}</p>
 								<div class="service" v-if="address.AppServices">
 									<div v-for="appservice in address.AppServices" v-bind:key="appservice.index">
 										<div class="servicechild type" style="width:15%"><span class="label">Type</span><span class="cont type ">{{ appservice.AppServiceType }}</span></div>

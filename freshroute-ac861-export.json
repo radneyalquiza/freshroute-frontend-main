@@ -1,72 +1,85 @@
 {
-  "AppAddresses" : {
-    "-L8rAkRB-g_NZz-rycEY" : {
-      "AppClientId" : "-L8qoShdyMKoeUq_eQFj",
-      "City" : "Toronto",
-      "PostalCode" : "L4J 5G3",
-      "Street" : "131 Joanna Crescent",
-      "lat" : 43.8038666,
-      "lng" : -79.42593219999999
-    },
-    "-L8rAkRGbW0oZgY5g0NB" : {
-      "AppClientId" : "-L8qoShiM94AyUyh9EjH",
-      "City" : "Toronto",
-      "PostalCode" : "L4J 5E9",
-      "Street" : "66 Joanna Cr",
-      "lat" : 43.80478666,
-      "lng" : -79.4267437
-    },
-    "-L8rAkRH-vndmpyvuQQj" : {
-      "AppClientId" : "-L8qoShiM94AyUyh9EjI",
-      "City" : "Toronto",
-      "PostalCode" : "M2M 2W8",
-      "Street" : "39 Arran Crescent",
-      "lat" : 43.8160999,
-      "lng" : -79.4274989
-    },
-    "-L8rAkRIWHx_0tNro1rV" : {
-      "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
-      "City" : "Toronto",
-      "PostalCode" : "L3T 1E9",
-      "Street" : "124 Woodward Avenue",
-      "lat" : 43.8025869,
-      "lng" : -79.4117149
-    },
-    "-L8rAkRIWHx_0tNro1rW" : {
-      "AppClientId" : "-L8qoShjmzSCxTkNXlMU",
-      "City" : "Toronto",
-      "PostalCode" : "L3T",
-      "Street" : "7560 Bayview Ave",
-      "lat" : 43.8165433,
-      "lng" : -79.4030897
-    }
-  },
   "AppClients" : {
     "-L8qoShdyMKoeUq_eQFj" : {
+      "AppAddresses" : {
+        "-L8rAkRB-g_NZz-rycEY" : {
+          "AppAddressId" : "-L8rAkRB-g_NZz-rycEY",
+          "AppClientId" : "-L8qoShdyMKoeUq_eQFj",
+          "City" : "Toronto",
+          "PostalCode" : "L4J 5G3",
+          "Street" : "131 Joanna Crescent",
+          "lat" : 43.8038666,
+          "lng" : -79.42593219999999
+        }
+      },
       "Email" : "a@a.com",
       "FirstName" : "David",
       "LastName" : "Yu",
       "Phone" : "647-292-1759"
     },
     "-L8qoShiM94AyUyh9EjH" : {
+      "AppAddresses" : {
+        "-L8rAkRGbW0oZgY5g0NB" : {
+          "AppAddressId" : "-L8rAkRGbW0oZgY5g0NB",
+          "AppClientId" : "-L8qoShiM94AyUyh9EjH",
+          "City" : "Toronto",
+          "PostalCode" : "L4J 5E9",
+          "Street" : "66 Joanna Cr",
+          "lat" : 43.80478666,
+          "lng" : -79.4267437
+        }
+      },
       "Email" : "a@a.com",
       "FirstName" : "Jenny",
       "LastName" : "",
       "Phone" : "647-333-4444"
     },
     "-L8qoShiM94AyUyh9EjI" : {
+      "AppAddresses" : {
+        "-L8rAkRH-vndmpyvuQQj" : {
+          "AppAddressId" : "-L8rAkRH-vndmpyvuQQj",
+          "AppClientId" : "-L8qoShiM94AyUyh9EjI",
+          "City" : "Toronto",
+          "PostalCode" : "M2M 2W8",
+          "Street" : "39 Arran Crescent",
+          "lat" : 43.8160999,
+          "lng" : -79.4274989
+        }
+      },
       "Email" : "a@a.com",
       "FirstName" : "Michael",
       "LastName" : "Leung",
       "Phone" : "647-555-6666"
     },
     "-L8qoShiM94AyUyh9EjJ" : {
+      "AppAddresses" : {
+        "-L8rAkRIWHx_0tNro1rV" : {
+          "AppAddressId" : "-L8rAkRIWHx_0tNro1rV",
+          "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
+          "City" : "Toronto",
+          "PostalCode" : "L3T 1E9",
+          "Street" : "124 Woodward Avenue",
+          "lat" : 43.8025869,
+          "lng" : -79.4117149
+        }
+      },
       "Email" : "a@a.com",
       "FirstName" : "SK",
       "LastName" : "Ho",
       "Phone" : "647-111-2222"
     },
     "-L8qoShjmzSCxTkNXlMU" : {
+      "AppAddresses" : {
+        "-L8rAkRIWHx_0tNro1rW" : {
+          "AppAddressId" : "-L8rAkRIWHx_0tNro1rW",
+          "AppClientId" : "-L8qoShjmzSCxTkNXlMU",
+          "City" : "Toronto",
+          "PostalCode" : "L3T",
+          "Street" : "7560 Bayview Ave",
+          "lat" : 43.8165433,
+          "lng" : -79.4030897
+        }
+      },
       "Email" : "a@a.com",
       "FirstName" : "Dr. Abbas",
       "LastName" : "Azadian",
@@ -76,67 +89,129 @@
   "AppRoutes" : {
     "-L8s7SOaiX7EMVv5adwI" : {
       "Name" : "Route1",
-      "Nodes" : [ {
-        "AddressId" : "-L8rAkRB-g_NZz-rycEY",
-        "AppServices" : {
-          "-L9L6vZKAgHMv_xkwsNF" : {
-            "AppServiceType" : "CUT",
-            "Frequency" : "Bi-Weekly",
-            "Price" : 20
-          }
-        },
-        "ClientId" : "-L8qoShdyMKoeUq_eQFj",
-        "Sequence" : 0
-      }, {
-        "AddressId" : "-L8rAkRGbW0oZgY5g0NB",
-        "AppServices" : {
-          "-L9L71B-ndK3c8fVaspp" : {
-            "AppServiceType" : "CUT",
-            "Frequency" : "Bi-Weekly",
-            "Price" : 20
-          }
-        },
-        "ClientId" : "-L8qoShiM94AyUyh9EjH",
-        "Sequence" : 1
-      }, {
-        "AddressId" : "-L8rAkRH-vndmpyvuQQj",
-        "AppServices" : {
-          "-L9L73rR9s4MGUaHgrSl" : {
-            "AppServiceType" : "CUT",
-            "Frequency" : "Bi-Weekly",
-            "Price" : 20
-          }
-        },
-        "ClientId" : "-L8qoShiM94AyUyh9EjI",
-        "Sequence" : 2
-      }, {
-        "AddressId" : "-L8rAkRIWHx_0tNro1rV",
-        "AppServices" : {
-          "-L9L78m3L5qaj9dCQsYH" : {
-            "AppServiceType" : "CUT",
-            "Frequency" : "Monthly",
-            "Price" : 20
+      "Nodes" : {
+        "-L9t7DXlZtr_ddGRXDu-" : {
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
+            "City" : "Toronto",
+            "PostalCode" : "L3T 1E9",
+            "Street" : "124 Woodward Avenue",
+            "lat" : 43.8025869,
+            "lng" : -79.4117149
           },
-          "-L9L7ByVxGLPExwDCQcw" : {
-            "AppServiceType" : "WEED",
-            "Frequency" : "Bi-Monthly",
-            "Price" : 30
-          }
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "SK",
+            "LastName" : "Ho",
+            "Phone" : "647-111-2222"
+          },
+          "AppServices" : {
+            "-L9L6vZKAgHMv_xkwsNF" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "Bi-Weekly",
+              "Price" : 20
+            }
+          },
+          "Sequence" : 0
         },
-        "ClientId" : "-L8qoShiM94AyUyh9EjJ",
-        "Sequence" : 3
-      }, {
-        "AddressId" : "-L8rAkRIWHx_0tNro1rW",
-        "AppServices" : {
-          "-L9TBE2vpPmW8gzHQ7Lh" : {
-            "AppServiceType" : "CUT",
-            "Frequency" : "WEEK",
-            "Price" : 30
-          }
+        "-L9t7HPgyLmDx5oRFqWY" : {
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjH",
+            "City" : "Toronto",
+            "PostalCode" : "L4J 5E9",
+            "Street" : "66 Joanna Cr",
+            "lat" : 43.80478666,
+            "lng" : -79.4267437
+          },
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "Jenny",
+            "LastName" : "",
+            "Phone" : "647-333-4444"
+          },
+          "AppServices" : {
+            "-L9L71B-ndK3c8fVaspp" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "Bi-Weekly",
+              "Price" : 20
+            }
+          },
+          "Sequence" : 1
         },
-        "ClientId" : "-L8qoShjmzSCxTkNXlMU",
-        "Sequence" : 4
-      } ],
+        "-L9t7LTsgdwC6Lpqkogi" : {
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjI",
+            "City" : "Toronto",
+            "PostalCode" : "M2M 2W8",
+            "Street" : "39 Arran Crescent",
+            "lat" : 43.8160999,
+            "lng" : -79.4274989
+          },
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "Michael",
+            "LastName" : "Leung",
+            "Phone" : "647-555-6666"
+          },
+          "AppServices" : {
+            "-L9L73rR9s4MGUaHgrSl" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "Bi-Weekly",
+              "Price" : 20
+            }
+          },
+          "Sequence" : 2
+        },
+        "-L9t7NkwMFx2TJ1sLiCT" : {
+          "AddressId" : "-L8rAkRIWHx_0tNro1rV",
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
+            "City" : "Toronto",
+            "PostalCode" : "L3T 1E9",
+            "Street" : "124 Woodward Avenue",
+            "lat" : 43.8025869,
+            "lng" : -79.4117149
+          },
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "SK",
+            "LastName" : "Ho",
+            "Phone" : "647-111-2222"
+          },
+          "AppServices" : {
+            "-L9L78m3L5qaj9dCQsYH" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "Monthly",
+              "Price" : 20
+            }
+          },
+          "Sequence" : 3
+        },
+        "-L9t7Pq7dutH9UQ8bedb" : {
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
+            "City" : "Toronto",
+            "PostalCode" : "L3T 1E9",
+            "Street" : "124 Woodward Avenue",
+            "lat" : 43.8025869,
+            "lng" : -79.4117149
+          },
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "SK",
+            "LastName" : "Ho",
+            "Phone" : "647-111-2222"
+          },
+          "AppServices" : {
+            "-L9TBE2vpPmW8gzHQ7Lh" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "WEEK",
+              "Price" : 30
+            }
+          },
+          "Sequence" : 4
+        }
+      },
       "Workers" : {
         "-L8q8PuMk_jBd1V8IQCJ" : "atlaswing",
         "-L8q8PuQ0oZ7YMytvA_e" : "jbrettler",
@@ -147,29 +222,56 @@
     },
     "-L8wcmTBRAVYxU5kTOYq" : {
       "Name" : "Brian's Route",
-      "Nodes" : [ {
-        "AddressId" : "-L8rAkRB-g_NZz-rycEY",
-        "AppServices" : {
-          "-L9L7Oee1vGs2vISRmlD" : {
-            "AppServiceType" : "CUT",
-            "Frequency" : "Monthly",
-            "Price" : 30
-          }
+      "Nodes" : {
+        "-L9t7YPJEE7VwXCUqqLo" : {
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjJ",
+            "City" : "Toronto",
+            "PostalCode" : "L3T 1E9",
+            "Street" : "124 Woodward Avenue",
+            "lat" : 43.8025869,
+            "lng" : -79.4117149
+          },
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "SK",
+            "LastName" : "Ho",
+            "Phone" : "647-111-2222"
+          },
+          "AppService" : {
+            "-L9L6vZKAgHMv_xkwsNF" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "Bi-Weekly",
+              "Price" : 20
+            }
+          },
+          "Sequence" : 0
         },
-        "ClientId" : "-L8qoShdyMKoeUq_eQFj",
-        "Sequence" : 0
-      }, {
-        "AddressId" : "-L8rAkRGbW0oZgY5g0NB",
-        "AppServices" : {
-          "-L9L7WF3og1N6RbdxDc4" : {
-            "AppServiceType" : "WEED",
-            "Frequency" : "Bi-Monthly",
-            "Price" : 30
-          }
-        },
-        "ClientId" : "-L8qoShiM94AyUyh9EjH",
-        "Sequence" : 1
-      } ],
+        "-L9t7cwsrjCRlA5fstaW" : {
+          "AppAddress" : {
+            "AppClientId" : "-L8qoShiM94AyUyh9EjH",
+            "City" : "Toronto",
+            "PostalCode" : "L4J 5E9",
+            "Street" : "66 Joanna Cr",
+            "lat" : 43.80478666,
+            "lng" : -79.4267437
+          },
+          "AppClient" : {
+            "Email" : "a@a.com",
+            "FirstName" : "Jenny",
+            "LastName" : "",
+            "Phone" : "647-333-4444"
+          },
+          "AppServices" : {
+            "-L9L71B-ndK3c8fVaspp" : {
+              "AppServiceType" : "CUT",
+              "Frequency" : "Bi-Weekly",
+              "Price" : 20
+            }
+          },
+          "Sequence" : 1
+        }
+      },
       "Workers" : {
         "-L8q8PuMk_jBd1V8IQCJ" : "atlaswing"
       },
