@@ -99,6 +99,19 @@
             // // instance.useragent = navigator.userAgent;
             
 
+		let updateObject = {};
+
+		// updateObject["AppClients/"+appclientid+"/FirstName"] = instance.client.FirstName;
+		// updateObject["AppClients/"+appclientid+"/LastName"] = instance.client.LastName;
+		// updateObject["AppClients/"+appclientid+"/Email"] = instance.client.Email;
+		// updateObject["AppClients/"+appclientid+"/Phone"] = instance.client.Phone;
+
+		// updateObject["AppClients/-L8qoShdyMKoeUq_eQFj/AppAddresses/-L8rAkRB-g_NZz-rycEY/City"] = "Toronto";
+        // updateObject["AppClients/-L8qoShdyMKoeUq_eQFj/AppAddresses/-L8rAkRB-g_NZz-rycEY/PostalCode"] = "M2R 3J2";
+        // this.$firebase.database().ref().update(updateObject);
+
+
+
             // console.log('in home mounted')
             // var root = this.$root;
 

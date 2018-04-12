@@ -5,7 +5,7 @@
                 <f7-link :close-popup="true" @click="closeAddRouteNode()">Close</f7-link>
             </f7-nav-right>
         </f7-navbar>
-        <f7-block>
+        <f7-block v-if="client">
             <f7-block-title>Customer Info</f7-block-title>
 			<div class="list no-hairlines-md">
 				<ul>
@@ -52,19 +52,19 @@
 			</div>
         </f7-block>
 
-        <f7-block>
+        <f7-block v-if="client && client.AppAddresses" >
             <f7-block-title>Address Info</f7-block-title>
-          
-			<div class="list no-hairlines-md">
+
+			<div class="list no-hairlines-md" v-for="caddress in client.AppAddresses" :key="caddress.AppAddressId">
 
 				<ul>
 					<li class="item-content item-input">
 						<div class="item-inner">
 							<div class="item-title">Street Address</div>
 							<div class="item-input-wrap">
-								<f7-input type="text" :value="client.AppAddress.Street"
-    				        		@input="client.AppAddress.Street = $event.target.value" placeholder="" clear-button></f7-input>
-								<span class="input-clear-button" @click="client.AppAddress.Street = ''"></span>
+								<f7-input type="text" :value="caddress.Street"
+    				        		@input="caddress.Street = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="caddress.Street = ''"></span>
 							</div>
 						</div>
 					</li>
@@ -72,33 +72,64 @@
 						<div class="item-inner">
 							<div class="item-title">City</div>
 							<div class="item-input-wrap">
-								<f7-input type="text" :value="client.AppAddress.City"
-    			        			@input="client.AppAddress.City = $event.target.value" placeholder="" clear-button></f7-input>
-								<span class="input-clear-button" @click="client.AppAddress.City = ''"></span>
+								<f7-input type="text" :value="caddress.City"
+    			        			@input="caddress.City = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="caddress.City = ''"></span>
 							</div>
 						</div>
 					</li>
-					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': client.AppAddress.PostalCode }">
+					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': caddress.PostalCode }">
 						<div class="item-inner">
 							<div class="item-title" >Postal Code</div>
 							<div class="item-input-wrap">
-								<masked-input :class="{ 'input-with-value': client.AppAddress.PostalCode }" v-model="client.AppAddress.PostalCode" mask="A#A #A#" placeholder="" type="tel" />
-								<span class="input-clear-button" @click="client.AppAddress.PostalCode = ''"></span>
+								<masked-input :class="{ 'input-with-value': caddress.PostalCode }" v-model="caddress.PostalCode" mask="A#A #A#" placeholder="" type="tel" />
+								<span class="input-clear-button" @click="caddress.PostalCode = ''"></span>
 							</div>
 						</div>
 					</li>
 				</ul>
 			</div>
         </f7-block>
+		<f7-block v-else-if="!client.AppAddresses && address" >
+            <f7-block-title>Address Info</f7-block-title>
 
-        <f7-block>
-            <f7-block-title>Service Info</f7-block-title>
+			<div class="list no-hairlines-md">
 
-			<div v-for="aras in ras">
-
-
+				<ul>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Street Address</div>
+							<div class="item-input-wrap">
+								<f7-input type="text" :value="address.Street"
+    				        		@input="address.Street = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="address.Street = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">City</div>
+							<div class="item-input-wrap">
+								<f7-input type="text" :value="address.City"
+    			        			@input="address.City = $event.target.value" placeholder="" clear-button></f7-input>
+								<span class="input-clear-button" @click="address.City = ''"></span>
+							</div>
+						</div>
+					</li>
+					<li class="item-content item-input" v-bind:class="{ 'item-input-with-value': address.PostalCode }">
+						<div class="item-inner">
+							<div class="item-title" >Postal Code</div>
+							<div class="item-input-wrap">
+								<masked-input :class="{ 'input-with-value': address.PostalCode }" v-model="address.PostalCode" mask="A#A #A#" placeholder="" type="tel" />
+								<span class="input-clear-button" @click="address.PostalCode = ''"></span>
+							</div>
+						</div>
+					</li>
+				</ul>
 			</div>
-
+        </f7-block>
+        <f7-block v-if="services && services.length">
+            <f7-block-title>Service Info</f7-block-title>
 
             <div style="border:1px solid #e0e0e0; width:85%; text-align: center; margin:auto; padding: 8px; border-radius:3px;" v-for="serv in services" :key="serv.$index">
                 <div style="display: flex">
@@ -141,8 +172,11 @@
                 </div>
             </div>
         </f7-block>
+		<f7-block v-if="(!services || !services.length) && caller == 'track'">
+			<f7-button style="width:140px; margin:auto;" @click="addService()" big :fill=true raised color="blue">Add a Service</f7-button>
+		</f7-block>
 
-        <f7-button style="width:95%; margin:auto;" @click="collectAndSave()" big :fill=true raised color="blue">Save</f7-button>
+        <f7-button style="width:95%; margin:auto;" @click="collectAndSave()" big :fill=true raised color="blue">{{ caller=='editclients' ? 'Update' : 'Save' }}</f7-button>
 
         <f7-block></f7-block>
     </f7-page>
@@ -199,12 +233,13 @@ export default {
         FirstName: "",
         LastName: "",
         Phone: "",
-        Email: ""
+		Email: ""
       },
       routeNode: {
         Sequence: null,
-        ClientId: null,
-        AddressId: null
+        AppClient: null,
+		AppAddress: null,
+		AppServices: null
       },
 	  services: [],
       ras: [],
@@ -249,20 +284,6 @@ export default {
 				});
 			// });
 
-
-		// get the list of Services
-		instance.$firebase
-		.database()
-		.ref("AppServices")
-		.once("value", function(data) {
-			instance.appservices = data.val();
-			instance.services.push({
-				AppServiceType: "",
-				Frequency: "",
-				Price: 0.00
-			});
-		});
-
 		if(instance.appclientid) {
 
 			// instance.$firebase.database().ref("AppClients/"+ instance.appclientid)
@@ -277,11 +298,13 @@ export default {
 				instance.getClient(instance.appclientid);
 			}
 
-			instance.client = instance.activeClient;
+			instance.client = JSON.parse(JSON.stringify(instance.activeClient));
+			console.log("Sdsdss", instance.client);
+
 			// if(instance.client.AppAddresses) {
 			// 	instance.$firebase.database().ref("AppRouteAddressService")
-			// 	.orderByChild("AppAddressId")
-			// 	.equalTo(instance.address.AppAddressId)
+			// 	.orderByChild("AppAddressesId")
+			// 	.equalTo(instance.address.AppAddressesId)
 			// 	.once("value", function(data) {
 			// 		let ras = data.val();
 			// 		console.log(ras, data.ref);
@@ -291,7 +314,26 @@ export default {
 			// }
 
 		}
-		
+		else if(instance.caller == "clients") {
+			instance.addEmptyAddress();
+		}
+		else if (instance.caller == "track") {
+
+			instance.addEmptyAddress();
+
+			// get the list of Services
+			instance.$firebase
+			.database()
+			.ref("AppServices")
+			.once("value", function(data) {
+				instance.appservices = data.val();
+				instance.services.push({
+					AppServiceType: "",
+					Frequency: "",
+					Price: 0.00
+				});
+			});
+		}		
 		
   },
   methods: {
@@ -358,7 +400,17 @@ export default {
     },
     addService: function(service) {
       this.services.push(service);
-    },
+	},
+	addEmptyAddress: function() {
+		this.address = {
+			Street: "",
+			City: "",
+			PostalCode: "",
+			lat: null,
+			lng: null,
+			AppClientId: null
+		}
+	},
     updatePrice: function(serviceobj, evt) {
       serviceobj.Price = evt;
       this.$forceUpdate();
@@ -371,9 +423,10 @@ export default {
 	  instance.$f7.preloader.show();
 	  
       let gp = await instance.geocodeAddress();
-      let cp = await instance.saveClient();
+	  let cp = await instance.saveClient();
       let ap = await instance.saveAddress(cp, gp);
-      let rp = await instance.saveRouteWithNewNode(ap);
+	  let rp = await instance.saveRouteWithNewNode(ap);
+	  console.log('rp', rp)
 	  let rn = await instance.saveServices(rp);
 	  if(instance.caller == "track")
 	      xc = await instance.addNodeToLocalRoute(rn);
@@ -383,7 +436,8 @@ export default {
     },
 
     saveClient: function() {
-      let instance = this;
+	  let instance = this;
+	  
       // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
       return instance.$firebase
         .database()
@@ -396,39 +450,42 @@ export default {
       let instance = this;
       // let addresspush = await instance.$firebase.database().ref('AppAddresses').push(instance.address);
       instance.address.AppClientId = cp.key;
-      instance.client.AppClientId = cp.key;
+	  instance.client.AppClientId = cp.key;
+	  
+	  if(!gp) return;
+
       return instance.$firebase
         .database()
-        .ref("AppAddresses")
+        .ref("AppClients/"+instance.client.AppClientId+"/AppAddresses")
         .push(instance.address);
-      // instance.address.AppAddressId = addresspush.key;
+      // instance.address.AppAddressesId = addresspush.key;
     },
 
     saveRouteWithNewNode: function(ap) {
       let instance = this;
-      instance.address.AppAddressId = ap.key;
+      instance.address.AppAddressesId = ap.key;
       let routelength = instance.route.length;
 
       instance.routenode = {
-        ClientId: instance.client.AppClientId,
-        AddressId: instance.address.AppAddressId,
-        Sequence: routelength // the current length (zero index) + 1
-      };
+        AppClient: instance.client,
+        AppAddress: instance.address,
+        Sequence: routelength // the current zero index + 1
+	  };
+	  
+	  console.log('new node bro');
 
-      return (
-        instance.$firebase
+      return instance.$firebase
           .database()
           .ref("AppRoutes/" + instance.routeid + "/Nodes")
-          // create a new child using the custom id (integer index)
-          // and use .set() to create properties for the child
-          .child(instance.routenode.Sequence)
-          .set(instance.routenode)
-      );
+          .push(instance.routenode);
     },
 
     saveServices: function(rn) {
+
+		console.log(rn);
 	  let instance = this;
-	  
+	  let nodekey = rn.key;
+
 	  if(instance.services[0] && 
 		(!instance.services[0].AppServiceType ||
 		 !instance.services[0].Frequency ||
@@ -440,10 +497,10 @@ export default {
           "AppRoutes/" +
             instance.routeid +
             "/Nodes/" +
-            instance.routenode.Sequence +
+            nodekey +
             "/AppServices"
         )
-        .push(instance.services[0]);
+        .push(instance.services[0]); // only 1 service per address for now
     },
 
     frequencyDescription: function(val) {
@@ -455,26 +512,34 @@ export default {
     },
 
     addNodeToLocalRoute: function(np) {
-      let instance = this;
-      instance.$firebase
-        .database()
-        .ref(
-          "AppRoutes/" +
-            instance.routeid +
-            "/Nodes/" +
-            instance.routenode.Sequence +
-            "/AppServices"
-        )
-        .once("value", function(data) {
-          let s = data.val();
-          instance.routenode.AppServices = {};
-          for (var p in s) {
-            instance.routenode.AppServices[p] = s[p];
-            break;
-          }
+	  let instance = this;
 
-          instance.addNodeToRoute(instance.routenode);
-        });
+	  instance.routenode.AppServices = {};
+	  instance.routenode.AppServices[np.key] = instance.services[0];
+	  instance.addNodeToRoute(instance.routenode);
+
+
+    //   instance.$firebase
+    //     .database()
+    //     .ref(
+    //       "AppRoutes/" +
+    //         instance.routeid +
+    //         "/Nodes/" +
+    //         instance.routenode.Sequence +
+    //         "/AppServices"
+    //     )
+    //     .once("value", function(data) {
+	// 	  let s = data.val();
+	// 	  console.log("ssss", s);
+    //       instance.routenode.AppServices = {};
+    //       for (var p in s) {
+    //         instance.routenode.AppServices[p] = s[p];
+    //         break;
+	// 	  }
+	// 	  console.log("QQQQQQ", instance.routenode);
+
+    //       instance.addNodeToRoute(instance.routenode);
+    //     });
     }
   },
   computed: {

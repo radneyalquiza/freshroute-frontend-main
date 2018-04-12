@@ -651,30 +651,40 @@ const ACTIONS = {
 
         commit('ADD_NODE', payload);
 
-        firebase.database().ref('AppClients/' + payload.ClientId)
-            .once("value", function(data) {
-                let c = data.val();
-                commit('INIT_CLIENT_AS_LOCATION', {
-                    sequence: payload.Sequence,
-                    client: c
-                });
+        console.log("payload?", payload);
 
-            });
-        firebase.database().ref('AppAddresses/' + payload.AddressId)
-            .once("value", function(data) {
-                let a = data.val();
-                commit('INIT_ADDRESS_AS_LOCATION', {
-                    sequence: payload.Sequence,
-                    address: a
-                });
-                commit('UPDATE_ROUTE_MARKERS', {
-                    sequence: payload.Sequence,
-                    position: {
-                        lat: a.AppAddress.lat,
-                        lng: a.AppAddress.lng
-                    }
-                });
-            })
+        commit('UPDATE_ROUTE_MARKERS', {
+            sequence: payload.Sequence,
+            position: {
+                lat: payload.AppAddress.lat,
+                lng: payload.AppAddress.lng
+            }
+        });
+
+        // firebase.database().ref('AppClients/' + payload.ClientId)
+        //     .once("value", function(data) {
+        //         let c = data.val();
+        //         commit('INIT_CLIENT_AS_LOCATION', {
+        //             sequence: payload.Sequence,
+        //             client: c
+        //         });
+
+        //     });
+        // firebase.database().ref('AppAddresses/' + payload.AddressId)
+        //     .once("value", function(data) {
+        //         let a = data.val();
+        //         commit('INIT_ADDRESS_AS_LOCATION', {
+        //             sequence: payload.Sequence,
+        //             address: a
+        //         });
+        //         commit('UPDATE_ROUTE_MARKERS', {
+        //             sequence: payload.Sequence,
+        //             position: {
+        //                 lat: a.AppAddress.lat,
+        //                 lng: a.AppAddress.lng
+        //             }
+        //         });
+        //     })
     }
 }
 

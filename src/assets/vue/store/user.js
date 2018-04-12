@@ -84,41 +84,41 @@ const ACTIONS = {
 
         commit("setLoading", true);
 
-        commit("setLoading", false);
-        commit("setCurrentLocation", {
-            lat: 44.19271,
-            lng: -79.14355
-        });
+        // commit("setLoading", false);
+        // commit("setCurrentLocation", {
+        //     lat: 44.19271,
+        //     lng: -79.14355
+        // });
 
-		if(handlers)
-			setTimeout(function() {
-				if (typeof handlers.success == "function") handlers.success();
-			}, 1);
+		// if(handlers)
+		// 	setTimeout(function() {
+		// 		if (typeof handlers.success == "function") handlers.success();
+		// 	}, 1);
 
-        // if(device.platform !== "browser") {
-        //     checkAvailability(_getGPS, handlers.fail);
-        // }
-        // else
-        //     _getGPS();
+        if(device.platform !== "browser") {
+            checkAvailability(_getGPS, handlers.fail);
+        }
+        else
+            _getGPS();
 
 
-        // function _getGPS() {
-        //     navigator.geolocation.getCurrentPosition(function(pos) {
-        //         if (pos && pos.coords) {
-        //             commit('setLoading', false);
-        //             commit("setCurrentLocation", {
-        //                 lat: pos.coords.latitude,
-        //                 lng: pos.coords.longitude
-        //             });
-        //             commit('setGPSGranted', true);
-        //             if (handlers && typeof handlers.success == "function") handlers.success();
-        //         }
-        //     }, function(err) {
-        //         commit('setLoading', false);
-        //         if (handlers && typeof handlers.fail == "function")
-        //             handlers.fail(err);
-        //     })
-        // }
+        function _getGPS() {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                if (pos && pos.coords) {
+                    commit('setLoading', false);
+                    commit("setCurrentLocation", {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    });
+                    commit('setGPSGranted', true);
+                    if (handlers && typeof handlers.success == "function") handlers.success();
+                }
+            }, function(err) {
+                commit('setLoading', false);
+                if (handlers && typeof handlers.fail == "function")
+                    handlers.fail(err);
+            })
+        }
 
         // navigator.geolocation.watchPosition(
         //     function(pos) {

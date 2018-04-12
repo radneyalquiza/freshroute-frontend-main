@@ -69,6 +69,7 @@
 				<f7-block class='clientinfo'  v-if="activeclient">
 					<f7-block-title>Info</f7-block-title>
 					<f7-block class="infocontainer">
+						<div>Name: {{ activeclient.FirstName + " " + activeclient.LastName }}</div>
 						<div>Phone: <a v-bind:href="phone(activeclient.Phone)">{{ activeclient.Phone }}</a></div>
 						<div>Email: {{ activeclient.Email }}</div>
 					</f7-block>
@@ -162,6 +163,10 @@ export default {
     mounted() {
 		let instance = this;
 		instance.getClients();
+
+		$(window).on("popstate", function() {
+			instance.closeViewDetails();
+		})
 	},
 	methods: {
 		...mapActions({
@@ -234,7 +239,7 @@ export default {
 			let i = this;
 			setTimeout(function() {
 				i.$f7.sheet.close(".sheet-client-details", true);
-			}, 500);
+			}, 100);
 		}
 	},
     created() {
