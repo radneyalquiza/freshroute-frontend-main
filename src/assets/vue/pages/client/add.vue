@@ -348,24 +348,41 @@ export default {
       instance.$f7.router.back();
 	},
 	// only use this when saving a record
-    geocodeAddress: function() {
-      let instance = this;
-
-      // GoogleMapsLoader.KEY = gmapkey;
+    geocodeAddress: function(geocodeexistingaddress) {
+	  let instance = this;
+	  let street = null;
+	  let city = null;
+	  let postalcode = null;
+	  // GoogleMapsLoader.KEY = gmapkey;
+	  
+	  if(geocodeexistingaddress) {
+		  	for(var x in instance.client.AppAddresses)
+			{
+				street = instance.client.AppAddresses[x].Street;
+				city = instance.client.AppAddresses[x].City;
+				postalcode = instance.client.AppAddresses[x].PostalCode;
+				return;
+			}
+	  }
+	  else {
+		  street = instance.address.Street;
+		  city = instance.address.City;
+		  postalcode = instance.address.PostalCode;
+	  }
 
       return new Promise(function(resolve, reject) {
         // GoogleMapsLoader.load(function(google) {
 
-        let geocoder = new google.maps.Geocoder();
-
+		let geocoder = new google.maps.Geocoder();
+		
         geocoder.geocode(
           {
             address:
-              instance.address.Street +
+              street +
               " " +
-              instance.address.City +
+              sity +
               " " +
-              instance.address.PostalCode
+              postalCode
           },
           function(results, status) {
             instance.$f7.preloader.hide();
@@ -422,28 +439,44 @@ export default {
 
 	  instance.$f7.preloader.show();
 	  
-      let gp = await instance.geocodeAddress();
-	  let cp = await instance.saveClient();
-      let ap = await instance.saveAddress(cp, gp);
-	  let rp = await instance.saveRouteWithNewNode(ap);
-	  console.log('rp', rp)
-	  let rn = await instance.saveServices(rp);
-	  if(instance.caller == "track")
-	      xc = await instance.addNodeToLocalRoute(rn);
+	  if(instance.appclientid) {
+		  console.log('aaa');
+		let gp = await instance.geocodeAddress(true);
+		let cp = await instance.saveClient();
+		xc = await instance.saveRoute(cp);
+	  }
+	  else {
+		let gp = await instance.geocodeAddress();
+		let cp = await instance.saveClient();
+		let ap = await instance.saveAddress(cp, gp);
+		let rp = await instance.saveRouteWithNewNode(ap);
+		let rn = await instance.saveServices(rp);
+		if(instance.caller == "track")
+			xc = await instance.addNodeToLocalRoute(rn);
+	  }
 
       instance.$f7.preloader.hide();
       instance.$f7.router.back();
     },
 
     saveClient: function() {
-	  let instance = this;
+	  	let instance = this;
 	  
-      // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
-      return instance.$firebase
-        .database()
-        .ref("AppClients")
-        .push(instance.client);
-      // instance.client.AppClientId = clientpush.key;
+      	// let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
+	  	if(instance.appclientid) {
+			//   console.log('pppppp', instance.client); return;
+		  	return instance.$firebase
+				.database()
+				.ref("AppClients/"+instance.appclientid)
+				.update(instance.client);
+	  	}
+	  	else {
+			return instance.$firebase
+				.database()
+				.ref("AppClients")
+				.push(instance.client);
+			// instance.client.AppClientId = clientpush.key;
+	  	}
     },
 
     saveAddress: function(cp, gp) {
