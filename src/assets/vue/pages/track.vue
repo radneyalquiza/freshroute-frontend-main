@@ -1,7 +1,7 @@
 <template>
 	<f7-page class="track-container" style="">
 
-		<f7-navbar name="nav">
+		<f7-navbar class="track-nav" name="nav">
 			<f7-nav-left v-if="!locationopened">
 				<f7-link icon="icon-back" @click="back()"></f7-link>
 			</f7-nav-left>
@@ -806,6 +806,8 @@
 				// instance.getCurrentLocation();
 				instance.zoom = 14;
 
+				instance.$f7.navbar.show(".track-nav", true)
+
 				if(nodeData) {
 
 					if(nodeData.Status == instance.STATUS.COMPLETE) {
@@ -1002,6 +1004,7 @@
 			},
 			closeActiveLocation: function(e) {
 				this.__closeActiveLocation();
+				instance.$f7.navbar.show(".track-nav", true)
 			},
 			back: function() {
 				this.$f7.views.main.router.back();

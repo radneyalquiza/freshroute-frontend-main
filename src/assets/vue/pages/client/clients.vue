@@ -157,8 +157,8 @@ export default {
 	},
 	computed: mapGetters({
 		UserModel: 'User/UserModel',
-		clients: 'Model/Clients',
-		activeclient: 'Model/ActiveClient'
+		clients: 'ClientModel/Clients',
+		activeclient: 'ClientModel/ActiveClient'
 	}),
     mounted() {
 		let instance = this;
@@ -170,8 +170,8 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			getClientsAddresses: 'Model/getClientsAddresses',
-			__setActiveClient: 'Model/selectClient'
+			getClientsAddresses: 'ClientModel/getClientsAddresses',
+			__setActiveClient: 'ClientModel/selectClient'
 		}),
 		getClients: async function() {
 			let instance = this;

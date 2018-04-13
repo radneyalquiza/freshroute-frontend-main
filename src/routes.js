@@ -20,7 +20,7 @@ export default [{
             {
               path: "clientform/:caller",
               component: require("./assets/vue/pages/client/add.vue")
-          }
+            }
         ]
     },
     {
@@ -32,7 +32,9 @@ export default [{
             },
             {
                 path: "expenses/",
-                component: require("./assets/vue/pages/expenses.vue")
+                loginScreen: {
+                    component: require("./assets/vue/pages/expenses.vue")
+                }
             },
             {
                 path: "routesummary/",
@@ -50,7 +52,18 @@ export default [{
     },
     {
         path: "/route/",
-        component: require("./assets/vue/pages/route.vue")
+        component: require("./assets/vue/pages/route.vue"),
+        routes: [{
+                path: "viewroute/",
+                component: require("./assets/vue/pages/editroute.vue"),
+                routes: [
+                    {
+                        path: "add/",
+                        component: require("./assets/vue/pages/client/add.vue")
+                    }
+                ]
+            }
+        ]
     },
     {
         path: "/reports/",

@@ -129,7 +129,7 @@
         computed: {
             ...mapGetters({
                 CurrentLocation: 'User/currentLocation',
-                Model: 'Model/Model',
+                Model: 'ClientModel/Model',
                 UserModel: 'User/UserModel',
                 UserRoutes: 'User/Routes'
             })
@@ -138,7 +138,7 @@
 		methods: {
             ...mapActions({
                 __getCurrentLocation:	'User/getCurrentLocation',
-                // __populateModelData: 'Model/getModelData',
+                // __populateModelData: 'ClientModel/getModelData',
                 __findUser: 'User/findUser',
                 __getUserRoutes: 'User/getRoutesOfUser',
                 __selectRoute: 'User/setSelectedAppRouteId'

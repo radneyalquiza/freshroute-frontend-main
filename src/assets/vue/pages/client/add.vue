@@ -340,8 +340,8 @@ export default {
   methods: {
     ...mapActions({
 	  addNodeToRoute: "Route/addNodeToRoute",
-	  deselectClient: "Model/deselectClient",
-	  getClient: "Model/getClient",
+	  deselectClient: "ClientModel/deselectClient",
+	  getClient: "ClientModel/getClient",
 	  updateRouteAddress: "Route/updateRouteAddress"
     }),
     closeAddRouteNode: function() {
@@ -628,7 +628,7 @@ export default {
       routename: "Route/RouteName",
       route: "Route/Route",
 	  routeid: "Route/RouteId",
-	  activeClient: "Model/ActiveClient"
+	  activeClient: "ClientModel/ActiveClient"
 	}),
 	price: function() {
 		let instance = this;

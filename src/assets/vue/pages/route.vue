@@ -1,80 +1,48 @@
 <template>
-	<f7-page>
-		<f7-navbar title="Your Route" back-link=" " sliding>
-			<f7-nav-right>
-				<f7-link toggle-sortable="#sortable">{{sorting ? 'Done' : 'Sort'}}</f7-link>
-			</f7-nav-right>
+	<f7-page class="routelist">
+		<f7-navbar title="Route" back-link=" ">
 		</f7-navbar>
-		<f7-block style="text-align: center">
-			Swipe right for MAP, swipe left for OPTIONS.
-		</f7-block>
-		<f7-block>
-<!-- @sortable:open="onOpen" @sortable:close="onClose" -->
+		
+		<f7-list v-if="routes && routes.length > 0">
+			<f7-list-item 
+				 v-for="route in routes"
+				:title="route.Name "
+				:key="route.Name"
+				@click="openRoute(route.AppRouteId)"
+				style="font-weight: 600; font-size: 14px; color: #595959"
+				>
+				<!-- <f7-accordion-content style="font-weight: 500">
+					<f7-block class='clientinfo'>
+						<f7-block-title>Info</f7-block-title>
+						<f7-block class="infocontainer">
+							<div>Phone: <a v-bind:href="phone(client.Phone)">{{ client.Phone }}</a></div>
+							<div>Email: {{ client.Email }}</div>
+						</f7-block>
+					</f7-block>
+					<f7-block class='clientinfo'>
+						<f7-block-title>Addresses</f7-block-title>
+						<f7-block class="infocontainer" v-for="address in client.AppAddresses" :key="address.Id">
+							<div>Street: {{ address.Street }}</div>
+							<div>City: {{ address.City }}</div>
+							<div>Postal Code: {{ address.PostalCode }}</div>
+							<f7-chip class="service-badge"
+									@click="removeService"
+							        deleteable media-bg-color="green"
+									v-for="service in address.AppServices"
+									:key="service.Id"
+									v-bind:text="serviceType(service.AppServiceType, service.Frequency)">
+							</f7-chip>
+						</f7-block>
 
-			<!-- <f7-list sortable @sortable:sort="onSort"  >
-				<f7-list-item
-				    swipeout
-				    title="Item 1"
-					subtitle="Test"
-					text="Test123"
-					@swipeout:deleted="onSwipeoutDeleted">
-					<f7-swipeout-actions right>
-						<f7-swipeout-button delete>Delete</f7-swipeout-button>
-					</f7-swipeout-actions>
-					<f7-swipeout-actions left>
-						<f7-swipeout-button>More</f7-swipeout-button>
-					</f7-swipeout-actions>
-				</f7-list-item>
-				<f7-list-item swipeout title="Item 2" @swipeout:deleted="onSwipeoutDeleted">
-					<f7-swipeout-actions right>
-						<f7-swipeout-button delete>Delete</f7-swipeout-button>
-					</f7-swipeout-actions>
-					<f7-swipeout-actions left>
-						<f7-swipeout-button>More</f7-swipeout-button>
-					</f7-swipeout-actions>
-				</f7-list-item>
-			</f7-list> -->
 
-			<div class="list-block media-list sortable route">
-				<ul>
-					<li class="swipeout transitioning" v-for="address in route" :key="address.Sequence">
-						<div class="swipeout-content" style="">
-							<a href="#" class=" item-content">
-								<!-- <div class="item-media">
-									<f7-icon color="blue" icon="icon-bars" ></f7-icon>
-								</div> -->
-								<div class="item-inner">
-									<div class="item-title-row">
-										<div class="item-title">
-										{{ address.Street + " " + address.City + " " + address.PostalCode }}</div>
-										<!-- <div class="item-after">17:14</div> -->
-									</div>
-									<!-- <div class="item-subtitle">New messages from John Doe</div> -->
-									<div class="item-text">
-										{{ address.FirstName + " " + address.LastName }}
-                  					</div>
-								</div>
-							</a>
-						</div>
-						<div class="swipeout-actions-left">
-							<a href="#" class="bg-green swipeout-overswipe demo-reply" style="left: 0px; z-index: 2;">Map</a>
-							<!-- <a href="#" class="demo-forward bg-blue" style="z-index: 1;">Forward</a> -->
-						</div>
-						<div class="swipeout-actions-right">
-							<a href="#" class="demo-actions" style="">More</a>
-							<a href="#" class="demo-mark bg-orange" style="">Mark</a>
-							<a href="#" data-confirm-title="Confirm Delete" data-confirm="Delete this Address from your Route?" class="swipeout-delete swipeout-overswipe" style="left: 0px;">Delete</a>
-						</div>
-							<div class="sortable-handler"></div>
-					</li>
-				</ul>
-			</div>
+					</f7-block>
+				</f7-accordion-content> -->
 
-			<f7-fab style="transform:translateY(-50px);" color="orange" @click="doSomething">
-				<f7-icon icon="icon-plus" ></f7-icon>
-			</f7-fab>
+				
+			</f7-list-item>
+		</f7-list>
 
-		</f7-block>
+		
 	</f7-page>
 	
 </template>
@@ -84,113 +52,91 @@
 	margin-right: 5px;
 	font-size: 15px;
 }
-.route .item-content {
-	padding-left:5px;
-}
-.route .item-media {
-	min-width: 20px
-}
-.route .item-title {
-	font-size: 14px;
-	font-weight: 600;
-	color: #6b6b6b
-}
-/* .list-block .sortable-handler {
+.list-block .sortable-handler {
 	visibility: visible !important;
 	opacity: 1 !important;
-} */
+}
+.clientlist {
+	padding-bottom: 20px;
+}
+.clientinfo {
+	border: 1px solid #f4f4f4;
+	margin: auto;
+	margin-bottom: 5px !important;
+	width: 99%;
+	padding-left: 0;
+	padding-right: 0;
+}
+.clientinfo .block-title {
+	font-weight: 600;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.clientinfo .infocontainer {
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+}
+.service-badge {
+    font-size: 11px;
+    background-color: #61a848;
+    color: white;
+    border-radius: 13px;
+    /* border-bottom-left-radius: 3px; */
+    padding-left: 7px;
+	padding-right: 8px;
+	height: 28px;
+	line-height: 28px;
+}
+.service-badge .chip-delete {
+	color: white;
+}
+.accordion-item-opened .accordion-item-content {
+	box-shadow: 0px 0px 6px 0px inset;
+}
+.sheet-client-details .left {
+	padding: 5px;
+	padding-left: 15px;
+	font-weight: 600;
+}
 </style>
 
 <script>
 
-import _ from 'lodash'
-import Vue from 'vue'
+import { mapGetters, mapActions } from 'vuex'
 
-function swap(arr, x, y) {
-   var origin = arr[x]
-   arr.splice(x, 1, arr[y])
-   Vue.set(arr, y, origin)
-}
 export default {
-    name: "Route",
+    name: "Clients",
 	data: function () {
 		return {
 			sorting: false,
-			route: []
+			// clients: [],
 		}
 	},
-	mounted() {
-		let clients;
+	computed: mapGetters({
+		UserModel: 'User/UserModel',
+		routes: 'RouteModel/Routes',
+	}),
+    mounted() {
 		let instance = this;
-		let JobModel = instance.$root.CurrentUserJobModel;
-		
-		showPreloader();
+		instance.getRoutes();
 
-		setTimeout(function() {
-			hidePreloader();
-
-			// if(!sessionStorage)
-			if(JobModel && JobModel.RouteAddresses)
-				instance.route = _.orderBy(JobModel.RouteAddresses, ['Sequence'], ['asc']);
-
-			if(instance.$root && instance.$root.CurrentUserModel && instance.$root.CurrentUserModel.AppClients)
-				clients = instance.$root.CurrentUserModel.AppClients;
-			
-			let addresses = [];
-
-			for(var x=0; x<instance.route.length; x++) {
-
-				var id = instance.route[x].AppAddressId;
-
-				for(var y=0; y < clients.length; y++) {
-
-					var addrs = clients[y].AppAddresses;
-
-					if(addrs.length) {
-						var addr = _.find(addrs, function(obj) {
-							return obj.Id.toString() === id.toString();
-						})
-						if(addr) {
-							instance.route[x] = _.extend(instance.route[x], addr);
-							var client = JSON.parse(JSON.stringify(clients[y]));
-							instance.route[x] = _.extend(instance.route[x], client);
-							delete instance.route[x].AppAddresses;
-							break;
-						}
-					}
-				}
-			}
-
-			// manually set event handler for sort since framework7-vue doesn't support sort+list+swipe
-			Dom7(".route").on("sortable:sort", function(evt, idx) {
-
-				var from = idx.startIndex;
-				var to = idx.newIndex;
-
-				instance.route[from].Sequence = to;
-				instance.route[to].Sequence = from;
-
-				swap(instance.route, from, to)
-				var temp = JSON.parse(JSON.stringify(instance.route = _.orderBy(instance.route, ['Sequence'], ['asc'])));
-				instance.route = [];
-
-				setTimeout(function() { instance.route = temp; },1);
-			});
-			Dom7(".route").on("sortable:open", function(evt, idx) {
-				instance.sorting = true;
-			});
-			Dom7(".route").on("sortable:close", function(evt, idx) {
-				instance.sorting = false;
-			});
-		},1000);
+		$(window).on("popstate", function() {
+			instance.closeViewDetails();
+		})
 	},
 	methods: {
-		onSort: function (event, indexes) {
-			console.log('sort', arguments);
-		},
-		doSomething: function() {
-			this.$f7.alert("Will allow adding addresses of Clients.", "Next Release");
+		...mapActions({
+			getRoutes: 'RouteModel/getRoutes',
+			selectActiveRoute: 'RouteModel/selectActiveRoute'
+		}),
+		openRoute: function(approuteid) {
+			let instance = this;
+			instance.selectActiveRoute(approuteid);
+			setTimeout(function() {
+				instance.$f7.router.navigate({ url: "./viewroute/" })
+			});
 		}
+		
 	},
     created() {
 	}

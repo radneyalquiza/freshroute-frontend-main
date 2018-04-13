@@ -57,7 +57,8 @@ Vue.use(Vuex);
 // VueX Store Modules
 import routestore from "./assets/vue/store/route.js";
 import userstore from "./assets/vue/store/user.js";
-import modelstore from "./assets/vue/store/model.js";
+import clientmodelstore from "./assets/vue/store/client.model.js";
+import routemodelstore from "./assets/vue/store/route.model.js";
 
 import { gmapload, gmaploaded } from './assets/js/async-map-manager.js';
 
@@ -107,7 +108,8 @@ document.addEventListener("deviceready", function() {
         modules: {
             Route: routestore,
             User: userstore,
-            Model: modelstore
+            ClientModel: clientmodelstore,
+            RouteModel: routemodelstore
         },
         strict: true
     });

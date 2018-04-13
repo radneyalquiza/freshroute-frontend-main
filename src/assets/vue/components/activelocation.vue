@@ -1,6 +1,6 @@
 <style scoped>
 	.card.activelocation {
-		margin-top: 3px;
+		margin-top: -55px;
 		margin-left: 0;
 		margin-right: 0;
 		position: fixed;
@@ -378,6 +378,8 @@ export default {
 			// for demo purposes, distances are not validated in case employee is too far
 			instance.gpsvalidation = false;
 		}
+
+		instance.$f7.navbar.hide(".track-nav", true)
 
 		setTimeout(function() {
 			document.addEventListener('backbutton', function(e) {
