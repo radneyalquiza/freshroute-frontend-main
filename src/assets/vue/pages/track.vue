@@ -58,8 +58,8 @@
 		<transition name="swipeleft">
 			<div v-if="!locationopened && routevisible"
 			     v-hammer:swipe.left="hideRouteTimeline"
-				 style="margin-top: 50px; position: absolute; z-index: 999; padding-bottom: 45px;"
-				 v-bind:style="{ height: routeheight + 'px', maxHeight: routeheight + 'px', overflowY: 'auto' }"
+				 style="margin-top: 50px; position: absolute; z-index: 999; padding-bottom: 45px; overflow-y: auto"
+				 v-bind:style="{ maxHeight: routeheight + 'px' }"
 				 class="timeline route-timeline">
 
 				<!-- <stopwatch></stopwatch> -->
@@ -147,16 +147,17 @@
 					icon-size=28
 					:fill=true raised color="pink">
 			</f7-button>
-			<f7-button href="./routesummary/"
-					v-if="tracking == TRACK.DONE"
-					icon-f7="graph_round"
-					icon-size=28
-					:fill=true raised color="orange">
-			</f7-button>
 			<f7-button href="./expenses/"
 					icon-f7="money_dollar"
 					icon-size=28
 					:fill=true raised color="blue">
+			</f7-button>
+			<f7-button href="./routesummary/"
+					v-if="tracking == TRACK.DONE"
+					icon-f7="graph_round"
+					icon-size=28
+					:fill=true raised color="orange"
+					style="margin-left: 20px;">
 			</f7-button>
 		</div>
 

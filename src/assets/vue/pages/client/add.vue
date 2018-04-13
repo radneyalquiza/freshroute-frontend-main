@@ -210,6 +210,7 @@ import _ from "lodash";
 import MaskedInput from "vue-masked-input";
 
 const gmapkey = "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754";
+const firstAndOnly = v => v[Object.keys(v)[0]];
 
 export default {
   components: {
@@ -340,7 +341,8 @@ export default {
     ...mapActions({
 	  addNodeToRoute: "Route/addNodeToRoute",
 	  deselectClient: "Model/deselectClient",
-	  getClient: "Model/getClient"
+	  getClient: "Model/getClient",
+	  updateRouteAddress: "Route/updateRouteAddress"
     }),
     closeAddRouteNode: function() {
 	  let instance = this;
@@ -353,15 +355,16 @@ export default {
 	  let street = null;
 	  let city = null;
 	  let postalcode = null;
+	  let addressprop = null;
 	  // GoogleMapsLoader.KEY = gmapkey;
 	  
-	  if(geocodeexistingaddress) {
+	  if(geocodeexistingaddress == true) {
 		  	for(var x in instance.client.AppAddresses)
 			{
 				street = instance.client.AppAddresses[x].Street;
 				city = instance.client.AppAddresses[x].City;
 				postalcode = instance.client.AppAddresses[x].PostalCode;
-				return;
+				addressprop = x;
 			}
 	  }
 	  else {
@@ -374,21 +377,32 @@ export default {
         // GoogleMapsLoader.load(function(google) {
 
 		let geocoder = new google.maps.Geocoder();
+		console.log(street +
+              " " +
+              city +
+              " " +
+              postalcode);
 		
         geocoder.geocode(
           {
             address:
               street +
               " " +
-              sity +
+              city +
               " " +
-              postalCode
+              postalcode
           },
           function(results, status) {
             instance.$f7.preloader.hide();
             if (status == google.maps.GeocoderStatus.OK) {
-              instance.address.lat = results[0].geometry.location.lat();
-              instance.address.lng = results[0].geometry.location.lng();
+			  if(geocodeexistingaddress == true) {
+				instance.client.AppAddresses[x].lat = results[0].geometry.location.lat();
+				instance.client.AppAddresses[x].lng = results[0].geometry.location.lng();
+			  }
+			  else {
+				instance.address.lat = results[0].geometry.location.lat();
+				instance.address.lng = results[0].geometry.location.lng();
+			  }
               resolve(results);
             } else {
               instance.$f7.dialog.alert(
@@ -440,10 +454,10 @@ export default {
 	  instance.$f7.preloader.show();
 	  
 	  if(instance.appclientid) {
-		  console.log('aaa');
+		//   console.log('aaa');
 		let gp = await instance.geocodeAddress(true);
 		let cp = await instance.saveClient();
-		xc = await instance.saveRoute(cp);
+		xc = await instance.updateRouteNodeData(cp);
 	  }
 	  else {
 		let gp = await instance.geocodeAddress();
@@ -505,13 +519,47 @@ export default {
         Sequence: routelength // the current zero index + 1
 	  };
 	  
-	  console.log('new node bro');
-
       return instance.$firebase
           .database()
           .ref("AppRoutes/" + instance.routeid + "/Nodes")
           .push(instance.routenode);
-    },
+	},
+	
+	updateRouteNodeData: function(a) {
+		let instance = this;
+		let tempaddress = firstAndOnly(instance.client.AppAddresses);
+		let tempclient = {
+			FirstName: instance.client.FirstName,
+			LastName: instance.client.LastName,
+			Phone: instance.client.Phone,
+			Email: instance.client.Email,
+			AppClientId: instance.client.AppClientId
+		};
+		console.log(tempclient);
+		instance.$firebase.database()
+			.ref("AppRoutes")
+			.once("value", function(routesSnap) {
+				let routes = routesSnap.val();
+				for(var x in routes) {
+					console.log('route ', x);
+					let nodes = routes[x].Nodes;
+					for(var y in nodes) {
+						if(nodes[y].AppAddress.AppAddressId == tempaddress.AppAddressId) {
+							instance.$firebase.database()
+							.ref("AppRoutes/" + x + "/Nodes/" + y + "/AppAddress")
+							.update(tempaddress);
+							// break;
+						}
+						if(nodes[y].AppClient.AppClientId == tempclient.AppClientId) {
+							instance.$firebase.database()
+							.ref("AppRoutes/" + x + "/Nodes/" + y + "/AppClient")
+							.update(tempclient);
+							// break;
+						}
+					}
+				}
+			})
+	},
 
     saveServices: function(rn) {
 

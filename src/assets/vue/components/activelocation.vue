@@ -378,6 +378,12 @@ export default {
 			// for demo purposes, distances are not validated in case employee is too far
 			instance.gpsvalidation = false;
 		}
+
+		setTimeout(function() {
+			document.addEventListener('backbutton', function(e) {
+				e.preventDefault();
+			});
+		}, 200);
 	},
 
 	methods:
