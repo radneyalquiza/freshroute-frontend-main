@@ -18,8 +18,8 @@ export default [{
                 component: require("./assets/vue/pages/client/add.vue")
             },
             {
-              path: "clientform/:caller",
-              component: require("./assets/vue/pages/client/add.vue")
+                path: "clientform/:caller",
+                component: require("./assets/vue/pages/client/add.vue")
             }
         ]
     },
@@ -54,19 +54,17 @@ export default [{
         path: "/route/",
         component: require("./assets/vue/pages/route.vue"),
         routes: [{
-              path: "viewroute/",
-              component: require("./assets/vue/pages/editroute.vue"),
-              // routes: [
-              //     {
-              //         path: "add/",
-              //         component: require("./assets/vue/pages/client/add.vue")
-              //     }
-              // ]
+                path: "viewroute/",
+                component: require("./assets/vue/pages/editroute.vue"),
+                routes: [{
+                    path: "routelocations/",
+                    component: require("./assets/vue/pages/routelocations.vue")
+                }]
             },
             {
-              path: "addroute/",
-              component: require("./assets/vue/pages/addroute.vue")
-          }
+                path: "addroute/",
+                component: require("./assets/vue/pages/addroute.vue")
+            }
         ]
     },
     {
@@ -98,7 +96,7 @@ export default [{
         component: require("./assets/vue/pages/vuex.vue")
     },
     {
-      path: '(.*)',
-      component: require("./assets/vue/pages/404.vue")
+        path: '(.*)',
+        component: require("./assets/vue/pages/404.vue")
     }
 ];

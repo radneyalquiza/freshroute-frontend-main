@@ -52,7 +52,7 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 
 export default {
-    name: "Clients",
+    name: "Route",
 	data: function () {
 		return {
 			sorting: false,

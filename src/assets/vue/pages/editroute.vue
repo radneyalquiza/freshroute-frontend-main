@@ -106,7 +106,7 @@
 			</div>
 			<div class="nodes-item" style="display: flex; padding: 10px; border-bottom: 1px solid #e0e0e0">
 				<div class="" style="font-size: 13px; padding-top: 5px">This route has <strong>{{ route && route.Nodes ? Object.keys(route.Nodes).length : 0 }}</strong> locations.</div>
-				<f7-button style="width:170px; margin:auto;" @click="saveRoute()" small :fill=true raised color="green">Open Locations UI</f7-button>
+				<f7-button style="width:170px; margin:auto;" @click="openNodes()" small :fill=true raised color="green">Open Locations UI</f7-button>
 			</div>
 		</div>
 
@@ -180,7 +180,7 @@ import moment from 'moment'
 import _ from 'lodash'
 
 export default {
-    name: "Clients",
+    name: "EditRoute",
 	data: function () {
 		return {
 			sorting: false,
@@ -321,6 +321,10 @@ export default {
 			setTimeout(function() {
 				i.$f7.sheet.close(".sheet-emp-details", true);
 			}, 100);
+		},
+
+		openNodes: function() {
+			this.$f7.router.navigate({ url: "./routelocations/" });
 		}
 		
 	},
