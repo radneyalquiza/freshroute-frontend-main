@@ -122,8 +122,10 @@
             //     instance.$root.CurrentUserJobModel = root.JobModel;
             // }
 
+            let instance = this;
+
             console.log('mount home');
-            document.removeEventListener('backbutton');
+
 
 		},
         computed: {

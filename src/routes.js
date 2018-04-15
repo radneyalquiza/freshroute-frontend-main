@@ -54,15 +54,19 @@ export default [{
         path: "/route/",
         component: require("./assets/vue/pages/route.vue"),
         routes: [{
-                path: "viewroute/",
-                component: require("./assets/vue/pages/editroute.vue"),
-                routes: [
-                    {
-                        path: "add/",
-                        component: require("./assets/vue/pages/client/add.vue")
-                    }
-                ]
-            }
+              path: "viewroute/",
+              component: require("./assets/vue/pages/editroute.vue"),
+              // routes: [
+              //     {
+              //         path: "add/",
+              //         component: require("./assets/vue/pages/client/add.vue")
+              //     }
+              // ]
+            },
+            {
+              path: "addroute/",
+              component: require("./assets/vue/pages/addroute.vue")
+          }
         ]
     },
     {
