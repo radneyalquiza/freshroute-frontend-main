@@ -36,7 +36,7 @@
 
         </f7-block>
 
-        <f7-button v-if="!exist" style="width:95%; margin:auto;" @click="saveAllChanges()" big :fill=true raised color="blue">Save Route</f7-button>
+        <f7-button style="width:95%; margin:auto;" @click="saveAllChanges()" big :fill=true raised color="blue">Save Route</f7-button>
 
 
 
