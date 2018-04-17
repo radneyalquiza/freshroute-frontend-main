@@ -90,7 +90,7 @@
 				</ul>
 			</div>
         </f7-block>
-		<f7-block v-else-if="!client.AppAddresses && address" >
+		<f7-block v-else-if="!client && address" >
             <f7-block-title>Address Info</f7-block-title>
 
 			<div class="list no-hairlines-md">
@@ -128,6 +128,30 @@
 				</ul>
 			</div>
         </f7-block>
+		<f7-block v-else>
+			<f7-block-title>Select existing Client to Add</f7-block-title>
+			<f7-list class="existingcustomerslist">
+				<f7-list-item style="font-size: 15px;" v-for="(customer, index) in existingcustomers" :key="index">
+					<label class="item-radio item-content" style="width: 100%">
+						<input type="radio" name="demo-radio" :value="customer.AppClientId" checked />
+						<i class="icon icon-radio" style="margin-right: 8px; margin-left: -10px;"></i>
+						<div class="item-title" style="width: 100%">
+							<div style="color: #686868">
+								<div class="">
+									{{ customer.FirstName + " " + customer.LastName }}
+								</div>
+								<div class="" v-for="(addr, idx) in customer.AppAddresses" :key="idx">
+									{{ addr.Street + " " + addr.City + " " + addr.PostalCode }}
+								</div>
+							</div>
+						</div>
+					</label>
+					
+					
+					<!-- <span>{{ }}</span> -->
+				</f7-list-item>
+			</f7-list>
+		</f7-block>
         <f7-block v-if="services && services.length">
             <f7-block-title>Service Info</f7-block-title>
 
@@ -176,8 +200,9 @@
 			<f7-button style="width:140px; margin:auto;" @click="addService()" big :fill=true raised color="blue">Add a Service</f7-button>
 		</f7-block>
 
-        <f7-button style="width:95%; margin:auto;" @click="collectAndSave()" big :fill=true raised color="blue">{{ caller=='editclients' ? 'Update' : 'Save' }}</f7-button>
-
+        <f7-button v-if="!exist" style="width:95%; margin:auto;" @click="collectAndSave()" big :fill=true raised color="blue">{{ caller=='editclients' ? 'Update' : 'Save' }}</f7-button>
+		<f7-button v-else style="width:95%; margin:auto;" @click="addExistingNodeToRoute()" big :fill=true raised color="blue">Add to Route</f7-button>
+		
         <f7-block></f7-block>
     </f7-page>
 </template>
@@ -194,11 +219,11 @@
   color: white;
 }
 .list .item-title {
-	font-size: 0.8em;
-	color: #a0a0a0;
+  font-size: 0.8em;
+  color: #a0a0a0;
 }
 .md .block-title {
-	font-weight: 600;
+  font-weight: 600;
 }
 </style>
 
@@ -216,33 +241,22 @@ export default {
   components: {
     MaskedInput
   },
-  props: ['caller', 'appclientid'],
+  props: ["caller", "appclientid", "exist"],
   data: function() {
     return {
       openfrequenciespopover: false,
       openservicespopover: false,
       appservices: null,
-      address: {
-        Street: "",
-        City: "",
-        PostalCode: "",
-        lat: null,
-        lng: null,
-        AppClientId: null
-      },
-      client: {
-        FirstName: "",
-        LastName: "",
-        Phone: "",
-		Email: ""
-      },
+      address: null,
+	  client: null,
+	  existingcustomers: [],
       routeNode: {
         Sequence: null,
         AppClient: null,
-		AppAddress: null,
-		AppServices: null
+        AppAddress: null,
+        AppServices: null
       },
-	  services: [],
+      services: [],
       ras: [],
       frequencies: [
         {
@@ -268,141 +282,161 @@ export default {
         {
           FrequencyType: "BIANNUM",
           FrequencyDescription: "Bi-Annually"
-		}
+        }
       ]
     };
   },
   created() {},
   mounted() {
-		let instance = this;
+    let instance = this;
 
-			// cordova.plugins.notification.local.requestPermission(function (granted) {
-				cordova.plugins.notification.local.schedule({
-					title: "FreshRoute Notification",
-					text: "New Addresses will be appended to the end of the route",
-					foreground: true,
-					priority: 2
-				});
-			// });
+    // cordova.plugins.notification.local.requestPermission(function (granted) {
+    cordova.plugins.notification.local.schedule({
+      title: "FreshRoute Notification",
+      text: "New Addresses will be appended to the end of the route",
+      foreground: true,
+      priority: 2
+    });
+	// });
+	
+	instance.client = {
+		FirstName: "",
+		LastName: "",
+		Phone: "",
+		Email: ""
+	};
+	instance.address = {
+		Street: "",
+		City: "",
+		PostalCode: "",
+		lat: null,
+		lng: null,
+		AppClientId: null
+	}
 
-		if(instance.appclientid) {
+    if (instance.appclientid) {
+      // instance.$firebase.database().ref("AppClients/"+ instance.appclientid)
+      // .once("value", function(data) {
+      // 	let c = data.val();
+      // 	instance.client = c;
+      // 	instance.client.AppClientId = instance.appclientid;
 
-			// instance.$firebase.database().ref("AppClients/"+ instance.appclientid)
-			// .once("value", function(data) {
-			// 	let c = data.val();
-			// 	instance.client = c;
-			// 	instance.client.AppClientId = instance.appclientid;
-				
-			// });
+      // });
 
-			if(!instance.activeClient) {
-				instance.getClient(instance.appclientid);
-			}
+      if (!instance.activeClient) {
+        instance.getClient(instance.appclientid);
+      }
 
-			instance.client = JSON.parse(JSON.stringify(instance.activeClient));
-			console.log("Sdsdss", instance.client);
+      instance.client = JSON.parse(JSON.stringify(instance.activeClient));
+      console.log("Sdsdss", instance.client);
 
-			// if(instance.client.AppAddresses) {
-			// 	instance.$firebase.database().ref("AppRouteAddressService")
-			// 	.orderByChild("AppAddressesId")
-			// 	.equalTo(instance.address.AppAddressesId)
-			// 	.once("value", function(data) {
-			// 		let ras = data.val();
-			// 		console.log(ras, data.ref);
+      // if(instance.client.AppAddresses) {
+      // 	instance.$firebase.database().ref("AppRouteAddressService")
+      // 	.orderByChild("AppAddressesId")
+      // 	.equalTo(instance.address.AppAddressesId)
+      // 	.once("value", function(data) {
+      // 		let ras = data.val();
+      // 		console.log(ras, data.ref);
 
-			// 	})
+      // 	})
 
-			// }
+      // }
+    } else if (instance.caller == "clients") {
+      instance.addEmptyAddress();
+    } else if (instance.caller == "track") {
 
-		}
-		else if(instance.caller == "clients") {
-			instance.addEmptyAddress();
-		}
-		else if (instance.caller == "track") {
+		console.log(instance.caller, instance.exist)
+	  instance.addEmptyAddress();
+	  
+	  if(instance.exist == "existing") {
+		  console.log('empty?')
+		  instance.client = null;
+		  instance.address = null;
 
-			instance.addEmptyAddress();
-
-			// get the list of Services
-			instance.$firebase
+		  instance.$firebase
 			.database()
-			.ref("AppServices")
+			.ref("AppClients")
 			.once("value", function(data) {
-				instance.appservices = data.val();
-				instance.services.push({
-					AppServiceType: "",
-					Frequency: "",
-					Price: 0.00
-				});
+				let c = data.val();
+				for(var x in c) {
+					c[x].AppClientId = x;
+					instance.existingcustomers.push(c[x]);
+				}
 			});
-		}		
-		
+	  }
+
+      // get the list of Services
+      instance.$firebase
+        .database()
+        .ref("AppServices")
+        .once("value", function(data) {
+          instance.appservices = data.val();
+          instance.services.push({
+            AppServiceType: "",
+            Frequency: "",
+            Price: 0.0
+          });
+        });
+    }
   },
   methods: {
     ...mapActions({
-	  addNodeToRoute: "Route/addNodeToRoute",
-	  deselectClient: "ClientModel/deselectClient",
-	  getClient: "ClientModel/getClient",
-	  updateRouteAddress: "Route/updateRouteAddress"
+      addNodeToRoute: "Route/addNodeToRoute",
+      deselectClient: "ClientModel/deselectClient",
+      getClient: "ClientModel/getClient",
+      updateRouteAddress: "Route/updateRouteAddress"
     }),
     closeAddRouteNode: function() {
-	  let instance = this;
-	  instance.deselectClient();
+      let instance = this;
+      instance.deselectClient();
       instance.$f7.router.back();
-	},
-	// only use this when saving a record
+    },
+    // only use this when saving a record
     geocodeAddress: function(geocodeexistingaddress) {
-	  let instance = this;
-	  let street = null;
-	  let city = null;
-	  let postalcode = null;
-	  let addressprop = null;
-	  // GoogleMapsLoader.KEY = gmapkey;
-	  
-	  if(geocodeexistingaddress == true) {
-		  	for(var x in instance.client.AppAddresses)
-			{
-				street = instance.client.AppAddresses[x].Street;
-				city = instance.client.AppAddresses[x].City;
-				postalcode = instance.client.AppAddresses[x].PostalCode;
-				addressprop = x;
-			}
-	  }
-	  else {
-		  street = instance.address.Street;
-		  city = instance.address.City;
-		  postalcode = instance.address.PostalCode;
-	  }
+      let instance = this;
+      let street = null;
+      let city = null;
+      let postalcode = null;
+      let addressprop = null;
+      // GoogleMapsLoader.KEY = gmapkey;
+
+      if (geocodeexistingaddress == true) {
+        for (var x in instance.client.AppAddresses) {
+          street = instance.client.AppAddresses[x].Street;
+          city = instance.client.AppAddresses[x].City;
+          postalcode = instance.client.AppAddresses[x].PostalCode;
+          addressprop = x;
+        }
+      } else {
+        street = instance.address.Street;
+        city = instance.address.City;
+        postalcode = instance.address.PostalCode;
+      }
 
       return new Promise(function(resolve, reject) {
         // GoogleMapsLoader.load(function(google) {
 
-		let geocoder = new google.maps.Geocoder();
-		console.log(street +
-              " " +
-              city +
-              " " +
-              postalcode);
-		
+        let geocoder = new google.maps.Geocoder();
+        console.log(street + " " + city + " " + postalcode);
+
         geocoder.geocode(
           {
-            address:
-              street +
-              " " +
-              city +
-              " " +
-              postalcode
+            address: street + " " + city + " " + postalcode
           },
           function(results, status) {
             instance.$f7.preloader.hide();
             if (status == google.maps.GeocoderStatus.OK) {
-			  if(geocodeexistingaddress == true) {
-				instance.client.AppAddresses[x].lat = results[0].geometry.location.lat();
-				instance.client.AppAddresses[x].lng = results[0].geometry.location.lng();
-			  }
-			  else {
-				instance.address.lat = results[0].geometry.location.lat();
-				instance.address.lng = results[0].geometry.location.lng();
-			  }
+              if (geocodeexistingaddress == true) {
+                instance.client.AppAddresses[
+                  x
+                ].lat = results[0].geometry.location.lat();
+                instance.client.AppAddresses[
+                  x
+                ].lng = results[0].geometry.location.lng();
+              } else {
+                instance.address.lat = results[0].geometry.location.lat();
+                instance.address.lng = results[0].geometry.location.lng();
+              }
               resolve(results);
             } else {
               instance.$f7.dialog.alert(
@@ -431,79 +465,77 @@ export default {
     },
     addService: function(service) {
       this.services.push(service);
-	},
-	addEmptyAddress: function() {
-		this.address = {
-			Street: "",
-			City: "",
-			PostalCode: "",
-			lat: null,
-			lng: null,
-			AppClientId: null
-		}
-	},
+    },
+    addEmptyAddress: function() {
+      this.address = {
+        Street: "",
+        City: "",
+        PostalCode: "",
+        lat: null,
+        lng: null,
+        AppClientId: null
+      };
+    },
     updatePrice: function(serviceobj, evt) {
       serviceobj.Price = evt;
       this.$forceUpdate();
     },
 
     collectAndSave: async function() {
-	  let instance = this;
-	  let xc = null;
+      let instance = this;
+      let xc = null;
 
-	  instance.$f7.preloader.show();
-	  
-	  if(instance.appclientid) {
-		//   console.log('aaa');
-		let gp = await instance.geocodeAddress(true);
-		let cp = await instance.saveClient();
-		xc = await instance.updateRouteNodeData(cp);
-	  }
-	  else {
-		let gp = await instance.geocodeAddress();
-		let cp = await instance.saveClient();
-		let ap = await instance.saveAddress(cp, gp);
-		let rp = await instance.saveRouteWithNewNode(ap);
-		let rn = await instance.saveServices(rp);
-		if(instance.caller == "track")
-			xc = await instance.addNodeToLocalRoute(rn);
-	  }
+      instance.$f7.preloader.show();
+
+      if (instance.appclientid) {
+        //   console.log('aaa');
+        let gp = await instance.geocodeAddress(true);
+        let cp = await instance.saveClient();
+        xc = await instance.updateRouteNodeData(cp);
+      } else {
+        let gp = await instance.geocodeAddress();
+        let cp = await instance.saveClient();
+        let ap = await instance.saveAddress(cp, gp);
+        let rp = await instance.saveRouteWithNewNode(ap);
+        let rn = await instance.saveServices(rp);
+        if (instance.caller == "track")
+          xc = await instance.addNodeToLocalRoute(rn);
+      }
 
       instance.$f7.preloader.hide();
       instance.$f7.router.back();
     },
 
     saveClient: function() {
-	  	let instance = this;
-	  
-      	// let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
-	  	if(instance.appclientid) {
-			//   console.log('pppppp', instance.client); return;
-		  	return instance.$firebase
-				.database()
-				.ref("AppClients/"+instance.appclientid)
-				.update(instance.client);
-	  	}
-	  	else {
-			return instance.$firebase
-				.database()
-				.ref("AppClients")
-				.push(instance.client);
-			// instance.client.AppClientId = clientpush.key;
-	  	}
+      let instance = this;
+
+      // let clientpush = await instance.$firebase.database().ref('AppClients').push(instance.client);
+      if (instance.appclientid) {
+        //   console.log('pppppp', instance.client); return;
+        return instance.$firebase
+          .database()
+          .ref("AppClients/" + instance.appclientid)
+          .update(instance.client);
+      } else {
+        return instance.$firebase
+          .database()
+          .ref("AppClients")
+          .push(instance.client);
+        // instance.client.AppClientId = clientpush.key;
+      }
     },
 
     saveAddress: function(cp, gp) {
       let instance = this;
       // let addresspush = await instance.$firebase.database().ref('AppAddresses').push(instance.address);
       instance.address.AppClientId = cp.key;
-	  instance.client.AppClientId = cp.key;
-	  
-	  if(!gp) return;
+      instance.client.AppClientId = cp.key;
+
+      if (!gp) return;
 
       return instance.$firebase
         .database()
-        .ref("AppClients/"+instance.client.AppClientId+"/AppAddresses")
+        .ref("AppClients/" + instance.client.AppClientId + "/AppAddresses")
         .push(instance.address);
       // instance.address.AppAddressesId = addresspush.key;
     },
@@ -517,69 +549,72 @@ export default {
         AppClient: instance.client,
         AppAddress: instance.address,
         Sequence: routelength // the current zero index + 1
-	  };
-	  
+      };
+
       return instance.$firebase
-          .database()
-          .ref("AppRoutes/" + instance.routeid + "/Nodes")
-          .push(instance.routenode);
-	},
-	
-	updateRouteNodeData: function(a) {
-		let instance = this;
-		let tempaddress = firstAndOnly(instance.client.AppAddresses);
-		let tempclient = {
-			FirstName: instance.client.FirstName,
-			LastName: instance.client.LastName,
-			Phone: instance.client.Phone,
-			Email: instance.client.Email,
-			AppClientId: instance.client.AppClientId
-		};
-		console.log(tempclient);
-		instance.$firebase.database()
-			.ref("AppRoutes")
-			.once("value", function(routesSnap) {
-				let routes = routesSnap.val();
-				for(var x in routes) {
-					console.log('route ', x);
-					let nodes = routes[x].Nodes;
-					for(var y in nodes) {
-						if(nodes[y].AppAddress.AppAddressId == tempaddress.AppAddressId) {
-							instance.$firebase.database()
-							.ref("AppRoutes/" + x + "/Nodes/" + y + "/AppAddress")
-							.update(tempaddress);
-							// break;
-						}
-						if(nodes[y].AppClient.AppClientId == tempclient.AppClientId) {
-							instance.$firebase.database()
-							.ref("AppRoutes/" + x + "/Nodes/" + y + "/AppClient")
-							.update(tempclient);
-							// break;
-						}
-					}
-				}
-			})
-	},
+        .database()
+        .ref("AppRoutes/" + instance.routeid + "/Nodes")
+        .push(instance.routenode);
+    },
+
+    updateRouteNodeData: function(a) {
+      let instance = this;
+      let tempaddress = firstAndOnly(instance.client.AppAddresses);
+      let tempclient = {
+        FirstName: instance.client.FirstName,
+        LastName: instance.client.LastName,
+        Phone: instance.client.Phone,
+        Email: instance.client.Email,
+        AppClientId: instance.client.AppClientId
+      };
+      console.log(tempclient);
+      instance.$firebase
+        .database()
+        .ref("AppRoutes")
+        .once("value", function(routesSnap) {
+          let routes = routesSnap.val();
+          for (var x in routes) {
+            console.log("route ", x);
+            let nodes = routes[x].Nodes;
+            for (var y in nodes) {
+              if (
+                nodes[y].AppAddress.AppAddressId == tempaddress.AppAddressId
+              ) {
+                instance.$firebase
+                  .database()
+                  .ref("AppRoutes/" + x + "/Nodes/" + y + "/AppAddress")
+                  .update(tempaddress);
+                // break;
+              }
+              if (nodes[y].AppClient.AppClientId == tempclient.AppClientId) {
+                instance.$firebase
+                  .database()
+                  .ref("AppRoutes/" + x + "/Nodes/" + y + "/AppClient")
+                  .update(tempclient);
+                // break;
+              }
+            }
+          }
+        });
+    },
 
     saveServices: function(rn) {
+      console.log(rn);
+      let instance = this;
+      let nodekey = rn.key;
 
-		console.log(rn);
-	  let instance = this;
-	  let nodekey = rn.key;
-
-	  if(instance.services[0] && 
-		(!instance.services[0].AppServiceType ||
-		 !instance.services[0].Frequency ||
-		 !instance.services[0].Price)) return;
+      if (
+        instance.services[0] &&
+        (!instance.services[0].AppServiceType ||
+          !instance.services[0].Frequency ||
+          !instance.services[0].Price)
+      )
+        return;
 
       return instance.$firebase
         .database()
         .ref(
-          "AppRoutes/" +
-            instance.routeid +
-            "/Nodes/" +
-            nodekey +
-            "/AppServices"
+          "AppRoutes/" + instance.routeid + "/Nodes/" + nodekey + "/AppServices"
         )
         .push(instance.services[0]); // only 1 service per address for now
     },
@@ -593,57 +628,53 @@ export default {
     },
 
     addNodeToLocalRoute: function(np) {
-	  let instance = this;
+      let instance = this;
 
-	  instance.routenode.AppServices = {};
-	  instance.routenode.AppServices[np.key] = instance.services[0];
-	  instance.addNodeToRoute(instance.routenode);
+      instance.routenode.AppServices = {};
+      instance.routenode.AppServices[np.key] = instance.services[0];
+      instance.addNodeToRoute(instance.routenode);
 
+      //   instance.$firebase
+      //     .database()
+      //     .ref(
+      //       "AppRoutes/" +
+      //         instance.routeid +
+      //         "/Nodes/" +
+      //         instance.routenode.Sequence +
+      //         "/AppServices"
+      //     )
+      //     .once("value", function(data) {
+      // 	  let s = data.val();
+      // 	  console.log("ssss", s);
+      //       instance.routenode.AppServices = {};
+      //       for (var p in s) {
+      //         instance.routenode.AppServices[p] = s[p];
+      //         break;
+      // 	  }
+      // 	  console.log("QQQQQQ", instance.routenode);
 
-    //   instance.$firebase
-    //     .database()
-    //     .ref(
-    //       "AppRoutes/" +
-    //         instance.routeid +
-    //         "/Nodes/" +
-    //         instance.routenode.Sequence +
-    //         "/AppServices"
-    //     )
-    //     .once("value", function(data) {
-	// 	  let s = data.val();
-	// 	  console.log("ssss", s);
-    //       instance.routenode.AppServices = {};
-    //       for (var p in s) {
-    //         instance.routenode.AppServices[p] = s[p];
-    //         break;
-	// 	  }
-	// 	  console.log("QQQQQQ", instance.routenode);
-
-    //       instance.addNodeToRoute(instance.routenode);
-    //     });
-    }
+      //       instance.addNodeToRoute(instance.routenode);
+      //     });
+	},
+	addExistingNodeToRoute() { }
   },
   computed: {
     ...mapGetters({
       routename: "Route/RouteName",
       route: "Route/Route",
-	  routeid: "Route/RouteId",
-	  activeClient: "ClientModel/ActiveClient"
-	}),
-	price: function() {
-		let instance = this;
-		return parseFloat(instance.services[0].Price).toFixed(2);
-	},
-	title: function() {
-		let instance = this;
-		if(instance.caller == "track")
-			return "Add to " + instance.routename;
-		else if(instance.caller == "clients")
-			return "Add Client";
-		else if(instance.caller == "editclients")
-			return "Edit Client";
-
-	}
+      routeid: "Route/RouteId",
+      activeClient: "ClientModel/ActiveClient"
+    }),
+    price: function() {
+      let instance = this;
+      return parseFloat(instance.services[0].Price).toFixed(2);
+    },
+    title: function() {
+      let instance = this;
+      if (instance.caller == "track") return "Add to " + instance.routename;
+      else if (instance.caller == "clients") return "Add Client";
+      else if (instance.caller == "editclients") return "Edit Client";
+    }
   }
 };
 </script>

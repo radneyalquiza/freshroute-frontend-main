@@ -60,7 +60,7 @@ const STATE = {
 
 const GETTERS = {
     Route: function(state) {
-      console.log(state.Route)
+        console.log(' changed route', state.Route)
         return state.Route;
     },
     RouteName: function(state) {
@@ -313,6 +313,11 @@ const MUTATIONS = {
     ADD_NODE: function(state, payload) {
         payload = Object.assign({}, payload, MUTATION_HELPERS.LocationEmptyState);
         state.Route.push(payload);
+    },
+
+    SET_LOCATION_SEQUENCE: function(state, payload) {
+        var p = state.Route[payload.fromseq];
+        p.Sequence = payload.toseq;
     }
 }
 
@@ -333,19 +338,19 @@ const ACTIONS = {
                 commit('SORT');
                 commit('SET_ROUTE_NAME', RouteModel.Name);
                 commit('SET_ROUTE_WORKERS', RouteModel.Workers);
-                
+
                 var route = getters.Route;
 
                 // at this point, Route has been filled by the SET_ADDRESSES mutator
-                for(var x=0; x<route.length;x++) {
+                for (var x = 0; x < route.length; x++) {
                     let address = route[x].AppAddress;
                     let pos = {
                         lat: address.lat,
                         lng: address.lng
                     }
                     commit('UPDATE_ROUTE_MARKERS', {
-                      sequence: x,
-                      position: pos
+                        sequence: x,
+                        position: pos
                     });
 
                     if (x == route.length - 1) {
@@ -353,11 +358,10 @@ const ACTIONS = {
                             position: rootGetters['User/currentLocation'],
                             sequence: x + 1
                         }
-                        if(routecenter.position) {
+                        if (routecenter.position) {
                             commit('UPDATE_ROUTE_MARKERS', routecenter);
                             commit('UPDATE_ROUTE_CENTER', routecenter);
-                        }
-                        else {
+                        } else {
                             commit('UPDATE_ROUTE_CENTER', pos);
                             cordova.plugins.notification.local.schedule({
                                 title: 'FreshRoute Notification',
@@ -369,60 +373,6 @@ const ACTIONS = {
                     }
                 }
 
-
-
-                // for (var x = 0; x < route.length; x++) {
-                //     (function(idx) {
-                //         firebase.database().ref('AppClients/' + route[idx].ClientId)
-                //             .once("value", function(data) {
-                //                 let c = data.val();
-                //                 commit('INIT_CLIENT_AS_LOCATION', {
-                //                     sequence: idx,
-                //                     client: c
-                //                 });
-
-                //             });
-                //         firebase.database().ref('AppAddresses/' + route[idx].AddressId)
-                //             .once("value", function(data) {
-                //                 let a = data.val();
-                //                 let pos = {
-                //                     lat: a.lat,
-                //                     lng: a.lng
-                //                 }
-                //                 commit('INIT_ADDRESS_AS_LOCATION', {
-                //                     sequence: idx,
-                //                     address: a
-                //                 });
-                //                 commit('UPDATE_ROUTE_MARKERS', {
-                //                     sequence: idx,
-                //                     position: pos
-                //                 });
-
-                //                 if (idx == route.length - 1) {
-                //                     let routecenter = {
-                //                         position: rootGetters['User/currentLocation'],
-                //                         sequence: idx + 1
-                //                     }
-                //                     if(routecenter.position) {
-                //                         commit('UPDATE_ROUTE_MARKERS', routecenter);
-                //                         commit('UPDATE_ROUTE_CENTER', routecenter);
-                //                     }
-                //                     else {
-                //                         console.log('qwqwqqwq', pos)
-                //                         commit('UPDATE_ROUTE_CENTER', pos);
-                //                         cordova.plugins.notification.local.schedule({
-                //                             title: 'FreshRoute Notification',
-                //                             text: 'Set center bro.',
-                //                             foreground: true,
-                //                             priority: 1
-                //                         });
-                //                     }
-                //                 }
-                //             });
-                //     })(x);
-                // }
-                // commit('SET_ROUTE_NAME', RouteModel.Name);
-                // commit('SET_ROUTE_WORKERS', RouteModel.Workers);
             });
 
     },
@@ -473,6 +423,11 @@ const ACTIONS = {
                     });
             })(idx);
         }
+    },
+
+    setLocationSequence({ commit }, payload) {
+        commit('SET_LOCATION_SEQUENCE', payload); // payload.fromseq, payload.toseq
+        // commit('SORT');
     },
 
     startRoute({ commit }) {

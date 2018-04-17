@@ -273,6 +273,8 @@ export default {
 			instance.currentWorkers.push(emp);
 		}
 
+		instance.__getRouteData(instance.activeRoute.AppRouteId);
+
 
 		// $(window).on("popstate", function() {
 		// 	instance.closeViewDetails();
@@ -281,7 +283,8 @@ export default {
 	methods: {
 		...mapActions({
 			getRoutes: 'RouteModel/getRoutes',
-			selectActiveRoute: 'RouteModel/selectActiveRoute'
+			selectActiveRoute: 'RouteModel/selectActiveRoute',
+			__getRouteData: 'Route/getRouteData',
 		}),
 		dollar: function(a) {
 			return "$" + parseFloat(a).toFixed(2) + "/hr";
@@ -313,7 +316,7 @@ export default {
 		},
 
 		saveRoute: function() {
-
+			console.log(instance.route);
 		},
 
 		closeViewDetails: function() {

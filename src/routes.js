@@ -58,7 +58,14 @@ export default [{
                 component: require("./assets/vue/pages/editroute.vue"),
                 routes: [{
                     path: "routelocations/",
-                    component: require("./assets/vue/pages/routelocations.vue")
+                    component: require("./assets/vue/pages/routelocations.vue"),
+                    routes: [{
+                        path: "addroutenode/:caller",
+                        component: require("./assets/vue/pages/client/add.vue")
+                    }, {
+                        path: "addroutenode/:caller/:exist",
+                        component: require("./assets/vue/pages/client/add.vue")
+                    }]
                 }]
             },
             {
