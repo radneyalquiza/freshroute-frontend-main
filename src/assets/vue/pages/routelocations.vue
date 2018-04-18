@@ -28,6 +28,7 @@
                                     <div class="chunk price">{{ appservice.Price }}</div>
                                 </span>
                             </div>
+                            <span class="delete" @click="deleteFromRoute(loc.AppAddress)"><i class="fa fa-trash"></i></span>
                             <span class="sort"><i class="fa fa-sort"></i></span>
                         </div>
                     </div>
@@ -43,16 +44,21 @@
 		<f7-fab class="addnodes" color="orange" @click="openaddnodes = true;" >
 			<f7-icon fa="plus" ></f7-icon>
 		</f7-fab>
+
         <f7-popover target=".addnodes" class='addnodes' @popover:closed="openaddnodes = false" :opened="openaddnodes == true">
             <f7-list>
                 <f7-list-item @click="addNewNode(); openaddnodes= false;" >
-                    Add New Client/Address
+                    Add New Client &amp; Address
                 </f7-list-item>
                 <f7-list-item @click="addExistingNode(); openaddnodes= false;" >
-                    Add Existing Client/Address
+                    Add Existing Client &amp; Address
                 </f7-list-item>
             </f7-list>
         </f7-popover>
+
+        <f7-popup>
+            <add-route-node></add-route-node>
+        </f7-popup>
 
 	</f7-page>
 	
@@ -89,7 +95,7 @@
     font-size: 11px;
 }
 .secondline {
-    display: flex;
+    /* display: flex; */
 }
 .service .chunk {
     padding: 2px;
@@ -100,13 +106,17 @@
 .location .container {
     position: relative;
 }
-.sort {
+.sort, 
+.delete {
     position: absolute;
     top: 50%;
-    right: 10px;
+    right: 8px;
     font-size: 25px;
     margin-top: -18px;
     color: #8e8e93;
+}
+.delete {
+    right: 45px;
 }
 .chunk.type {
     padding-left: 2px;
@@ -129,11 +139,13 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
 import draggable from 'vuedraggable'
+import AddRouteNode from "../../../assets/vue/pages/client/add.vue"
 
 export default {
     name: "RouteLocations",
     components: {
-        draggable
+        draggable,
+        AddRouteNode
     },
 	data: function () {
 		return {
@@ -159,6 +171,10 @@ export default {
                 handle: '.sort'
             };
         },
+        title: function() {
+            let instance = this;
+            return "Edit Route";
+        }
 	},
 	watch: {
 	},
@@ -218,6 +234,44 @@ export default {
 
             this.$f7.router.navigate({ url: "./addroutenode/track/existing" });
 
+        },
+
+        saveAllChanges: function(ap) {
+            let instance = this;
+            instance.address.AppAddressesId = ap.key;
+            let routelength = instance.route.length;
+
+            instance.routenode = {
+                AppClient: instance.client,
+                AppAddress: instance.address,
+                Sequence: routelength // the current zero index + 1
+            };
+
+            return instance.$firebase
+                .database()
+                .ref("AppRoutes/" + instance.routeid + "/Nodes")
+                .push(instance.routenode);
+        },
+
+        deleteFromRoute(addr) {
+            let instance = this;
+            console.log(addr);
+
+            instance.$f7.dialog.confirm(
+                "Are you sure you want to remove this Address from this Route?",
+                "Hold on...",
+                function(okdata) {
+                    instance.$firebase.database()
+                        .ref(
+                            "AppRoutes/" +
+                            instance.activeRoute.AppRouteId +
+                            "/Nodes")
+                        .orderByChild("AppAddressId")
+                        .equalTo(addr.AppAddressId)
+                        .remove();
+                },
+                function(canceldata) {}
+            )
         },
 
         saveAllChanges() {

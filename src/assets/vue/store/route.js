@@ -136,8 +136,8 @@ const MUTATIONS = {
     // just a list of address id's
     SET_ADDRESSES: function(state, addresses) {
         if (addresses) {
-
             for (var x in addresses) {
+                addresses[x].AppAddressId = x;
                 addresses[x] = Object.assign({}, addresses[x], MUTATION_HELPERS.LocationEmptyState);
             }
 
