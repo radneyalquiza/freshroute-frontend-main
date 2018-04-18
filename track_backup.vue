@@ -37,7 +37,7 @@
 
 			<stopwatch></stopwatch>
 
-			<div class="timeline-item" v-for="address in route">
+			<div class="timeline-item" v-for="(address,idx) in route" :key="idx">
 				<!-- <div class="timeline-item-date">21 <small>DEC</small></div> -->
 				<div class="timeline-item-divider"
 				     v-bind:class="{ inc: address.Status == STATUS.INCOMPLETE,

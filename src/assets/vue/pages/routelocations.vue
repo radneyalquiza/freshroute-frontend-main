@@ -47,7 +47,7 @@
 
         <f7-popover target=".addnodes" class='addnodes' @popover:closed="openaddnodes = false" :opened="openaddnodes == true">
             <f7-list>
-                <f7-list-item @click="addNewNode(); openaddnodes= false;" >
+                <f7-list-item @click="openaddnodes= false; addnode = true; addNewNode();" >
                     Add New Client &amp; Address
                 </f7-list-item>
                 <f7-list-item @click="addExistingNode(); openaddnodes= false;" >
@@ -56,7 +56,7 @@
             </f7-list>
         </f7-popover>
 
-        <f7-popup>
+        <f7-popup id="addexisting" v-if="addnode">
             <add-route-node></add-route-node>
         </f7-popup>
 
@@ -152,7 +152,9 @@ export default {
 			sorting: false,
             locations: null,
             clients: [],
-            openaddnodes: false
+            openaddnodes: false,
+            addnode: false,
+            existnode: false
             // locations: []
 		}
 	},
@@ -227,7 +229,11 @@ export default {
         },
 
         addNewNode() {
-            this.$f7.router.navigate({ url: "./addroutenode/track" });
+            // this.$f7.router.navigate({ url: "./addroutenode/track" });
+            let instance = this;
+            setTimeout(function() {
+                instance.$f7.popup.open("#addexisting", true);
+            },100);
         },
 
         addExistingNode() {

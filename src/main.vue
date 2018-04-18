@@ -87,6 +87,24 @@ export default {
             let instance = this;
             var root = this.$root;
 
+            document.addEventListener('backbutton', function(e) {
+                if(instance.Dom7(".popover").length > 0) {
+                    instance.$f7.popover.close(".popover", true);
+                    e.preventDefault();
+                    return false;
+                }
+                else if(instance.Dom7(".popup").length > 0) {
+                    instance.$f7.popup.close(".popup", true);
+                    e.preventDefault();
+                    return false;
+                }
+                else if(instance.Dom7(".dialog").length > 0) {
+                    instance.$f7.dialog.close(".dialog", true);
+                    e.preventDefault();
+                    return false;
+                }
+            })
+
             if(!sessionStorage.getItem("AppUserId")) {
                 // setTimeout(function() {
                     instance.$f7.router.navigate({
