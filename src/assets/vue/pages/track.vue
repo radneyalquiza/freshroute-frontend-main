@@ -605,7 +605,7 @@
 	import FileService from '../../../assets/js/file.service.js'
 	import Location from '../../../assets/js/location.class.js'
 	import { mapGetters, mapActions } from 'vuex'
-	import AddRouteNode from '../pages/client/add.vue'
+	import AddRouteNode from '../pages/addnewclienttoroute.vue'
 	import GoogleMap from '../components/map.vue'
 
 	export default {

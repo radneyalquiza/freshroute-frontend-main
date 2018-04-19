@@ -52,7 +52,7 @@
 			</f7-list-item>
 		</f7-list>
 
-		<f7-fab color="orange" href="./clientform/clients">
+		<f7-fab color="orange" href="./add/">
 			<f7-icon fa="plus" ></f7-icon>
 		</f7-fab>
 
@@ -61,7 +61,7 @@
 			<div class="toolbar">
 				<div class="toolbar-inner">
 					<div class="left">Client Details</div>
-					<div class="right"><a class="link" v-if="activeclient" @click="closeViewDetails()" v-bind:href="'./clientform/editclients/' + activeclient.AppClientId" >Edit</a></div>
+					<div class="right"><a class="link" v-if="activeclient" @click="closeViewDetails()" v-bind:href="'./edit/' + activeclient.AppClientId" >Edit</a></div>
 				</div>
 			</div>
 

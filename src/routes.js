@@ -14,12 +14,12 @@ export default [{
         path: "/clients/",
         component: require("./assets/vue/pages/client/clients.vue"),
         routes: [{
-                path: "clientform/:caller/:appclientid",
-                component: require("./assets/vue/pages/client/add.vue")
+                path: "edit/:appclientid",
+                component: require("./assets/vue/pages/client/edit.vue")
             },
             {
-                path: "clientform/:caller",
-                component: require("./assets/vue/pages/client/add.vue")
+                path: "add/",
+                component: require("./assets/vue/pages/client/create.vue")
             }
         ]
     },
@@ -28,7 +28,7 @@ export default [{
         component: require("./assets/vue/pages/track.vue"),
         routes: [{
                 path: "addroutenode/:caller",
-                component: require("./assets/vue/pages/client/add.vue")
+                component: require("./assets/vue/pages/addnewclienttoroute.vue")
             },
             {
                 path: "expenses/",
@@ -60,17 +60,17 @@ export default [{
                     path: "routelocations/",
                     component: require("./assets/vue/pages/routelocations.vue"),
                     routes: [{
-                        path: "addroutenode/:caller",
-                        component: require("./assets/vue/pages/client/add.vue")
+                        path: "addnewnode/",
+                        component: require("./assets/vue/pages/addnewclienttoroute.vue")
                     }, {
-                        path: "addroutenode/:caller/:exist",
-                        component: require("./assets/vue/pages/client/add.vue")
+                        path: "addexistingnode/",
+                        component: require("./assets/vue/pages/client/addexisting.vue")
                     }]
                 }]
             },
             {
                 path: "addroute/",
-                component: require("./assets/vue/pages/addroute.vue")
+                component: require("./assets/vue/pages/addnewclienttoroute.vue")
             }
         ]
     },

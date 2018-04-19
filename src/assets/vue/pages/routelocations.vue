@@ -139,7 +139,7 @@ import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
 import draggable from 'vuedraggable'
-import AddRouteNode from "../../../assets/vue/pages/client/add.vue"
+import AddRouteNode from "../../../assets/vue/pages/addnewclienttoroute.vue"
 
 export default {
     name: "RouteLocations",

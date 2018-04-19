@@ -89,6 +89,7 @@ export default {
 
             document.addEventListener('backbutton', function(e) {
                 if(instance.Dom7(".popover").length > 0) {
+                    console.log('dsdsdssdsdsdsdsdsdsd')
                     instance.$f7.popover.close(".popover", true);
                     e.preventDefault();
                     return false;
