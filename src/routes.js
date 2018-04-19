@@ -25,10 +25,10 @@ export default [{
     },
     {
         path: "/track/",
-        component: require("./assets/vue/pages/track.vue"),
+        component: require("./assets/vue/pages/route/track.vue"),
         routes: [{
-                path: "addroutenode/:caller",
-                component: require("./assets/vue/pages/addnewclienttoroute.vue")
+                path: "addnewnode/:caller",
+                component: require("./assets/vue/pages/route/addnewclienttoroute.vue")
             },
             {
                 path: "expenses/",
@@ -52,25 +52,37 @@ export default [{
     },
     {
         path: "/route/",
-        component: require("./assets/vue/pages/route.vue"),
+        component: require("./assets/vue/pages/route/route.vue"),
+        // YES, EDIT AND ADD ROUTE HAVE THE SAME SUBROUTES
         routes: [{
                 path: "viewroute/",
-                component: require("./assets/vue/pages/editroute.vue"),
+                component: require("./assets/vue/pages/route/editroute.vue"),
                 routes: [{
                     path: "routelocations/",
-                    component: require("./assets/vue/pages/routelocations.vue"),
+                    component: require("./assets/vue/pages/route/routelocations.vue"),
                     routes: [{
                         path: "addnewnode/",
-                        component: require("./assets/vue/pages/addnewclienttoroute.vue")
+                        component: require("./assets/vue/pages/route/addnewclienttoroute.vue")
                     }, {
                         path: "addexistingnode/",
-                        component: require("./assets/vue/pages/client/addexisting.vue")
+                        component: require("./assets/vue/pages/route/addexisting.vue")
                     }]
                 }]
             },
             {
                 path: "addroute/",
-                component: require("./assets/vue/pages/addnewclienttoroute.vue")
+                component: require("./assets/vue/pages/route/createroute.vue"),
+                routes: [{
+                    path: "routelocations/",
+                    component: require("./assets/vue/pages/route/routelocations.vue"),
+                    routes: [{
+                        path: "addnewnode/",
+                        component: require("./assets/vue/pages/route/addnewclienttoroute.vue")
+                    }, {
+                        path: "addexistingnode/",
+                        component: require("./assets/vue/pages/route/addexisting.vue")
+                    }]
+                }]
             }
         ]
     },

@@ -333,7 +333,7 @@ export default {
 			{
 				weatherimage () {
 					console.log(this.location.Weather);
-					return require('../../images/weather/' + this.location.Weather.weather[0].icon + '.png')
+					return require('images/weather/' + this.location.Weather.weather[0].icon + '.png')
 				},
 				distance() {
 					return (this.Distance / 1000).toFixed(1) + " km";

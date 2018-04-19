@@ -151,7 +151,7 @@
                 window.location.replace("/");
             },
             openRoutes: function() {
-                console.log('open routes');
+
                 let instance = this;
 
                 if(sessionStorage.getItem("SelectedAppRouteId")) {

@@ -120,6 +120,31 @@ const GETTERS = {
 
 
 const MUTATIONS = {
+
+    RESET_ROUTE_STORE: function(state) {
+        state.Route = []; 
+        state.RouteName = "";
+        state.Id = null;
+        state.started = false;
+        
+        state.Markers = [];
+
+        state.RouteDateTimeStarted = null;
+        state.RouteCompleteSaved = false;
+        state.RouteTempSaved = false;
+        state.RoutePaused = false;
+        state.Center = null;
+        state.current = 0;
+        state.RouteStatus = 0;
+
+        state.Workers = [];
+
+        state.activeLocation = null;
+        state.locationopened = false;
+        state.whereyouare = null;
+
+        state.ExternalExpenses = [];
+    },
     UPDATE_LOCATION: function(state, payload) {
 
     },
@@ -134,7 +159,19 @@ const MUTATIONS = {
         state.Workers = payload;
     },
     // just a list of address id's
-    SET_ADDRESSES: function(state, addresses) {
+    SET_NODES: function(state, addresses) {
+        if (addresses) {
+            for (var x in addresses) {
+                addresses[x].AppAddressId = x;
+                addresses[x] = Object.assign({}, addresses[x], MUTATION_HELPERS.LocationEmptyState);
+            }
+
+            state.Route = addresses;
+        }
+    },
+    UPDATE_NODES: function(state, addresses) {
+
+        console.log(addresses); return;
         if (addresses) {
             for (var x in addresses) {
                 addresses[x].AppAddressId = x;
@@ -326,6 +363,7 @@ const ACTIONS = {
         if (route)
             commit('SET_ROUTE', route);
     },
+    
     getRouteData({ commit, getters, dispatch, rootGetters }, approuteid) {
 
         firebase.database().ref("AppRoutes/" + approuteid)
@@ -333,7 +371,7 @@ const ACTIONS = {
 
                 let RouteModel = data.val();
 
-                commit('SET_ADDRESSES', RouteModel.Nodes);
+                commit('SET_NODES', RouteModel.Nodes);
                 commit('SET_ROUTE_ID', approuteid);
                 commit('SORT');
                 commit('SET_ROUTE_NAME', RouteModel.Name);
@@ -341,7 +379,7 @@ const ACTIONS = {
 
                 var route = getters.Route;
 
-                // at this point, Route has been filled by the SET_ADDRESSES mutator
+                // at this point, Route has been filled by the SET_NODES mutator
                 for (var x = 0; x < route.length; x++) {
                     let address = route[x].AppAddress;
                     let pos = {
@@ -376,6 +414,58 @@ const ACTIONS = {
             });
 
     },
+
+    // only use for Routes that are currently running
+    updateActiveRouteDisplay({ commit, getters, rootGetters }, routeid) {
+
+        return firebase.database().ref("AppRoutes/" + routeid)
+            .once("value", function(data) {
+
+                let RouteModel = data.val();
+
+                commit('UPDATE_NODES', RouteModel.Nodes);
+                commit('SORT'); // editing a route involves reordering
+                commit('SET_ROUTE_NAME', RouteModel.Name);
+                commit('SET_ROUTE_WORKERS', RouteModel.Workers); // may have added or removed workers
+
+                var route = getters.Route;
+
+                // at this point, Route has been filled by the SET_NODES mutator
+                for (var x = 0; x < route.length; x++) {
+                    let address = route[x].AppAddress;
+                    let pos = {
+                        lat: address.lat,
+                        lng: address.lng
+                    }
+                    commit('UPDATE_ROUTE_MARKERS', {
+                        sequence: x,
+                        position: pos
+                    });
+
+                    if (x == route.length - 1) {
+                        let routecenter = {
+                            position: rootGetters['User/currentLocation'],
+                            sequence: x + 1
+                        }
+                        if (routecenter.position) {
+                            commit('UPDATE_ROUTE_MARKERS', routecenter);
+                            commit('UPDATE_ROUTE_CENTER', routecenter);
+                        } else {
+                            commit('UPDATE_ROUTE_CENTER', pos);
+                            cordova.plugins.notification.local.schedule({
+                                title: 'FreshRoute Notification',
+                                text: 'Set center bro.',
+                                foreground: true,
+                                priority: 1
+                            });
+                        }
+                    }
+                }
+
+            });
+
+    },
+
     sortRoute({ commit }) {
         commit('SORT');
     },
@@ -641,6 +731,11 @@ const ACTIONS = {
         //         });
         //     })
     },
+
+    
+    resetRouteStore({ commit }) {
+        commit("RESET_ROUTE_STORE");
+    }
 
 }
 

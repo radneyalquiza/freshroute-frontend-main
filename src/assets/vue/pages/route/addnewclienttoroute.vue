@@ -35,7 +35,7 @@
 						<div class="item-inner">
 							<div class="item-title" >Phone</div>
 							<div class="item-input-wrap">
-								<masked-input :class="{ 'input-with-value': client.Phone }" v-model="client.Phone" mask="\+\1 (111) 111-1111" placeholder="" type="tel" />
+								<masked-input :class="{ 'input-with-value': client.Phone }" v-model="client.Phone" mask="\+\1 111 111-1111" placeholder="" type="tel" />
 								<span class="input-clear-button" @click="client.Phone = ''"></span>
 							</div>
 						</div>

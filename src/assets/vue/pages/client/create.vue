@@ -35,7 +35,7 @@
 						<div class="item-inner">
 							<div class="item-title" >Phone</div>
 							<div class="item-input-wrap">
-								<masked-input :class="{ 'input-with-value': client.Phone }" v-model="client.Phone" mask="\+\1 (111) 111-1111" placeholder="" type="tel" />
+								<masked-input :class="{ 'input-with-value': client.Phone }" v-model="client.Phone" mask="\+\1 111 111-1111" placeholder="" type="tel" />
 								<span class="input-clear-button" @click="client.Phone = ''"></span>
 							</div>
 						</div>
@@ -176,25 +176,24 @@ export default {
 				let geocoder = new google.maps.Geocoder();
 				console.log(street + " " + city + " " + postalcode);
 
-				geocoder.geocode(
-				{
+				geocoder.geocode({
 					address: street + " " + city + " " + postalcode
-				},
-				function(results, status) {
-					instance.$f7.preloader.hide();
-					if (status == google.maps.GeocoderStatus.OK) {
-						instance.address.lat = results[0].geometry.location.lat();
-						instance.address.lng = results[0].geometry.location.lng();
-						resolve(results);
-					} else {
-						instance.$f7.dialog.alert(
-							"Address could not be found. Please check your address again.",
-							"Hold on..."
-						);
-						reject();
-					}
-				},
-				function(err) {}
+					},
+					function(results, status) {
+						instance.$f7.preloader.hide();
+						if (status == google.maps.GeocoderStatus.OK) {
+							instance.address.lat = results[0].geometry.location.lat();
+							instance.address.lng = results[0].geometry.location.lng();
+							resolve(results);
+						} else {
+							instance.$f7.dialog.alert(
+								"Address could not be found. Please check your address again.",
+								"Hold on..."
+							);
+							reject();
+						}
+					},
+					function(err) {}
 				);
 				// });
 			});

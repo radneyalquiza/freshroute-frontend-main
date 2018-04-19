@@ -10,7 +10,7 @@
 			</f7-nav-left>
 			<div class="title">Track {{ routename ? ("  " + routename) : "" }}</div>
 			<f7-nav-right>
-				<f7-link >RESET</f7-link>
+				<f7-link @click="resetRoute()">RESET</f7-link>
 			</f7-nav-right>
 		</f7-navbar>
 
@@ -132,10 +132,10 @@
 			</div>
 		</transition>
 
-		<f7-block></f7-block>
+		<f7-block v-if="routevisible"></f7-block>
 
 		<div v-if="!locationopened && tracking != TRACK.DONE" class="fab fab-right-bottom color-red">
-			<a href="./addroutenode/track" style="width: 35px; height: 35px; bottom: 1px; right: 1px;">
+			<a href="./addnewnode/track" style="width: 35px; height: 35px; bottom: 1px; right: 1px;">
 				<i class="icon f7-icons">add</i>
 			</a>
 		</div>
@@ -598,15 +598,15 @@
 <script>
 	import Vue from 'vue'
 	import moment from 'moment'
-	import Clock from '../components/clock.vue'
-	import Stopwatch from '../components/stopwatch.vue'
-	import Activelocation from '../components/activelocation.vue'
-	import Routesummary from '../components/routesummary.vue'
-	import FileService from '../../../assets/js/file.service.js'
-	import Location from '../../../assets/js/location.class.js'
+	import Clock from 'components/clock.vue'
+	import Stopwatch from 'components/stopwatch.vue'
+	import Activelocation from 'components/activelocation.vue'
+	import Routesummary from 'components/routesummary.vue'
+	// import FileService from '../../.../js/file.service.js'
+	// import Location from '../../.../js/location.class.js'
 	import { mapGetters, mapActions } from 'vuex'
-	import AddRouteNode from '../pages/addnewclienttoroute.vue'
-	import GoogleMap from '../components/map.vue'
+	import AddRouteNode from 'pages/route/addnewclienttoroute.vue'
+	import GoogleMap from 'components/map.vue'
 
 	export default {
 		name: "Track",
@@ -689,6 +689,7 @@
 				__closeActiveLocation: 'Route/closeProperty',
 				__selectRoute: 'User/setSelectedAppRouteId',
 				__getCurrentLocation: 'User/getCurrentLocation',
+				__resetRouteStore: 'Route/resetRouteStore',
 				gpsGranted: 'User/gpsGranted'
 			}),
 			onF7Ready: function() {
@@ -744,6 +745,18 @@
 								);
 							}
 						});
+					}
+					else {
+						instance.$f7.preloader.hide();
+						
+						setupmapview();
+
+						instance.pollGPS = null;
+						
+						// start polling GPS location (default 15s)
+						instance.pollGPS = setInterval(function() {
+							instance.__getCurrentLocation();
+						}, instance.pollRate);
 					}
 
 				
@@ -834,7 +847,15 @@
 
 			},
 			resetRoute: function() {
-
+				let instance = this;
+				instance.$f7.dialog.confirm("Route job data (invoicing, expenses, etc.) will not be saved. Is this ok?", "Reset",
+					function() {
+						instance.__resetRouteStore();
+						sessionStorage.removeItem("SelectedAppRouteId");
+						instance.$f7.router.back();
+					},
+					function() {}
+				);
 			},
 			updateFocusLocation: function(location) {
 				this.focusLocation = location;
