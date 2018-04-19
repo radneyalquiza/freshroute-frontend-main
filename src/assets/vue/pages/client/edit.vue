@@ -2,7 +2,7 @@
     <f7-page navbar-fixed>
         <f7-navbar v-bind:title="title">
             <f7-nav-right>
-                <f7-link :close-popup="true" @click="closeAddRouteNode()">Close</f7-link>
+                <f7-link :close-popup="true" @click="closeEdit()">Close</f7-link>
             </f7-nav-right>
         </f7-navbar>
 
@@ -137,8 +137,6 @@ export default {
   props: ["caller", "appclientid", "exist"],
   data: function() {
     return {
-      openfrequenciespopover: false,
-      openservicespopover: false,
       address: null,
       client: null,
 	  selectedCustomerId: null
@@ -161,11 +159,6 @@ export default {
         deselectClient: "ClientModel/deselectClient",
         getClient: "ClientModel/getClient",
     }),
-    closeAddRouteNode: function() {
-      let instance = this;
-      instance.deselectClient();
-    //   instance.$f7.router.back();
-    },
     // only use this when saving a record
     geocodeAddress: function(geocodeexistingaddress) {
       let instance = this;
@@ -225,59 +218,19 @@ export default {
         // });
       });
     },
-    createService: function() {
-      this.services.push({
-        AppServiceId: "",
-        Price: null // on init, use Default Price
-      });
-    },
-	addEmptyClient: function() {
-		this.client = {
-			FirstName: "",
-			LastName: "",
-			Phone: "",
-			Email: ""
-		};
-	},
-    addEmptyAddress: function() {
-      	this.address = {
-			Street: "",
-			City: "",
-			PostalCode: "",
-			lat: null,
-			lng: null,
-			AppClientId: null
-      	};
-    },
 
     collectAndSave: async function() {
-      let instance = this;
-      let xc = null;
+        let instance = this;
+        let xc = null;
 
-      instance.$f7.preloader.show();
+        instance.$f7.preloader.show();
 
-      if (instance.appclientid) {
-			//   console.log('aaa');
-			let gp = await instance.geocodeAddress(true);
-			let cp = await instance.saveClient();
-			xc = await instance.updateRouteNodeData(cp);
-	  }
-	  else
-	  {
-			let gp = await instance.geocodeAddress();
-			let cp = await instance.saveClient();
-			let ap = await instance.saveAddress(cp, gp);
-			
-			// only add to route and only add services if it is in a "track" workflow
-			if (instance.caller == "track") {
-				let rp = await instance.saveRouteWithNewNode(ap);
-				let rn = await instance.saveServices(rp);
-				xc = await instance.addNodeToLocalRoute(rn);
-			}
-      }
+        let gp = await instance.geocodeAddress(true);
+        let cp = await instance.saveClient();
+        xc = await instance.updateRouteNodeData(cp);
 
-      instance.$f7.preloader.hide();
-      instance.$f7.router.back();
+        instance.$f7.preloader.hide();
+        instance.$f7.router.back();
     },
 
     saveClient: function() {
@@ -314,45 +267,10 @@ export default {
       // instance.address.AppAddressesId = addresspush.key;
     },
 
-    updateRouteNodeData: function(a) {
-      let instance = this;
-      let tempaddress = firstAndOnly(instance.client.AppAddresses);
-      let tempclient = {
-        FirstName: instance.client.FirstName,
-        LastName: instance.client.LastName,
-        Phone: instance.client.Phone,
-        Email: instance.client.Email,
-        AppClientId: instance.client.AppClientId
-      };
-      console.log(tempclient);
-      instance.$firebase
-        .database()
-        .ref("AppRoutes")
-        .once("value", function(routesSnap) {
-			let routes = routesSnap.val();
-			for (var x in routes) {
-				let nodes = routes[x].Nodes;
-				for (var y in nodes) {
+    closeEdit: function() {
+        this.$f7.router.back();
+    }
 
-					if ( nodes[y].AppAddress.AppAddressId == tempaddress.AppAddressId )
-					{
-						instance.$firebase
-						.database()
-						.ref("AppRoutes/" + x + "/Nodes/" + y + "/AppAddress")
-						.update(tempaddress);
-						// break;
-					}
-					if (nodes[y].AppClient.AppClientId == tempclient.AppClientId) {
-						instance.$firebase
-						.database()
-						.ref("AppRoutes/" + x + "/Nodes/" + y + "/AppClient")
-						.update(tempclient);
-						// break;
-					}
-				}
-			}
-        });
-    },
 
   },
   computed: {

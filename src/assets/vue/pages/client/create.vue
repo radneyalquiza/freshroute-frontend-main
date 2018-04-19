@@ -226,6 +226,9 @@ export default {
 			let gp = await instance.geocodeAddress(true);
 			let cp = await instance.saveClient();
 			let ad = await instance.saveAddress(cp,gp);
+
+			if(ad) instance.address.AppAddressId = ad.key;
+
 			await instance.updateAddressId(ad);
 
 			instance.$f7.preloader.hide();
@@ -256,14 +259,12 @@ export default {
 
 		updateAddressId: function(ad) {
 			let instance = this;
-			instance.address.AppAddressId = ad.key;
-
-			if (!gp) return;
+			if (!ad) return;
 
 			return instance.$firebase
 				.database()
-				.ref("AppClients/" + instance.client.AppClientId + "/AppAddresses")
-				.limitToFirst(1)
+				.ref("AppClients/" + instance.client.AppClientId + "/AppAddresses/" + ad.key)
+				.update({ AppAddressId: ad.key });
 
 		}
 
