@@ -347,7 +347,6 @@ export default {
 				},
 				end: function() {
 					if(this.location.JobData) {
-						console.log(this.location);
 						return this.location.JobData.DateTimeEnded;
 					}
 				},
@@ -432,6 +431,7 @@ export default {
 				instance.$forceUpdate();
 			},
 			endLocation: function() {
+				console.log('endlocation')
 				let instance = this;
 				
 				if(instance.gpsvalidation && instance.Distance > 500) {

@@ -71,10 +71,13 @@ export default {
 	methods: {
 		...mapActions({
 			getRoutes: 'RouteModel/getRoutes',
-			selectActiveRoute: 'RouteModel/selectActiveRoute'
+			selectActiveRoute: 'RouteModel/selectActiveRoute',
+			resetRoute: 'Route/resetRouteStore'
 		}),
 		openRoute: function(approuteid) {
 			let instance = this;
+			instance.resetRoute();
+			sessionStorage.removeItem("SelectedAppRouteId");
 			instance.selectActiveRoute(approuteid);
 			setTimeout(function() {
 				instance.$f7.router.navigate({ url: "./viewroute/" })

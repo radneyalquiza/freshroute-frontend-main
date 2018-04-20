@@ -32,9 +32,7 @@ export default [{
             },
             {
                 path: "expenses/",
-                loginScreen: {
-                    component: require("./assets/vue/pages/expenses.vue")
-                }
+                component: require("./assets/vue/pages/expenses.vue")
             },
             {
                 path: "routesummary/",

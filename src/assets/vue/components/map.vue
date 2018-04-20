@@ -77,13 +77,13 @@ export default {
 			// GoogleMapsLoader.load(function(google) {
 			gmaploaded.then(() => {
 
-console.log('qqqq')
-				cordova.plugins.notification.local.schedule({
-					title: 'FreshRoute Notification',
-					text: 'draw map bro.',
-					foreground: true,
-					priority: 1
-				});
+// console.log('qqqq')
+// 				cordova.plugins.notification.local.schedule({
+// 					title: 'FreshRoute Notification',
+// 					text: 'draw map bro.',
+// 					foreground: true,
+// 					priority: 1
+// 				});
 
 				instance.bounds = new google.maps.LatLngBounds();
 				instance.element = document.getElementById(instance.id);

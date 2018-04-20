@@ -8,6 +8,7 @@ import GoogleMapsLoader from "google-maps"
 import axios from 'axios'
 
 const gmapkey = "AIzaSyBLXvlal6niC0b49NWSorcdFV9cQT3Y754"
+const firstAndOnly = v => v[Object.keys(v)[0]];
 
 // ---------------------------------------------------------------------------------------
 const RouteStatus = {
@@ -256,7 +257,8 @@ const MUTATIONS = {
             TempPauseTime: 0,
             DateTimeStarted: null,
             DateTimeEnded: null,
-            TotalJobTimeText: null
+            TotalJobTimeText: null,
+            Paid: false
         });
         p.JobData.TimeStarted = Date.now();
         p.JobData.CurrentTime = Date.now();
@@ -331,10 +333,14 @@ const MUTATIONS = {
     END_PROPERTY: function(state, payload) {
         var p = state.Route[payload.sequence];
         p.Status = LocationStatus.COMPLETE;
+
+        console.log(p);
     },
     JOB_COMPLETE: function(state, payload) {
         var p = state.Route[payload.sequence];
         p.JobData.TotalJobTimeText = MUTATION_HELPERS.formatTimer(p.JobData.TotalJobTime);
+
+        console.log(p);
     },
 
     NEXT: function(state) {
@@ -401,12 +407,12 @@ const ACTIONS = {
                             commit('UPDATE_ROUTE_CENTER', routecenter);
                         } else {
                             commit('UPDATE_ROUTE_CENTER', pos);
-                            cordova.plugins.notification.local.schedule({
-                                title: 'FreshRoute Notification',
-                                text: 'Set center bro.',
-                                foreground: true,
-                                priority: 1
-                            });
+                            // cordova.plugins.notification.local.schedule({
+                            //     title: 'FreshRoute Notification',
+                            //     text: 'Set center bro.',
+                            //     foreground: true,
+                            //     priority: 1
+                            // });
                         }
                     }
                 }
@@ -452,12 +458,12 @@ const ACTIONS = {
                             commit('UPDATE_ROUTE_CENTER', routecenter);
                         } else {
                             commit('UPDATE_ROUTE_CENTER', pos);
-                            cordova.plugins.notification.local.schedule({
-                                title: 'FreshRoute Notification',
-                                text: 'Set center bro.',
-                                foreground: true,
-                                priority: 1
-                            });
+                            // cordova.plugins.notification.local.schedule({
+                            //     title: 'FreshRoute Notification',
+                            //     text: 'Set center bro.',
+                            //     foreground: true,
+                            //     priority: 1
+                            // });
                         }
                     }
                 }
@@ -675,13 +681,21 @@ const ACTIONS = {
             position: rootGetters['User/currentLocation']
         });
     },
-    jobComplete({ commit }, sequence) {
+    jobComplete({ commit, getters }, sequence) {
         commit('CLOSE_PROPERTY', { sequence: sequence })
         commit('UPDATE_PROPERTY_STATUS', {
             status: LocationStatus.COMPLETE,
             sequence: sequence
         });
         commit('JOB_COMPLETE', { sequence: sequence })
+
+        const location = getters.Route[sequence];
+        const client = location.AppClient;
+        const address = location.AppAddress;
+        const service = firstAndOnly(location.AppServices);
+        const jobdata = location.JobData;
+        // firebase.database().ref("AppInvoice")
+        // .
     },
 
     next({ commit }) {

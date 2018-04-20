@@ -10,6 +10,7 @@ const STATE = {
 
 const GETTERS = {
 
+    // All AppRoutes records
     Routes: function(state) {
         console.log(state.Routes);
         return state.Routes;
@@ -17,7 +18,7 @@ const GETTERS = {
 
     ActiveRoute: function(state) {
         return state.ActiveRoute;
-    },
+    }
 }
 
 
@@ -31,6 +32,10 @@ const MUTATIONS = {
             return obj.AppRouteId === id;
         })
         state.ActiveRoute.AppRouteId = id;
+    },
+    CREATE_ACTIVE_ROUTE(state, route) {
+        state.ActiveRoute = route;
+        // no route id yet
     }
 }
 
@@ -53,6 +58,10 @@ const ACTIONS = {
 
     selectActiveRoute({ commit }, id) {
         commit("SET_ACTIVE_ROUTE", id);
+    },
+
+    createActiveRoute({ commit }) {
+        commit("CREATE_ACTIVE_ROUTE");
     }
 }
 

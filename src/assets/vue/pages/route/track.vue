@@ -204,7 +204,7 @@
 				<div class="block">
 					<f7-list >
 						<f7-list-item title="" v-for="emp in workers" v-bind:key="emp.$index">
-							{{ emp }}
+							{{ emp.AppUser.FirstName + " " + emp.AppUser.LastName }} ({{ dollar(emp.Pay) }})
 						</f7-list-item>
 					</f7-list>
 
@@ -692,6 +692,9 @@
 				__resetRouteStore: 'Route/resetRouteStore',
 				gpsGranted: 'User/gpsGranted'
 			}),
+			dollar: function(a) {
+				return "$" + parseFloat(a).toFixed(2) + "/hr";
+			},
 			onF7Ready: function() {
 
 				let clients;
@@ -924,12 +927,12 @@
 						// 	closeTimeout: 3000,
 						// 	text: 'Tap on [Open Location] on the next available Location to begin working.',
 						// }).open();
-						cordova.plugins.notification.local.schedule({
-							title: 'FreshRoute Notification',
-							text: 'Tap on [Open Location] on the next available Location to begin working.',
-							foreground: true,
-        					priority: 1
-						});
+						// cordova.plugins.notification.local.schedule({
+						// 	title: 'FreshRoute Notification',
+						// 	text: 'Tap on [Open Location] on the next available Location to begin working.',
+						// 	foreground: true,
+        				// 	priority: 1
+						// });
 
 						instance.__startRoute();
 						instance.__activateProperty({

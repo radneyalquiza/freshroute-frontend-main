@@ -1,11 +1,18 @@
 <template>
 	<f7-page class="routelocationslist">
-		<f7-navbar title="Edit Locations for Route" back-link=" ">
+		<f7-navbar :title="title" back-link=" ">
 		</f7-navbar>
 
         <h3 v-if="locations && locations.length" style="padding-left: 15px;">Editing {{ locations.length }} locations</h3>
-        <p style="padding-left: 15px; font-size: 12px;">Drag the handles on the right to reorder the locations.</p>
-        <p style="padding-left: 15px; font-size: 12px;">Click "Save Route" to save ALL changes here.</p>
+        
+        <div v-if="locations && locations.length">
+            <p style="padding-left: 15px; font-size: 12px;">Drag the handles on the right to reorder the locations.</p>
+            <p style="padding-left: 15px; font-size: 12px;">Click "DONE" to save ALL changes here.</p>
+        </div>
+        <div v-else>
+             <p style="padding-left: 15px; font-size: 12px;">Click on the + button to add locations.</p>
+        </div>
+
 
         <f7-block style="margin-top: 1px; margin-bottom: 10px; padding-left: 5px; padding-right: 5px;" >
 
@@ -37,8 +44,7 @@
 
         </f7-block>
 
-        <f7-button style="width:95%; margin:auto;" @click="saveAllChanges()" big :fill=true raised color="blue">Save Route</f7-button>
-
+        <f7-button v-if="locations && locations.length" style="width:95%; margin:auto;" @click="saveAllChanges()" big :fill=true raised color="blue">DONE</f7-button>
 
 
 		<f7-fab class="addnodes" color="orange" @click="openaddnodes = true;" >
@@ -147,6 +153,7 @@ export default {
         draggable,
         AddRouteNode
     },
+    props: ['nodes'],
 	data: function () {
 		return {
 			sorting: false,
@@ -185,7 +192,16 @@ export default {
 
         // instance.route = JSON.parse(JSON.stringify(instance.activeRoute));
         console.log(instance.activeRoute);
-        instance.__getRouteData(instance.activeRoute.AppRouteId);
+
+        if(instance.activeRoute && instance.activeRoute.AppRouteId) {
+            instance.__getRouteData(instance.activeRoute.AppRouteId);
+            instance.locations = JSON.parse(JSON.stringify(instance.route));
+        }
+        else if (instance.nodes) {
+            instance.locations = instance.nodes;
+        }
+
+        console.log(instance.locations);
         
         instance.$firebase.database().ref("AppClients")
         .once("value", function(data) {
@@ -196,12 +212,6 @@ export default {
             }
         });
 
-        // if(instance.route.Nodes)
-        //     for(var s in instance.route.Nodes)
-        //         instance.locations.push(instance.route.Nodes[s]);
-
-        instance.locations = JSON.parse(JSON.stringify(instance.route));
-        console.log(instance.locations)
 	},
 	methods: {
 		...mapActions({
@@ -272,9 +282,19 @@ export default {
                             "AppRoutes/" +
                             instance.activeRoute.AppRouteId +
                             "/Nodes")
-                        .orderByChild("AppAddressId")
-                        .equalTo(addr.AppAddressId)
-                        .remove();
+                        .once("value", function(nodes) {
+                            let cnodes = nodes.val();
+                            for(var n in cnodes) {
+                                if(addr.AppAddressId == cnodes[n].AppAddress.AppAddressId)
+                                {
+                                    instance.$firebase.database()
+                                    .ref("AppRoutes/" +
+                                        instance.activeRoute.AppRouteId +
+                                        "/Nodes/"+ n).remove();
+                                }
+                            }
+
+                        })
                 },
                 function(canceldata) {}
             )

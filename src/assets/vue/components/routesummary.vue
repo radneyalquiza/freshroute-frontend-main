@@ -116,16 +116,45 @@
 							</div>
 							</div>
 						</div>
+						<div class="summary-data-row">
+							<div class="data-container"  style="text-align: right">
+							<div class="data-label underline">Total Employee Pay</div>
+							<div class="data">
+									<!--<countto :number='1000'></countto>-->
+									$ <ICountUp
+									:startVal="startVal"
+									:endVal="completeddata.totalemployeepay"
+									:decimals="decimals"
+									:duration="duration"
+									:options="options"
+									@ready="onReady"
+									/>
+							</div>
+							</div>
+
+							<div class="data-container"  style="text-align: left">
+							<div class="data-label underline">Employees Worked</div>
+							<div v-for="(emp, idx) in workers" :key="idx" class="data-label mini">
+								({{ dollar(emp.Pay) }}) &nbsp; {{ emp.AppUser.UserName }} 
+							</div>
+
+							<!-- <div class="data">
+									$ <ICountUp
+									:startVal="startVal"
+									:endVal="completeddata.totalserviceprice"
+									:decimals="decimals"
+									:duration="duration"
+									:options="options"
+									@ready="onReady"
+									/>
+							</div> -->
+							</div>
+						</div>
 
 				<f7-block>
-					<f7-button :fill="true" blue raised>Save Route Details</f7-button>
+					<f7-button :fill="true" blue raised @click="createWork()">Save Work Details</f7-button>
 				</f7-block>
 
-	<!-- 
-					</f7-swiper-slide>
-					<f7-swiper-slide>Slide 2</f7-swiper-slide>
-					<f7-swiper-slide>Slide 3</f7-swiper-slide>
-				</f7-swiper> -->
 		</div>
 	</f7-page>
 
@@ -179,6 +208,12 @@ h3 {
 donut-chart {
 	display: block;
 }
+.data-label.underline {
+	text-decoration: underline;
+}
+.data-label.mini {
+	font-size: 0.75em;
+}
 </style>
 
 <script>
@@ -218,7 +253,9 @@ function timeConversion(millisec) {
 			...mapGetters({
 				route: 'Route/Route',
 				routename: 'Route/RouteName',
-				expense: 'Route/ExternalExpenses'
+				expense: 'Route/ExternalExpenses',
+				workers: 'Route/Workers',
+				routeid: 'Route/RouteId'
 			})
 		},
         data: function() {
@@ -277,6 +314,12 @@ function timeConversion(millisec) {
         mounted() {
 		},
 		methods: {
+			...mapActions({
+				resetRoute: 'Route/resetRouteStore'
+			}),
+			dollar: function(a) {
+				return "$" + parseFloat(a).toFixed(2) + "/hr";
+			},
 			onReady: function(instance, CountUp) {
 				const that = this;
 				// instance.update(that.endVal + 50);
@@ -288,8 +331,10 @@ function timeConversion(millisec) {
 				var totalserviceprice = 0;
 				var totaltime = 0;
 				var averagetime = 0;
-				var miscexpenses = 0;
+				var miscexpenses = 0.00;
 				var incomplete = 0;
+				var totalemployeepay = 0.00;
+				var totalmilliseconds = 0;
 				
 				for(var x=0; x<instance.route.length; x++) {
 					if(instance.route[x].Status == 2) {
@@ -308,7 +353,7 @@ function timeConversion(millisec) {
 						incomplete++;
 				}
 
-				totaltime = (averagetime / (1000 * 60));
+				totaltime = parseFloat(averagetime / (1000 * 60)); // in minutes
 				if(averagetime) {
 					averagetime = (averagetime / (1000 * 60)) / completed;
 					if(!averagetime) averagetime = 0;
@@ -322,10 +367,17 @@ function timeConversion(millisec) {
 					// 	averagetime = averagetime + "hours";
 				}
 
+console.log('aaaa', instance.workers)
+				for(var x in instance.workers) {
+					var g = instance.workers[x];
+					var pay = parseFloat(g.Pay) * (totaltime / 60.00); 
+					totalemployeepay += parseFloat(pay); 
+				}
+
 				if(instance.expense) {
 					console.log(instance.expense)
 					for(var x=0; x<instance.expense.length; x++) {
-						miscexpenses += instance.expense[x].Amount;
+						miscexpenses += parseFloat(instance.expense[x].Amount);
 					}
 				}
 				instance.locations = {};
@@ -350,6 +402,8 @@ function timeConversion(millisec) {
 					data: [totalserviceprice, miscexpenses]
 				}];
 
+				console.log('ddd', totalemployeepay);
+
 				instance.$forceUpdate();
 				instance.completeddata = {
 					completed: parseInt(completed),
@@ -357,9 +411,40 @@ function timeConversion(millisec) {
 					totalserviceprice: parseInt(totalserviceprice),
 					averagetime: parseFloat(averagetime),
 					miscexpenses: parseInt(miscexpenses),
-					totaltime: parseFloat(totaltime)
+					totaltime: parseFloat(totaltime),
+					totalemployeepay: parseFloat(totalemployeepay)
 				};
 
+			},
+			createWork() {
+
+				let instance = this;
+
+				instance.$f7.dialog.confirm("Route Job will be saved and you will be returned to the home screen. Is this ok?", "Save and Close",
+					async function() {
+						let s = await instance.saveWork();
+						instance.resetRoute();
+						sessionStorage.removeItem("SelectedAppRouteId");
+						instance.$f7.router.navigate({ url: '/' });
+					},
+					function() {}
+				);
+				
+			},
+
+			saveWork() {
+				let instance = this;
+
+				instance.$firebase.database().ref("AppWork")
+				.push({
+					SaveDate: Date.now(),
+					WorkData: instance.completeddata,
+					Route: {
+						AppRouteId: instance.routeid,
+						Workers: instance.workers,
+						Nodes: instance.route
+					}
+				})
 			}
 		},
     } 

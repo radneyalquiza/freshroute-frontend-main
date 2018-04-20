@@ -113,7 +113,9 @@
 
 		<f7-button style="width:95%; margin:auto;" @click="saveRoute()" big :fill=true raised color="blue">Save Route</f7-button>
 
-
+		<f7-popup id="locationsui">
+			<route-locations :nodes="route.Nodes"></route-locations>
+		</f7-popup>
 
 	</f7-page>
 	
@@ -187,7 +189,11 @@ export default {
 			// clients: [],
 			route: {
 				Name: "",
-				Description: ""
+				Description: "",
+				Workers: [],
+				Nodes: [],
+				creator: "",
+				createdate: null 
 			},
 			services: [], // list of all services
 			employees: [], // list of all employees
@@ -243,6 +249,8 @@ export default {
     mounted() {
 		let instance = this;
 
+		instance.createRoute(instance.route);
+
 		// get all users
 		instance.$firebase.database().ref("AppUsers")
 		.once("value", function(data) {
@@ -262,9 +270,7 @@ export default {
 	},
 	methods: {
 		...mapActions({
-			getRoutes: 'RouteModel/getRoutes',
-			selectActiveRoute: 'RouteModel/selectActiveRoute',
-			__getRouteData: 'Route/getRouteData',
+			createRoute: 'RouteModel/createActiveRoute',
 		}),
 		dollar: function(a) {
 			return "$" + parseFloat(a).toFixed(2) + "/hr";

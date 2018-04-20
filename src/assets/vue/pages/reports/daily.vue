@@ -3,7 +3,11 @@
 		<f7-navbar title="Daily Report" back-link=" " sliding>
 		</f7-navbar>
 
-		
+		<f7-list>
+			<f7-list-item v-for="(s,idx) in appworks" :key="idx" :title="s.AppWorkId">
+				<span style="font-size: 11px">{{ date(s.SaveDate) }}</span>
+			</f7-list-item>
+		</f7-list>
 
 	</f7-page>
 	
@@ -36,6 +40,8 @@
 import _ from 'lodash'
 import Vue from 'vue'
 
+import moment from 'moment'
+
 function swap(arr, x, y) {
    var origin = arr[x]
    arr.splice(x, 1, arr[y])
@@ -46,14 +52,29 @@ export default {
 	data: function () {
 		return {
 			sorting: false,
-			route: []
+			route: [],
+			appworks: []
 		}
 	},
+			
 	mounted() {
 		let clients;
 		let instance = this;
+
+		instance.$firebase.database().ref("AppWork")
+		.orderByChild("SaveDate")
+		.once("value", function(data) {
+			let works = data.val();
+			for(var x in works) {
+				works[x].AppWorkId = x;
+				instance.appworks.push(works[x]);
+				console.log(works[x]);
+			}
+		})
 	},
-	methods: {
+	methods: {date: function(date) {
+			return moment(date).format("lll")
+		},
 		onSort: function (event, indexes) {
 			console.log('sort', arguments);
 		},
