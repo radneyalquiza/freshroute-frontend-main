@@ -400,7 +400,9 @@ export default {
 			__getUserCurrentAddress: 'User/getCurrentAddress',
 			__closeActiveLocation: 'Route/closeProperty',
 			__completeProperty: 'Route/completeProperty',
-			__jobComplete: 'Route/jobComplete'
+			__jobComplete: 'Route/jobComplete',
+			__setLocationPaymentStatus: 'Route/setLocationPaymentStatus',
+			__setInvoiceDeliveryStatus: 'Route/setInvoiceDeliveryStatus'
 		}),
 		{
 			getWeather: function() {
@@ -501,10 +503,66 @@ export default {
 				let instance = this;
 				// instance.location.Duration = instance.duration;
 				// instance.STATUS = instance.STATUS.COMPLETE;
-				instance.__jobComplete(instance.location.Sequence);
-				instance.__closeActiveLocation();
-				instance.$emit('doneProperty', instance.location)
-				instance.$forceUpdate();
+
+				var dialog = instance.$f7.dialog.create({
+					title: 'Payment Status',
+					text: 'What is the Payment Status of this job?',
+					buttons: [
+						{ 
+							text: 'Paid',
+							onClick: function() {
+								instance.__setLocationPaymentStatus(true);
+								dialog2.open(true);
+
+							}
+						},
+						{ 
+							text: 'Unpaid',
+							onClick: function() {
+								instance.__setLocationPaymentStatus(false);
+								dialog2.open(true);
+							}
+						}
+					]
+				});
+				var dialog2 = instance.$f7.dialog.create({
+					title: 'Invoice Delivery Status',
+					text: 'Send an Invoice?',
+					buttons: [
+						{ 
+							text: 'Send',
+							onClick: function() {
+								instance.__setInvoiceDeliveryStatus(true);
+								_jobcomplete();
+							}
+						},
+						{ 
+							text: 'Don\'t Send',
+							onClick: function() {
+								instance.__setInvoiceDeliveryStatus(false);
+								_jobcomplete();
+							}
+						}
+					]
+				});
+
+				dialog.open(true);
+
+				// instance.$f7.dialog.confirm("Has this job for this location been paid in advance?", "Paid",
+				// 	function() {
+				// 		instance.__resetRouteStore();
+				// 		sessionStorage.removeItem("SelectedAppRouteId");
+				// 		instance.$f7.router.back();
+				// 	},
+				// 	function() {}
+				// );
+
+				function _jobcomplete() {
+					instance.__jobComplete(instance.location.Sequence);
+					instance.__closeActiveLocation();
+					instance.$emit('doneProperty', instance.location)
+					instance.$forceUpdate();
+				}
 			},
 			takeBeforePhoto: function() {
 				let instance = this;

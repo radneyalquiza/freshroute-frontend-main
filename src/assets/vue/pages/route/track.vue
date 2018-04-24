@@ -125,6 +125,12 @@
 									<div v-if="address.JobData" style="width: 33%; border-left: 1px solid #CCC; padding: 3px;">{{ address.JobData.TotalJobTimeText }}</div>
 								</div>
 							</div>
+							<div v-if="address.Status == STATUS.COMPLETE" style="display: flex; width: 100%; text-align: center; border-top: 1px solid #dbdbdb; ">
+								<div v-if="address.JobData.Paid == true" style="padding: 7px; width:50%; color: #50b223; font-weight: 600;">PAID</div>
+								<div v-else style="padding: 7px; width:50%; color: #f44336; font-weight: 600;">UNPAID</div>
+								<div v-if="address.JobData.SentInvoice == true" style="padding: 7px; width: 50%; color: #2196f3; font-weight: 600;">INVOICE SENT</div>
+								<div v-else style="padding: 7px; width: 50%; color: #ffcf3f; font-weight: 600;">INVOICE NOT SENT</div>
+							</div>
 						</div>
 
 					</div>

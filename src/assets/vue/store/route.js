@@ -116,6 +116,13 @@ const GETTERS = {
             return { lat: state.activeLocation.AppAddress.lat, lng: state.activeLocation.AppAddress.lng };
         else
             return null;
+    },
+
+    Paid: function(state) {
+        return state.activeLocation.Paid;
+    },
+    SentInvoice: function(state) {
+        return state.activeLocation.SentInvoice;
     }
 }
 
@@ -123,11 +130,11 @@ const GETTERS = {
 const MUTATIONS = {
 
     RESET_ROUTE_STORE: function(state) {
-        state.Route = []; 
+        state.Route = [];
         state.RouteName = "";
         state.Id = null;
         state.started = false;
-        
+
         state.Markers = [];
 
         state.RouteDateTimeStarted = null;
@@ -172,7 +179,8 @@ const MUTATIONS = {
     },
     UPDATE_NODES: function(state, addresses) {
 
-        console.log(addresses); return;
+        console.log(addresses);
+        return;
         if (addresses) {
             for (var x in addresses) {
                 addresses[x].AppAddressId = x;
@@ -245,6 +253,7 @@ const MUTATIONS = {
             Paused: false,
             Timer: null, // actual display
             TimeStarted: null,
+            TimeEnded: null,
             CurrentTime: null,
             CurrentPauseTime: null,
             IntervalObject: null,
@@ -258,7 +267,8 @@ const MUTATIONS = {
             DateTimeStarted: null,
             DateTimeEnded: null,
             TotalJobTimeText: null,
-            Paid: false
+            Paid: false,
+            SentInvoice: false
         });
         p.JobData.TimeStarted = Date.now();
         p.JobData.CurrentTime = Date.now();
@@ -267,6 +277,7 @@ const MUTATIONS = {
     },
     STOP_PROPERTY: function(state, payload) {
         var p = state.Route[payload.sequence];
+        p.JobData.TimeEnded = Date.now();
         clearInterval(p.JobData.IntervalObject);
         p.JobData.DateTimeEnded = moment().format('LT');
         p.Status = LocationStatus.DONE;
@@ -361,6 +372,17 @@ const MUTATIONS = {
     SET_LOCATION_SEQUENCE: function(state, payload) {
         var p = state.Route[payload.fromseq];
         p.Sequence = payload.toseq;
+    },
+
+    SET_PAYMENT_STATUS: function(state, payload) {
+        if (state.activeLocation && payload != undefined)
+            state.activeLocation.JobData.Paid = payload;
+        console.log("111", state.activeLocation.JobData.Paid, payload)
+    },
+    SET_INVOICE_STATUS: function(state, payload) {
+        if (state.activeLocation && payload != undefined)
+            state.activeLocation.JobData.SentInvoice = payload;
+        console.log("222", state.activeLocation.JobData.SentInvoice, payload)
     }
 }
 
@@ -369,7 +391,7 @@ const ACTIONS = {
         if (route)
             commit('SET_ROUTE', route);
     },
-    
+
     getRouteData({ commit, getters, dispatch, rootGetters }, approuteid) {
 
         firebase.database().ref("AppRoutes/" + approuteid)
@@ -423,6 +445,8 @@ const ACTIONS = {
 
     // only use for Routes that are currently running
     updateActiveRouteDisplay({ commit, getters, rootGetters }, routeid) {
+
+        if (!routeid) return new Promise(function(resolve, reject) { reject(); });
 
         return firebase.database().ref("AppRoutes/" + routeid)
             .once("value", function(data) {
@@ -690,12 +714,19 @@ const ACTIONS = {
         commit('JOB_COMPLETE', { sequence: sequence })
 
         const location = getters.Route[sequence];
+
         const client = location.AppClient;
         const address = location.AppAddress;
         const service = firstAndOnly(location.AppServices);
         const jobdata = location.JobData;
-        // firebase.database().ref("AppInvoice")
-        // .
+        firebase.database().ref("AppInvoice")
+            .push({
+                AppInvoiceId: generateInvoiceId(5),
+                AppClient: client,
+                AppAddress: address,
+                WorkData: jobdata,
+                AppService: service
+            })
     },
 
     next({ commit }) {
@@ -746,11 +777,18 @@ const ACTIONS = {
         //     })
     },
 
-    
+
     resetRouteStore({ commit }) {
         commit("RESET_ROUTE_STORE");
-    }
+    },
 
+    setLocationPaymentStatus({ commit }, status) {
+        commit("SET_PAYMENT_STATUS", status);
+    },
+
+    setInvoiceDeliveryStatus({ commit }, status) {
+        commit("SET_INVOICE_STATUS", status);
+    }
 }
 
 
@@ -817,4 +855,14 @@ const MUTATION_HELPERS = {
         Expenses: null,
         JobData: null
     }
+}
+
+const generateInvoiceId = function(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    for (var i = 0; i < length; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
 }
